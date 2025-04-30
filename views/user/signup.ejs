@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IzCubes Signup</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f4f4f9;
+    }
+
+    .container {
+      display: flex;
+      width: 90%;
+      max-width: 1000px;
+      background: #fcf3df;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .form-section {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .form-section h1 {
+      margin-bottom: 24px;
+      font-size: 28px;
+      color: #333;
+      text-align: center;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    input {
+      margin-bottom: 20px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 12px;
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #004999;
+    }
+
+    .or {
+      text-align: center;
+      margin: 16px 0;
+      color: #666;
+    }
+
+    .social-buttons a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: white;
+      font-weight: 600;
+      gap: 8px;
+    }
+
+    .google-btn {
+      background-color: #db4437;
+    }
+
+    .facebook-btn {
+      background-color: #3b5998;
+    }
+
+    .social-buttons img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .image-section {
+      flex: 1;
+      background: #fcf3df;
+      align-content: center;
+    }
+
+    .image-section img {
+      width: 100%;
+      
+      object-fit: cover;
+    }
+
+    .error-message{
+      color: red;
+      font-size: 0.75rem;
+      display: none;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-section">
+      <h1>Sign Up to IzCubes</h1>
+      <form id="signform" method="post" action="/signup">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" placeholder="Enter your name" />
+        <div id="error1" class="error-message"></div>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" />
+        <div id="error2" class="error-message"></div>
+
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" />
+        <div id="error3" class="error-message"></div>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Create a password" />
+        <div id="error4" class="error-message"></div>
+
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" id="confirm-password" name="cpassword" placeholder="Confirm your password" />
+        <div id="error5" class="error-message"></div>
+
+        <button type="submit">Create Account</button>
+
+        <p class="or">OR</p>
+
+        <div class="social-buttons">
+          <a href="#" class="google-btn">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google logo"> Sign up with Google
+          </a>
+          <a href="#" class="facebook-btn">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" alt="Facebook logo"> Sign up with Facebook
+          </a>
+        </div>
+      </form>
+    </div>
+    <div class="image-section">
+      <img src="img/Signup_izCube_Logo.png" alt="IzCubes illustration" />
+    </div>
+  </div>
+</body>
+</html>
+
+<script>
+
+const nameid = document.getElementById("name");
+const emailid = document.getElementById("email");
+const phoneid = document.getElementById("phone");
+const passid = document.getElementById("password");
+const cpassid = document.getElementById("confirm-password");
+const error1 = document.getElementById("error1");
+const error2 = document.getElementById("error2");
+const error3 = document.getElementById("error3");
+const error4 = document.getElementById("error4");
+const error5 = document.getElementById("error5");
+const signform = document.getElementById("signform");
+
+
+function nameValidation(e){
+
+  const nameval = nameid.value;
+  const namepattern = /^[A-Za-z\s]+$/;
+
+  if(nameval.trim()===""){
+    error1.style.display="block";
+    error1.innerHTML = "Please enter a valid name"
+  }else if(!namepattern.test(nameval)){
+    error1.style.display="block";
+    error1.innerHTML= "Name can only contain alphabets and spaces"
+  }else{
+    error1.style.display="none";
+    error1.innerHTML=""
+  }
+
+}
+
+
+function emailValidation(e){
+  const emailval = emailid.value;
+  const emailpattern = /^([a-zA-Z0-9._-]+)@([a-zA-Z.-]+).([a-zA-Z]{2,4})$/
+
+  if(!emailpattern.test(emailval)){
+    error2.style.display="block";
+    error2.innerHTML="enter a valid e-mail id"
+  }else{
+    error2.style.display="none";
+    error2.innerHTML ="";
+  }
+
+}
+
+
+function phoneValidation(e){
+  const phoneval = phoneid.value;
+
+  if(phoneval.trim()===""){
+    error3.style.display="block";
+    error3.innerHTML = "Enter valid phone number"
+  }else if(phoneval.length<10||phoneval.length>10){
+    error3.style.display="block"
+    error3.innerHTML="Enter 10 digits"
+  }else{
+    error3.style.display="none";
+    error3.innerHTML=""
+  }
+
+}
+
+function passValidation(e){
+  const passval = passid.value;
+  const cpassval = cpassid.value;
+  const alpha = /[a-zA-Z]/;
+  const digit = /\d/;
+
+  if(passval.length<8){
+    error4.style.display="block";
+    error4.innerHTML="Should contain atleast 8 characters";
+  }else if(!alpha.test(passval) || !digit.test(passval)){
+    error4.style.display="block",
+    error4.innerHTML="Should contain numbers and alphabets"
+  }else{
+    error4.style.display="none";
+    error4.innerHTML="";
+  }
+
+  if(passval !== cpassval){
+    error5.style.display="block";
+    error5.innerHTML="Passwords do not match";
+  }else{
+    error5.style.display="none";
+    error5.innerHTML="";
+  }
+
+}
+
+
+document.addEventListener("DOMContentLoaded",function(){
+  signform.addEventListener("submit",function(e){
+    nameValidation();
+    emailValidation();
+    phoneValidation();
+    passValidation();
+
+    if(
+      !nameid ||
+      !emailid||
+      !phoneid||
+      !passid ||
+      !error1 ||
+      !error2 ||
+      !error3 ||
+      !error4 ||
+      !error5 ||
+      !signform
+    ){
+      console.log("One or more elements not found");
+    }
+
+    if(
+      error1.innerHTML ||
+      error2.innerHTML ||
+      error3.innerHTML ||
+      error4.innerHTML ||
+      error5.innerHTML
+    ){
+      e.preventDefault()
+    }
+
+  })
+})
+
+
+
+</script>
+
