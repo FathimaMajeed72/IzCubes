@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background: #fcf3df;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-container img {
+      width: 150px;
+      height: 150px;
+      /*margin-bottom: 1rem;*/
+    }
+
+    .login-container h1 {
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      color: #AF5C40;
+    }
+
+    .google-btn {
+      background: #fff;
+      color: #000;
+      border: 1px solid #ccc;
+      padding: 0.6rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto 1rem auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .google-btn img {
+      width: 18px;
+      height: 18px;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.3rem;
+      color: #333;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .forgot-password {
+      text-align: right;
+      
+      margin-bottom: 1rem;
+    }
+
+    .forgot-password a {
+      text-decoration: none;
+      font-size: 0.9rem;
+      color: red;
+    }
+
+    .login-btn {
+      background: #AF5C40;
+      color: white;
+      border: none;
+      padding: 0.7rem;
+      width: 80%;
+      max-width: 280px;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+
+    .signup-link {
+      font-size: 0.9rem;
+    }
+
+    .signup-link a {
+      color: #007bff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <img src="img/Signup_izCube_Logo.png" alt="User Icon">
+    <h1>Welcome Back</h1>
+
+    <button class="google-btn">
+      <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" alt="Google Icon">
+      <span>Login with Google</span>
+    </button>
+
+    <form id="loginform" method="post" action="/login">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email">
+        <div id="error1" class="error-message"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password">
+        <div id="error2" class="error-message"></div>
+      </div>
+
+      <div class="forgot-password">
+        <a href="#">Forgot Password?</a>
+      </div>
+
+      <%if(locals.message && message.length>0){%>
+        <div class="alert alert-danger text-center">
+          <%=message%>
+        </div>
+      <%}%>
+
+
+      <button type="submit" class="login-btn">Login</button>
+    </form>
+
+    <div class="signup-link">
+      New user? <a href="#">Sign up now</a>
+    </div>
+  </div>
+
+
+  <script>
+    const emailid = document.getElementById("email");
+    const passwrd = document.getElementById("password");
+    const error1 = document.getElementById("error1");
+    const error2 = document.getElementById("error2")
+    const loginform = document.getElementById("loginform");
+
+    function emailValidation(e) {
+        const emailval = emailid.value;
+        const emailpattern =/^[a-zA-Z0-9._-]+@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,4})$/;
+
+        if (!emailpattern.test(emailval)) {
+          error1.style.display = "block";
+          error1.innerHTML = "Invalid Format";
+        } else {
+          error1.style.display = "none";
+          error1.innerHTML = "";
+        }
+      }
+
+
+    function passwordValidation(e) {
+        const passval = passwrd.value;
+        if (passval.length < 8) {
+          error2.style.display = "block";
+          error2.innerHTML = "Should contain at least 8 characters";
+        } else {
+          error2.style.display = "none";
+          error2.innerHTML = "";
+        }
+      }
+
+
+      document.addEventListener("DOMContentLoaded", function () {
+        loginform.addEventListener("submit", function (e) {
+          emailValidation();
+          passwordValidation();
+
+          if (!emailid || !passid || !error1 || !error2 || !loginform) {
+            console.error("One or more elements not found");
+          }
+
+          if (error1.innerHTML || error2.innerHTML) {
+            e.preventDefault();
+          }
+        });
+      });
+
+
+  </script>
+
+</body>
+</html>
