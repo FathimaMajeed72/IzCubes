@@ -22,11 +22,19 @@ const pageNotFound = async (req,res) => {
 const loadHomepage = async (req,res) => {
     try{
 
-        return res.render("home")
+        let user = req.session.user;
+        
+        if(user){
+            const userData = await User.findOne({_id:user._id});
+            console.log(userData)
+            res.render("home",{user:userData});
+        }else{
+            return res.render("home");
+        }
 
     }catch(error){
-        console.log("Home Page not found")
-        res.status(500).send("Server error")
+        console.log("Home Page not found");
+        res.status(500).send("Server error");
     }
 }
 
@@ -34,12 +42,12 @@ const loadHomepage = async (req,res) => {
 const loadSignup = async (req,res) => {
     try {
         
-            return res.render("signup")
+            return res.render("signup");
 
     } catch (error) {
         
-        console.log("Signup Page not found")
-        res.status(500).send("Server error")
+        console.log("Signup Page not found");
+        res.status(500).send("Server error");
 
     }
 }
@@ -240,13 +248,32 @@ const login = async (req,res) => {
         if(!passwordMatch){
             return res.render("login",{message:"incorrect Password"})
         }
-
-        req.session.user = findUser._id;
+        console.log(findUser)
+        req.session.user = findUser;
         res.redirect("/")
 
     } catch (error) {
         console.error("login error ",error);
         res.render("login",{message:"login failed. Please try again later"})
+    }
+}
+
+
+const logout = async (req,res) => {
+    try {
+
+        req.session.destroy((err)=>{
+            if(err){
+                console.log("Session destruction error ",err.message);
+                return res.redirect("/pageNotFound")
+            }
+            return res.redirect("/login")
+        })
+        
+    } catch (error) {
+        console.log("Logout error ",error);
+        res.redirect("/pageNotFound")
+        
     }
 }
 
@@ -260,4 +287,5 @@ module.exports = {
     resendOtp,
     loadLogin,
     login,
+    logout,
 }
