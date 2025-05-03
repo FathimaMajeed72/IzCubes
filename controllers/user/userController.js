@@ -159,11 +159,18 @@ const securePassword = async (password) => {
 const verifyOtp = async (req,res) => {
     try {
         const {otp} = req.body;
-        console.log(otp);
+        console.log("OTP entered:",otp);
 
         if(otp === req.session.userOtp){
             const user = req.session.userData;
             const passwordHash = await securePassword(user.password);
+
+            //to avoid saving the same user after refreshing the otp page after already succesful registration
+            const existingUser = await User.findOne({ email: user.email });
+            if (existingUser) {
+                return res.status(400).json({ success: false, message: "User already exists" });
+            }
+
 
             const saveUserData = new User({
                 name : user.name,
@@ -175,6 +182,8 @@ const verifyOtp = async (req,res) => {
 
             await saveUserData.save();
             req.session.user =saveUserData._id;
+            
+            console.log("User after OTP:", saveUserData); 
             res.json({success:true,redirectUrl:"/"})
         }else{
             res.status(400).json({success:false,message:"Invalid OTP, Please try again"})
