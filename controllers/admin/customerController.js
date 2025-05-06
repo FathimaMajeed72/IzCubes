@@ -37,9 +37,11 @@ const count = await User.find({
 })
 .countDocuments();
 
+const totalPages = Math.ceil(count / limit);
+
 res.render("customers", {
     data: userData,
-    totalPages: Math.ceil(count / limit),
+    totalPages: totalPages,
     currentPage: page
 });
 
