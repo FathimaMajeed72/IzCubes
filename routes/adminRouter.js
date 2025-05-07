@@ -8,7 +8,7 @@ const multer = require("multer")
 const storage = require("../helpers/multer")
 const uploads = multer({storage:storage});
 const brandController = require("../controllers/admin/brandController")
-//const productController = require("../controllers/admin/productController")
+const productController = require("../controllers/admin/productController")
 
 router.get("/pageerror",adminController.pageerror);
 
@@ -36,9 +36,9 @@ router.get("/blockBrand",adminAuth,brandController.blockBrand);
 router.get("/unBlockBrand",adminAuth,brandController.unBlockBrand);
 router.get("/deleteBrand",adminAuth,brandController.deleteBrand)
 
-//router.get("/addProducts",adminAuth,productController.getProductAddPage)
-
-
+router.get("/addProducts",adminAuth,productController.getProductAddPage)
+router.post("/addProducts",adminAuth,uploads.array("images",4),productController.addProducts)
+//router.get("/products",adminAuth,productController.getAllProducts)
 
 
 
