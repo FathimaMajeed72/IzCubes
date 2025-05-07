@@ -110,7 +110,7 @@ const getAllProducts = async (req,res) => {
                 brand : brand
             })
         }else{
-            res.render("page-404")
+            res.render("admin-error")
         }
 
     } catch (error) {
@@ -119,12 +119,73 @@ const getAllProducts = async (req,res) => {
 }
 
 
+const addProductOffer = async(req,res)=>{
+    try {
+      const {productId,percentage} = req.body;
+      const findProduct =await Product.findOne({_id:productId});
+      const findCategory = await Category.findOne({_id:findProduct.category});
+      if(findCategory.categoryOffer>percentage){
+        return res.json({status:false,message:"This product category already has a category offer"});  
+      }
+      findProduct.salePrice = Math.floor(findProduct.regularPrice - (findProduct.regularPrice * (percentage / 100)));
+      findProduct.productOffer=parseInt(percentage);
+      await findProduct.save();
+      findCategory.categoryOffer=0;
+      await findCategory.save();
+      return res.json({status:true});
+    } catch (error) {
+      res.redirect('/admin/pageerror');
+      res.status(500).json({status:false,message:"Internal Server Error"})
+    }
+  }
+  
+  const removeProductOffer =async(req,res)=>{
+    try {
+      const {productId} = req.body;
+      const findProduct = await Product.findOne({_id:productId});
+      const percentage = findProduct.productOffer;
 
+      if (!findProduct) {
+        return res.status(404).json({ status: false, message: "Product not found" });
+      }
 
+      //findProduct.salePrice = Math.floor(findProduct.regularPrice + (findProduct.regularPrice * (percentage / 100)));
+      findProduct.productOffer=0;
+      findProduct.salePrice = findProduct.regularPrice;
+      await findProduct.save();
+      return res.json({ status: true });
+    } catch (error) {
+      res.redirect('/admin/pageerror');
+    }
+  }
+  
+  const blockProduct = async (req,res)=>{
+    try {
+      let id = req.query.id;
+      await Product.updateOne({_id:id},{$set:{isBlocked:true}});
+      res.redirect('/admin/products');
+    } catch (error) {
+      res.redirect('/admin/ pageerror');
+    }
+  }
+  
+  const unblockProduct = async (req,res)=>{
+    try {
+      let id = req.query.id;
+      await Product.updateOne({_id:id},{$set:{isBlocked:false}});
+      res.redirect('/admin/products'); 
+    } catch (error) {
+      res.redirect('/admin/pageerror');
+    }
+  }
 
 
 module.exports = {
     getProductAddPage,
     addProducts,
     getAllProducts,
+    addProductOffer,
+    removeProductOffer,
+    blockProduct,
+    unblockProduct,
 }
