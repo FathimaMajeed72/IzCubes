@@ -97,6 +97,11 @@
       font-size: 0.9rem;
       color: red;
     }
+    .forgot-password a:hover {
+      
+      color: rgb(186, 3, 3);
+      text-decoration: underline;
+    }
 
     .login-btn {
       background: #AF5C40;
@@ -148,7 +153,7 @@
       </div>
 
       <div class="forgot-password">
-        <a href="#">Forgot Password?</a>
+        <a href="/forgot-password">Forgot Password?</a>
       </div>
 
       <%if(locals.message && message.length>0){%>

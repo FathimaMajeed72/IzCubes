@@ -1,4 +1,6 @@
 const User = require("../../models/userSchema")
+const Category = require("../../models/categorySchema");
+const Product = require("../../models/productSchema")
 const env = require("dotenv").config()
 const nodemailer = require("nodemailer")
 const bcrypt = require("bcrypt")
@@ -9,7 +11,8 @@ const pageNotFound = async (req,res) => {
         res.render("page-404")
         
     } catch (error) {
-        res.redirect("/pageNotFound")
+        console.error(error);
+        res.status(500).send("Something went wrong");
     }
     
 }
