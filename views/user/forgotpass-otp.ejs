@@ -132,8 +132,7 @@ function initializeOTPTimer(){
 function validateOtpForm() {
 
   const otpValue = document.getElementById('otp').value;
-        // let otpValue = "";
-        // otpInputs.forEach(input => otpValue += input.value);
+        
 
         $.ajax({
             type: "POST",
@@ -171,36 +170,17 @@ function validateOtpForm() {
 
     function resendOtp() {
       document.querySelector(".resend-button").disabled = true;
-    clearInterval(otpTimerInterval);  // Stop existing timer
-    timer = 60;  // Reset timer
+    clearInterval(otpTimerInterval);  
+    timer = 60;  
     startOtpTimer();
-    // document.getElementById("timerValue").textContent = timer;
-    // document.getElementById("timerValue").classList.remove("expired");
-
-    // // Enable OTP input fields again
-    // document.querySelectorAll(".otp-box").forEach(input => {
-    //     input.disabled = false;
-    //     input.value = "";  // Clear previous OTP input
-    // });
-
-    // // Start new timer
-    // timerInterval = setInterval(() => {
-    //     timer--;
-    //     document.getElementById("timerValue").textContent = timer;
-    //     if (timer <= 0) {
-    //         clearInterval(timerInterval);
-    //         document.getElementById("timerValue").textContent = "Expired";
-    //         document.getElementById("timerValue").classList.add("expired");
-    //         document.querySelectorAll(".otp-box").forEach(input => input.disabled = true);
-    //     }
-    // }, 1000);
+    
 
     setTimeout(() => {
         document.querySelector(".resend-button").disabled = false;
     },60000);
 
 
-    // Make AJAX request to resend OTP
+
     $.ajax({
         type: "POST",
         url: "/resend-forgot-otp",

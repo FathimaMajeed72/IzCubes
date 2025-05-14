@@ -84,8 +84,8 @@
                 <div class="col-lg-6 col-md-6">
                     <nav class="header__menu mobile-menu">
                         <ul>
-                            <li class="active"><a href="#">Home</a></li>
-                            <li><a href="./shop">Shop</a></li>
+                            <li class=""><a href="/">Home</a></li>
+                            <li><a href="/shop">Shop</a></li>
                             <!-- <li><a href="#">Pages</a>
                                 <ul class="dropdown">
                                     <li><a href="./">About Us</a></li>
@@ -126,3 +126,18 @@
         </div>
     </header>
     <!-- Header Section End -->
+
+
+        <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll("nav li a");
+
+    navLinks.forEach(link => {
+      if (link.getAttribute("href") === currentPath) {
+        link.parentElement.classList.add("active");
+      }
+    });
+  });
+</script>
+   

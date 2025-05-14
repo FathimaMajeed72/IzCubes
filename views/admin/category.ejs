@@ -253,9 +253,15 @@
             input: "number",
             inputLabel: "Percentage",
             inputPlaceholder: "%",
+            inputAttributes: {
+            min: 1,
+            max: 100,
+            step: 1
+            },
+            showCancelButton: true
           });
     
-          if (amount) {
+          if (amount){
             try {
               const response = await fetch("/admin/addCategoryOffer", {
                 method: "POST",
@@ -276,6 +282,9 @@
               Swal.fire("Error", "An error occurred while adding the offer", "error");
               console.error("Error adding offer:", error);
             }
+          }else{
+            Swal.fire("Invalid input", "Please enter a valid percentage between 1 and 100", "warning");
+            return;
           }
         });
       });

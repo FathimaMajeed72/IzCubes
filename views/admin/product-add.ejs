@@ -1,6 +1,8 @@
 <%- include("../../views/partials/admin/header") %>
 <head>
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+   <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet"/>
+
 </head>
 <style>
    .error-message{
@@ -16,9 +18,17 @@
 
        .thumbnail {
            margin-right: 10px;
-
-
        }
+
+       .remove-icon {
+            position: absolute;
+            font-size: 18px;
+            color: red;
+            cursor: pointer;
+            background: white;
+            border-radius: 50%;
+            
+        }
 
 
 </style>
@@ -128,6 +138,13 @@
                                <div class="border row">
                                    <div id="addedImagesContainer" class="thumbnails-container"></div>
                                </div>
+
+
+                                <!-- <input type="file" id="imageInput" accept="image/*" />
+                                <div id="previewContainer"></div> -->
+                                
+
+
                                 <div class="row">
                                    <div class="card-body align-items-center" style="margin-bottom: 20px;">
                                        <img src="" alt="" id="imgView1">
@@ -195,7 +212,7 @@
                                                        </div>              
                            </div>
                            <div>
-                               <button class="btn btn-md rounded font-sm hover-up"  type="button" onclick="validateAndSubmit()">Publish</button>
+                               <button class="btn btn-md rounded font-sm hover-up"  type="button" id="submitBtn" onclick="validateAndSubmit()">Publish</button>
                            </div>
                        </form>
                    </div>
@@ -204,6 +221,7 @@
        </div>
    </section>
 <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
  
 <script>
     function validateAndSubmit(){
@@ -227,7 +245,6 @@
     function viewImage4(event){
         document.getElementById("imgView4").src = URL.createObjectURL(event.target.files[0])
     }
-
 
 
 
@@ -318,11 +335,12 @@
             thumbnail.appendChild(removeIcon);
             addedImagesContainer.appendChild(thumbnail);
         }
+        if (files.length > 0) {
         const feedback = document.createElement("div");
         feedback.innerText = "Image added successfully!";
         feedback.style.color = "green";
-        thumbnail.appendChild(feedback);
-
+        addedImagesContainer.appendChild(feedback);
+    }
 
 
     }

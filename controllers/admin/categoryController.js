@@ -135,6 +135,8 @@ const getUnlistCategory = async (req,res) => {
     try {
         let id = req.query.id;
         await Category.updateOne({_id:id},{$set:{isListed:true}}) 
+
+
         res.redirect("/admin/category")
     } catch (error) {
         res.redirect("/pageerror")
