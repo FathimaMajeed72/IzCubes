@@ -29,10 +29,10 @@ const loadHomepage = async (req,res) => {
             isBlocked:false,
             category:{$in:categories.map(category=>category._id)},
             quantity:{$gt:0}
-        })
+        }).sort({createdAt:-1}).limit(4)
 
-        productData.sort((a,b)=>new Date(b.createdOn)-new Date(a.createdOn));
-        productData=productData.slice(0,4);
+       // productData.sort((a,b)=>new Date(b.createdOn)-new Date(a.createdOn));
+       // productData=productData.slice(0,4);
 
         
         if(user){

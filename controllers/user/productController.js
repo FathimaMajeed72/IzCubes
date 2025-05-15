@@ -9,6 +9,7 @@ const productDetails = async (req, res) => {
       const userId = req.session.user;
       const userData = await User.findById(userId);
       const productId = req.query.id;
+      const from = req.query.from || "shop";
   
       if (!productId) {
         return res.redirect('/pageNotFound');
@@ -24,22 +25,11 @@ const productDetails = async (req, res) => {
       const productOffer = product.productOffer || 0;
       const totalOffer = categoryOffer + productOffer;
   
-    //   const similarProducts = await Product.find({
-    //     category: product.category._id,
-    //     _id: { $ne: product._id },
-    //   }).limit(4);
+      const similarProducts = await Product.find({
+        category: product.category._id,
+        _id: { $ne: product._id },
+      }).limit(4);
 
-    //   let existingQtyincart=0;
-    //   if(userId){
-    //     const cart = await Cart.findOne({ userId: userId._id });
-    //     if(cart){
-    //       const cartItem = cart.items.find(item=>item.productId.toString()===productId);
-    //       if(cartItem){
-    //         existingQtyincart=cartItem.quantity;
-    //       }
-    //     }
-    //   }
-    //  console.log(existingQtyincart);
 
       
       res.render('product-details', {
@@ -48,9 +38,8 @@ const productDetails = async (req, res) => {
         quantity: product.quantity,
         totalOffer: totalOffer,
         category: findCategory,
-    //    similarProducts: similarProducts,
-      //  existingQtyincart,
-        //message:null
+        similarProducts: similarProducts,
+        from,
       });
   
     } catch (error) {
