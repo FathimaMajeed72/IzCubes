@@ -1,8 +1,10 @@
 const User = require("../models/userSchema")
 
 const userAuth = (req,res,next)=>{
-    if(req.session.user){
-        User.findById(req.session.user)
+    const userId = req.session.user._id || (req.user && req.user._id);
+
+    if(userId){
+        User.findById(userId)
         .then(data=>{
             if(data&&!data.isBlocked){
                 next();

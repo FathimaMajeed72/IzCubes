@@ -15,6 +15,9 @@ async (accessToken,refreshToken,profile,done)=>{
     try {
         let user = await User.findOne({googleId:profile.id});
         if(user){
+            if (user.isBlocked) {
+                return done(null, false, { message: 'Your Account is blocked' });
+            }
             return done(null,user);
         }else{
             user = new User({
