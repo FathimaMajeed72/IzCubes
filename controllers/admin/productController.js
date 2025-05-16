@@ -65,7 +65,7 @@ const addProducts = async (req,res) => {
             });
 
             await newProduct.save();
-            return res.redirect("/admin/addProducts")
+            return res.redirect("/admin/addProducts?success=true")
           
         }else{
             return res.status(400).json("Product already exist, please try with another name");
@@ -150,7 +150,7 @@ const addProductOffer = async(req,res)=>{
         return res.status(404).json({ status: false, message: "Product not found" });
       }
 
-      //findProduct.salePrice = Math.floor(findProduct.regularPrice + (findProduct.regularPrice * (percentage / 100)));
+      
       findProduct.productOffer=0;
       findProduct.salePrice = findProduct.regularPrice;
       await findProduct.save();

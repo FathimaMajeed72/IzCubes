@@ -124,6 +124,12 @@
       color: #007bff;
       text-decoration: none;
     }
+    .error-message {
+      color: red;
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+    }
+
   </style>
 </head>
 <body>
@@ -180,10 +186,13 @@
     const loginform = document.getElementById("loginform");
 
     function emailValidation(e) {
-        const emailval = emailid.value;
+        const emailval = emailid.value.trim();
         const emailpattern =/^[a-zA-Z0-9._-]+@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,4})$/;
 
-        if (!emailpattern.test(emailval)) {
+        if (emailval === "") {
+          error1.style.display = "block";
+          error1.innerHTML = "Email is required";
+        } else if (!emailpattern.test(emailval)) {
           error1.style.display = "block";
           error1.innerHTML = "Invalid Format";
         } else {
@@ -194,8 +203,12 @@
 
 
     function passwordValidation(e) {
-        const passval = passwrd.value;
-        if (passval.length < 8) {
+        const passval = passwrd.value.trim();
+
+        if (passval === "") {
+          error2.style.display = "block";
+          error2.innerHTML = "Password is required";
+        } else if (passval.length < 8) {
           error2.style.display = "block";
           error2.innerHTML = "Should contain at least 8 characters";
         } else {
