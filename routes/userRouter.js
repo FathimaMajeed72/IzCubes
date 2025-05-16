@@ -40,9 +40,10 @@ router.get("/productDetails",userAuth,productController.productDetails)
 
 
 router.get("/shop",userAuth,userController.loadShoppingPage)
-
-
-
+router.get("/filter",userAuth,userController.filterProducts)
+router.get("/filterPrice",userAuth,userController.filterByPrice)
+router.post("/search",userAuth,userController.searchProducts)
+router.get("/sort",userAuth,userController.sortProducts)
 
 
 module.exports = router;

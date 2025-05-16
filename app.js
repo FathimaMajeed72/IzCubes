@@ -28,9 +28,17 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use((req, res, next) => {
+  if (req.user && !req.session.user) {
+    req.session.user = req.user;
+  }
+  next();
+});
+
+
 
 app.use((req, res, next) => {
-    res.locals.user = req.user; 
+    res.locals.user = req.session.user||null; 
     next();
 });
 
