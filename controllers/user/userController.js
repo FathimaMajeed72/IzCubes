@@ -192,10 +192,11 @@ const verifyOtp = async (req,res) => {
 
 
             await saveUserData.save();
-            req.session.user =saveUserData._id;
+            //req.session.user =saveUserData._id;
             
             console.log("User after OTP:", saveUserData); 
-            res.json({success:true,redirectUrl:"/"})
+            res.json({ success: true, redirectUrl: "/login?message=Signup%20successful%2C%20please%20log%20in" });
+            //res.json({success:true,redirectUrl:"/"})
         }else{
             res.status(400).json({success:false,message:"Invalid OTP, Please try again"})
         }
@@ -240,8 +241,11 @@ const resendOtp = async (req,res) => {
 
 const loadLogin = async (req,res) => {
     try {
-        if(!req.session.user){
-            const message = req.query.message || "";
+
+        const message = req.query.message || "";
+
+        if(!req.session.user&&!req.user){
+            
             return res.render("login",{message})
         }else{
             res.redirect("/")
@@ -290,9 +294,18 @@ const login = async (req,res) => {
             
             return res.render("login",{message:"Incorrect password"})
         }
-        console.log(findUser)
-        req.session.user = findUser;
-        res.redirect("/")
+
+        req.login(findUser, (err) => {
+            if (err) {
+                console.error("Passport login error:", err);
+                return next(err);
+            }
+
+            //console.log(findUser)
+            req.session.user = findUser;
+            res.redirect("/")
+        });
+
 
     } catch (error) {
         console.error("login error ",error); 
