@@ -42,14 +42,7 @@ const addBrand = async (req,res) => {
             await newBrand.save();
             res.redirect("/admin/brands")
         }else {
-            // Duplicate found — handle it gracefully
-            // res.render("brands", {
-            //   data: await Brand.find({}),
-            //   currentPage: 1,
-            //   totalPages: 1,
-            //   totalBrands: 1,
-            //   errorMessage: "Brand already exists!", // send error to EJS
-            // });
+            
             res.redirect("/admin/brands?error=Brand already exists!");
 
           }
