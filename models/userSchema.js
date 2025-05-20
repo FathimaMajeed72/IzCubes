@@ -28,6 +28,10 @@ const userSchema = new Schema({
         type : String,
         required : false
     },
+    profileImage: {
+        type : String,
+        default: "defaultProfileImage.jpg"
+    },
     isBlocked : {
         type : Boolean,
         default : false

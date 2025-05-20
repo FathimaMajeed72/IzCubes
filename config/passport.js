@@ -20,15 +20,18 @@ async (accessToken,refreshToken,profile,done)=>{
             }
             return done(null,user);
         }else{
+            const profileImage = profile.photos && profile.photos.length > 0 ? profile.photos[0].value : "defaultProfileImage.jpg";
             user = new User({
                 name : profile.displayName,
                 email : profile.emails[0].value,
                 googleId : profile.id,
+                profileImage: profileImage
             })
             await user.save();
             return done(null,user);
         }
     } catch (error) {
+        console.error("GoogleStrategy Error:", error);
         return done(error,null)
     }
     

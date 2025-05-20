@@ -235,6 +235,21 @@
 
 
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const passwordChanged = urlParams.get('passwordChanged');
+
+  if (passwordChanged === 'true') {
+    Swal.fire({
+      icon: 'success',
+      title: 'Password Changed Successfully',
+      text: 'You can now log in with your new password',
+      timer: 2000,
+      showConfirmButton: false
+    });
+  }
+</script>
 
 </body>
 </html>

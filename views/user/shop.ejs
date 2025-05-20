@@ -246,6 +246,16 @@
  .category-brand-container {
    text-align: center;
  }
+
+ .truncated-text {
+  white-space: nowrap;         
+  overflow: hidden;            
+  text-overflow: ellipsis;    
+  display: block;
+  max-width: 230px;         
+  cursor: pointer;
+}
+
 </style>
 
 
@@ -323,7 +333,7 @@
            <span class="wishlist-btn" onclick="">❤️</span>
            <a href="/productdetails?id=<%=products[i]._id%>&from=shop">
              <img src="/uploads/re-image/<%=products[i].productImage[0]%>" alt="/<%=products[i].productName%>" />
-             <h4><%=products[i].productName%></h4>
+             <h4 class="truncated-text" title="<%= products[i].productName %>"><%=products[i].productName%></h4>
              <p>Brand:<%=products[i].brand%></p>
              <p>Price ₹<%=products[i].salePrice.toLocaleString('en-IN')%><span class="text-muted"><strike>₹<%=products[i].regularPrice.toLocaleString('en-IN')%></strike></span></p>
            </a>
