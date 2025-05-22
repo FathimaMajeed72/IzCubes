@@ -43,7 +43,11 @@ router.post("/change-password",userAuth,profileController.changePasswordValid);
 router.post("/verify-changepassword-otp",userAuth,profileController.verifyChangePassOtp)
 
 
-router.get("/productDetails",userAuth,productController.productDetails)
+router.get("/addAddress",userAuth,profileController.addAddress);
+router.post("/addAddress",userAuth,profileController.postAddAddress)
+//router.get("/editAddress",userAuth,profileController.editAddress);
+router.post("/editAddress",userAuth,profileController.postEditAddress);
+router.get("/deteAddress",userAuth,profileController.deleteAddress);
 
 
 
@@ -52,6 +56,10 @@ router.get("/filter",userAuth,userController.filterProducts)
 router.get("/filterPrice",userAuth,userController.filterByPrice)
 router.post("/search",userAuth,userController.searchProducts)
 router.get("/sort",userAuth,userController.sortProducts)
+
+
+
+router.get("/productDetails",userAuth,productController.productDetails)
 
 
 module.exports = router;

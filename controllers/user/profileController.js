@@ -168,8 +168,13 @@ const postNewPassword = async (req,res)=>{
   const userProfile = async (req,res)=>{
     try {
       const userData = req.session.user;
+      const addressData = await Address.findOne({userId:userData._id})
+
+      const userAddresses = addressData ? addressData.address : [];
+
       res.render("profile",{
-        user:userData,
+        user : userData,
+        userAddresses
       })
       
     } catch (error) {
@@ -332,6 +337,149 @@ const verifyChangePassOtp = async (req, res) => {
   };
 
 
+const addAddress = async (req,res) => {
+  try {
+    
+      const user = req.session.user;
+      res.render("add-address",{user:user})
+
+  } catch (error) {
+    res.redirect("/pageNotFound")
+  }
+}
+
+const postAddAddress = async (req,res) => {
+  try {
+
+    const user = req.session.user;
+    //const userData = await User.findOne({_id:user._id});
+    const {addressType,name,houseName,streetName,city,landMark,state,pincode,phone,altPhone} = req.body;
+    
+    let userAddress = await Address.findOne({userId : user._id})
+    const newAddress = { addressType, name, houseName, streetName, city, landMark, state, pincode, phone, altPhone };
+
+    if (!userAddress) {
+      userAddress = new Address({
+        userId: user._id,
+        address: [newAddress],
+      });
+      await userAddress.save();
+    } else {
+      userAddress.address.push(newAddress);
+      await userAddress.save();
+    }
+
+    const userAddresses = userAddress.address;
+
+    res.render("profile", {
+      user,
+      userAddresses,
+    });
+
+  } catch (error) {
+
+    console.error("Error on adding address",error);
+    res.redirect("/pageNotFound");
+    
+  }
+}
+
+
+// const editAddress = async (req,res) => {
+//   try {
+
+//     const addressId = req.query.id;
+//     const user = req.session.user;
+//     const currentAddress = await Address.findOne({
+//       "address._id" : addressId,
+//     })
+
+//     if(!currentAddress){
+//       return res.redirect("/pageNotFound");
+//     }
+    
+//     const addressData = currentAddress.address.find((item)=>{
+//       return item._id.toString()===addressId.toString();
+//     })
+
+//     if(!addressData){
+//       return res.redirect("/pageNotFound");
+//     }
+
+//     res.render
+
+//   } catch (error) {
+    
+//   }
+// }
+
+const postEditAddress = async (req,res) => {
+  try {
+
+    const data = req.body;
+    const addressId = req.query.id;
+    const user = req.session.user;
+    const findAddress = await Address.findOne({"address._id":addressId})
+    if(!findAddress){
+      res.redirect("/pageNotFound");
+    }
+    await Address.updateOne(
+      {"address._id" : addressId},
+      {$set : {
+        "address.$" : {
+          _id : addressId,
+          addressType : data.addressType,
+          name : data.name,
+          houseName : data.houseName,
+          streetName : data.streetName,
+          landMark : data.landMark,
+          city : data.city,
+          pincode : data.pincode,
+          state : data.state,
+          phone : data.phone,
+          altPhone : data.altPhone,
+        }
+      }}
+    )
+
+    res.redirect("/userProfile");
+
+
+  } catch (error) {
+    
+    console.error("Error in edit address",error);
+    res.redirect("/pageNotFound")
+
+  }
+}
+
+
+const deleteAddress = async (req,res) => {
+  try {
+    const addressId = req.query.id;
+    const findAddress = await Address.findOne({"address._id":addressId})
+    if(!findAddress){
+      return res.status(404).send("Address not found")
+    }
+
+    await Address.updateOne(
+      {"address._id" : addressId},
+      {
+        $pull : {
+          address : {
+            _id :addressId,
+
+          }
+        }
+      }
+    )
+    res.redirect("/userProfile")
+
+  } catch (error) {
+    console.error("Error in delete address",error);
+    res.redirect("/pageNotFound");
+  }
+}
 
 
 module.exports ={
@@ -348,6 +496,9 @@ module.exports ={
     updateEmail,
     changePassword,
     changePasswordValid,
-    verifyChangePassOtp
-
+    verifyChangePassOtp,
+    addAddress,
+    postAddAddress,
+    postEditAddress,
+    deleteAddress,
 }

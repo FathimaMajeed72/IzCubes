@@ -1,6 +1,6 @@
 <%- include("../../views/partials/user/header") %>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     body {
       background-color: #f5f5f5;
@@ -15,7 +15,7 @@
       margin: 10px 0;
     }
     .sidebar .nav-link.active {
-      color: #e91e63;
+      color: #46698f;
       font-weight: bold;
     }
     .profile-section {
@@ -88,18 +88,18 @@
         </div>
         <nav class="nav flex-column">
           <h6 class="ml-3 fw-bold">ACCOUNT SETTINGS</h6>
-          <a class="nav-link" href="#"><i class="fa fa-user-circle"></i> Profile details</a>
-          <a class="nav-link" href="#"><i class="fa-solid fa-address-card"></i> Manage Address</a>
+          <a class="nav-link sidebar-link active" href="#" data-target="profileSection"><i class="fa fa-user-circle"></i> Profile details</a>
+          <a class="nav-link sidebar-link" href="#" data-target="addressSection"><i class="fa-solid fa-address-card"></i> Manage Address</a>
           <h6 class="mt-4 ml-3 fw-bold">MY STUFFS</h6>
-          <a class="nav-link" href="#"><i class="fa fa-box"></i> My Orders</a>
-          <a class="nav-link" href="#"><i class="fa fa-box"></i> My Coupons</a>
-          <a class="nav-link" href="#"><i class="fa fa-wallet"></i> My Wallet</a>
+          <a class="nav-link sidebar-link" href="#" data-target="orderSection"><i class="fa fa-box"></i> My Orders</a>
+          <a class="nav-link sidebar-link" href="#" data-target="couponSection"><i class="fa fa-box"></i> My Coupons</a>
+          <a class="nav-link sidebar-link" href="#" data-target="walletSection"><i class="fa fa-wallet"></i> My Wallet</a>
           <a class="nav-link" href="/logout"><i class="fa fa-sign-out-alt"></i>  Logout</a>
         </nav>
       </div>
 
       <!-- Profile content -->
-      <div class="col-md-9 profile-section">
+      <div class="col-md-9 profile-section content-section" id="profileSection">
         <div class="profile-card">
             <div class="d-flex align-content-center justify-content-between">
                 <h4>Profile details</h4> 
@@ -155,12 +155,151 @@
               </form>
             </div>
           </div>
-
       </div>
+
+
+            <!-- Manage Address Section (Initially Hidden) -->
+      <div class="col-md-9 profile-section content-section" id="addressSection" style="display: none;">
+        <div class="profile-card">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4>Manage Address</h4>
+            <a href="/addAddress">
+            <button class="btn btn-sm pwdbtn" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+              <i class="fa fa-plus"></i> Add Address
+            </button>
+            </a>
+          </div>
+          <% if (userAddresses && userAddresses.length > 0) { %>
+            <% userAddresses.forEach((address, index) => { %>
+              <div class="border p-3 mb-3 rounded">
+                <p><strong><u><%= address.addressType %></u></strong></p>
+                <p><b><%= address.name %></b><br><%= address.houseName %>,<br><%= address.streetName %>,<br><%= address.landMark %>,<br><%= address.city %> - <%= address.pincode %>,<br><%= address.state %>,<br>Phone no: <%= address.phone %>,<br>Alternate Phone no: <%= address.altPhone %></p>
+                <div class="text-end">
+                  <button class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#editAddressModal<%= index %>"><i class="fa fa-pen"></i></button>
+                  <form method="POST" action="/deleteAddress?id=<%= address._id %>" class="d-inline" onsubmit="return confirmDelete()">
+                    <button class="btn btn-sm btn-outline-danger" type="submit"><i class="fa fa-trash"></i></button>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Edit Address Modal -->
+              <div class="modal fade" id="editAddressModal<%= index %>" tabindex="-1">
+                <div class="modal-dialog">
+                  <form class="modal-content" method="POST" action="/editAddress?id=<%= address._id %>">
+                    <div class="modal-header">
+                      <h5>Edit Address</h5>
+                      <button class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                       <div class="mb-2">
+                        <label for="addressType<%= index %>" class="form-label fw-bold">Address Type</label>
+                        <input type="text" id="addressType<%= index %>" class="form-control" name="addressType" value="<%= address.addressType %>" required>
+                      </div>
+
+                      <div class="mb-2">
+                        <label for="name<%= index %>" class="form-label fw-bold">Name</label>
+                        <input type="text" id="name<%= index %>" class="form-control" name="name" value="<%= address.name %>" required>
+                      </div>
+
+                      <div class="mb-2">
+                        <label for="houseName<%= index %>" class="form-label fw-bold">House Name/no:(or Work Place)</label>
+                        <input type="text" id="houseName<%= index %>" class="form-control" name="houseName" value="<%= address.houseName %>" required>
+                      </div>
+
+                      <div class="mb-2">
+                        <label for="streetName<%= index %>" class="form-label fw-bold">Street Name</label>
+                        <input type="text" id="streetName<%= index %>" class="form-control" name="streetName" value="<%= address.streetName %>" required>
+                      </div>
+
+                      <div class="mb-2">
+                        <label for="landMark<%= index %>" class="form-label fw-bold">Landmark</label>
+                        <input type="text" id="landMark<%= index %>" class="form-control" name="landMark" value="<%= address.landMark %>" required>
+                      </div>
+
+                      <div class="mb-2">
+                        <label for="city<%= index %>" class="form-label fw-bold">City</label>
+                        <input type="text" id="city<%= index %>" class="form-control" name="city" value="<%= address.city %>" required>
+                      </div>
+
+                      <div class="mb-2">
+                        <label for="pincode<%= index %>" class="form-label fw-bold">Pincode</label>
+                        <input type="text" id="pincode<%= index %>" class="form-control" name="pincode" value="<%= address.pincode %>" required>
+                      </div>
+
+                      <div class="mb-2">
+                        <label for="state<%= index %>" class="form-label fw-bold">State</label>
+                        <input type="text" id="state<%= index %>" class="form-control" name="state" value="<%= address.state %>" required>
+                      </div>
+
+                      <div class="mb-2">
+                        <label for="phone<%= index %>" class="form-label fw-bold">Phone</label>
+                        <input type="text" id="phone<%= index %>" class="form-control" name="phone" value="<%= address.phone %>" required>
+                      </div>
+
+                      <div class="mb-2">
+                        <label for="altPhone<%= index %>" class="form-label fw-bold">Alternate Phone</label>
+                        <input type="text" id="altPhone<%= index %>" class="form-control" name="altPhone" value="<%= address.altPhone %>" required>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                      <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p class="text-muted">No addresses found.</p>
+          <% } %>
+        </div>
+      </div>
+
+
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const sidebarLinks = document.querySelectorAll(".sidebar-link");
+    const contentSections = document.querySelectorAll(".content-section");
+
+    sidebarLinks.forEach(link => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        const targetId = this.getAttribute("data-target");
+
+        contentSections.forEach(section => {
+          section.style.display = "none";
+        });
+
+        sidebarLinks.forEach(link => link.classList.remove("active"));
+
+      
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) {
+          targetSection.style.display = "block";
+        }
+
+        this.classList.add("active");
+      });
+    });
+
+    document.querySelector('[data-target="profileSection"]').click();
+  });
+</script>
+
+<script>
+  function confirmDelete() {
+    return confirm("Are you sure you want to delete this address?");
+  }
+</script>
+
+
+
 <%- include("../../views/partials/user/footer") %>
 
 
