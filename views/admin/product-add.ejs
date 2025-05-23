@@ -76,7 +76,7 @@
                                <div class="col-lg-4">
                                    <div class="mb-4">
                                        <label class="form-label">Regular price</label>
-                                       <input placeholder="$" name="regularPrice" type="text"
+                                       <input placeholder="₹" name="regularPrice" type="text"
                                            class="form-control border">
                                            <div id="regularPrice-error" class="error-message"></div>
                                    </div>
@@ -84,17 +84,10 @@
                                <div class="col-lg-4">
                                    <div class="mb-4">
                                        <label class="form-label">Sale price</label>
-                                       <input placeholder="$" name="salePrice" type="text" class="form-control border">
+                                       <input placeholder="₹" name="salePrice" type="text" class="form-control border">
                                       
                                    </div>
                                    <div id="salePrice-error" class="error-message"></div>
-                               </div>
-                               <div class="col-lg-4">
-                                   <div class="mb-4">
-                                       <label class="form-label">Quantity</label>
-                                       <input placeholder="" name="quantity" type="text" class="form-control border">
-                                       <div id="quantity-error" class="error-message"></div>
-                                   </div>
                                </div>
                            </div>
                            <div class="row">
@@ -108,6 +101,42 @@
                                </div>
                             
                            </div>
+
+
+                           <div class="card mb-4">
+                               <div class="card-body">
+                                   <div class="row gx-2">
+                                       <div class="col-sm-6 mb-3">
+                                           <div class="form-group">
+                                                <label class="mb-3">Size and Inventory</label>
+                                                <div id="sizeInventorySection">
+                                                    <div class="size-inventory-entry mb-2 d-flex align-items-center gap-2">
+                                                    <select name="sizes[0][size]" required>
+                                                        <option value="">Select Size</option>
+                                                        <option value="0-1">0-1 Years</option>
+                                                        <option value="1-2">1-2 Years</option>
+                                                        <option value="2-3">2-3 Years</option>
+                                                        <option value="3-4">3-4 Years</option>
+                                                        <option value="4-5">4-5 Years</option>
+                                                        <option value="5-6">5-6 Years</option>
+                                                        <option value="6-7">6-7 Years</option>
+                                                        <option value="7-8">7-8 Years</option>
+                                                        <option value="8-9">8-9 Years</option>
+                                                        <option value="9-10">9-10 Years</option>
+                                                    </select>
+                                                    <input type="number" name="sizes[0][quantity]" min="0" placeholder="Qty" required />
+                                                    <button type="button" onclick="removeSize(this)">Remove</button>
+                                                    </div>
+                                                </div>
+                                                <button type="button" onclick="addSize()">Add Size</button>
+                                            </div>
+                                           <div id="quantity-error" class="error-message"></div>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+
+
                            <div class="card mb-4">
                                <div class="card-body">
                                    <div class="row gx-2">
@@ -359,7 +388,6 @@
               const color = document.getElementsByName('color')[0].value;
               const category = document.getElementsByName('category')[0].value;
               const images = document.getElementById('input1')
-              const quantity=document.getElementsByName('quantity')[0].value;
               let isValid = true
               if (name.trim() === "") {
       displayErrorMessage('productName-error', 'Please enter a product name.');
@@ -381,14 +409,6 @@
    displayErrorMessage('brand-error', 'Please select a brand.');
    isValid = false;
     }
-
-           
-  
-  
-              if (isNaN(quantity) || parseInt(quantity) < 0) {
-                  displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
-                  isValid = false;
-              }
   
   
   
@@ -421,6 +441,24 @@
                   displayErrorMessage("images-error",'Please select an image.');
                   isValid = false;
               }
+                let quantityInputs = document.querySelectorAll('input[name^="sizes["][name$="[quantity]"]');
+                let allQuantitiesValid = true;
+
+                quantityInputs.forEach(input => {
+                    const value = input.value;
+                    if (isNaN(value) || parseInt(value) < 0) {
+                        displayErrorMessage('quantity-error', 'Please enter valid non-negative quantities.');
+                        allQuantitiesValid = false;
+                    }
+                });
+
+                if (!allQuantitiesValid) {
+                    isValid = false;
+                }
+
+
+
+
               return isValid;
           }
 
@@ -462,6 +500,36 @@
             window.history.replaceState(null, null, newURL);
         });
     }
+</script>
+<script>
+  let sizeIndex = 1;
+  function addSize() {
+    const section = document.getElementById("sizeInventorySection");
+    const div = document.createElement("div");
+    div.className = "size-inventory-entry d-flex align-items-center gap-2 mb-2";
+    div.innerHTML = `
+      <select name="sizes[${sizeIndex}][size]" required>
+        <option value="">Select Size</option>
+        <option value="1-2">1-2 Years</option>
+        <option value="2-3">2-3 Years</option>
+        <option value="3-4">3-4 Years</option>
+        <option value="4-5">4-5 Years</option>
+        <option value="5-6">5-6 Years</option>
+        <option value="6-7">6-7 Years</option>
+        <option value="7-8">7-8 Years</option>
+        <option value="8-9">8-9 Years</option>
+        <option value="9-10">9-10 Years</option>
+      </select>
+      <input type="number" name="sizes[${sizeIndex}][quantity]" min="0" placeholder="Qty" required />
+      <button type="button" onclick="removeSize(this)">Remove</button>
+    `;
+    section.appendChild(div);
+    sizeIndex++;
+  }
+
+  function removeSize(button) {
+    button.parentElement.remove();
+  }
 </script>
 
 

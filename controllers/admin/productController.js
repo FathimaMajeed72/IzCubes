@@ -57,8 +57,7 @@ const addProducts = async (req,res) => {
                 regularPrice : products.regularPrice,
                 salePrice : products.salePrice,
                 createdOn : new Date(),
-                quantity : products.quantity,
-                size : products.size,
+                sizes: products.sizes,
                 color : products.color,
                 productImage : images,
                 status : 'Available',
@@ -187,14 +186,15 @@ const getEditProduct =async (req,res) => {
 
     const product = await Product.findById(id);
     //console.log("Fetched product:", product);
-
+    const invertoryIndex = product.sizes.length;
     const category = await Category.find();
     const brand = await Brand.find();
 
     res.render('product-edit', {
       cat:category,
       product:product,
-      brand:brand
+      brand:brand,
+      invertoryIndex
     });
     
   } catch (error) {
@@ -219,6 +219,11 @@ const editProduct = async (req,res) => {
       return res.status(400).json({error:"Product with this name already exists. please try with another name"})
     }
 
+    const sizes = Object.values(data.sizes || {}).map(entry => ({
+      size: entry.size,
+      quantity: parseInt(entry.quantity, 10)
+    }));
+
     const images = [];
     if(req.files && req.files.length>0){
       for(let i=0;i<req.files.length;i++){
@@ -234,8 +239,7 @@ const editProduct = async (req,res) => {
         category:data.category,
         regularPrice:data.regularPrice,
         salePrice:data.salePrice,
-        quantity:data.quantity,
-        size:data.size,
+        sizes:sizes,
         color:data.color,
     }
     if(req.files.length>0){

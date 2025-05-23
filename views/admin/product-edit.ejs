@@ -88,17 +88,8 @@
                                    </div>
                                    <div id="salePrice-error" class="error-message"></div>
                                </div>
-                               <div class="col-lg-4">
-                                   <div class="mb-4">
-                                       <label class="form-label">Quantity</label>
-                                       <input name="quantity" type="text" value="<%=product.quantity%>"
-                                           class="form-control border">
-                                           <div id="quantity-error" class="error-message"></div>
-                                   </div>
-                               </div>
                            </div>
                            <div class="row">
-                             
                                <div class="col-lg-4">
                                    <div class="mb-4">
                                        <label class="form-label">Color</label>
@@ -109,9 +100,25 @@
                                </div>
                               
                            </div>
+                                           
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium mb-1">Size & Inventory</label>
+                                            <div id="sizeInventoryContainer" class="space-y-2">
+                                                <% product.sizes.forEach((entry, index) => { %>
+                                                <div class="flex gap-2 items-center size-inventory-row">
+                                                    <input type="text" name="sizes[<%= index %>][size]" value="<%= entry.size %>" placeholder="Size" class="border p-2 rounded w-1/2">years
+                                                    <input type="number" name="sizes[<%= index %>][quantity]" value="<%= entry.quantity %>" placeholder="Quantity" class="border p-2 rounded w-1/2">nos
+                                                    <button type="button" class="remove-row text-red-500 font-bold text-xl">×</button>
+                                                </div>
+                                                <% }) %>
+                                            </div>
+                                            <button type="button" id="addSizeInventoryRow" class="mt-2 text-blue-600 hover:underline">+ Add Size</button>
+                                        </div>
+
+                                           <div id="quantity-error" class="error-message"></div>
+                                    
+
                            <div class="card mb-4">
-
-
                                <div class="card-body">
                                    <div class="row gx-2">
                                        <div class="col-sm-6 mb-3">
@@ -226,6 +233,32 @@
    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
 
    <script>
+     let inventoryIndex = <%= product.sizes.length %>;
+
+    document.getElementById('addSizeInventoryRow').addEventListener('click', () => {
+        const container = document.getElementById('sizeInventoryContainer');
+
+        const div = document.createElement('div');
+        div.className = 'flex gap-2 items-center size-inventory-row';
+        div.innerHTML = `
+        <input type="text" name="sizeInventory[${inventoryIndex}][size]" placeholder="Size" class="border p-2 rounded w-1/2">
+        <input type="number" name="sizeInventory[${inventoryIndex}][quantity]" placeholder="Quantity" class="border p-2 rounded w-1/2">
+        <button type="button" class="remove-row text-red-500 font-bold text-xl">×</button>
+        `;
+
+        container.appendChild(div);
+        inventoryIndex++;
+    });
+
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-row')) {
+        e.target.parentElement.remove();
+        }
+    });
+    </script>
+
+
+   <script>
 
 
     function validateAndSubmit() {
@@ -250,11 +283,11 @@
                const category = document.getElementsByName('category')[0].value;
                const images = document.getElementById('input1')
               // const quantity=document.getElementsByName('quantity')
-               const quantity = document.getElementsByName('quantity')[0].value;
-                if (!/^\d+$/.test(quantity) || parseInt(quantity) < 0) {
-                displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
-                isValid = false;
-                }
+               //const quantity = document.getElementsByName('quantity')[0].value;
+                // if (!/^\d+$/.test(quantity) || parseInt(quantity) < 0) {
+                // displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+                // isValid = false;
+                // }
 
     imageDatas = document.getElementById("imageDatas")?.value;
                let isValid = true;    
@@ -269,10 +302,10 @@
                } 
     
     
-               if ( parseInt(quantity) < 0) {
-                   displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
-                   isValid = false;
-               }
+            //    if ( parseInt(quantity) < 0) {
+            //        displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+            //        isValid = false;
+            //    }
     
     
     

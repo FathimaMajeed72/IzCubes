@@ -22,6 +22,7 @@
                 <th scope="col"><b>Product name</b></th>
                 <th scope="col"><b>Brand</b></th>
                 <th scope="col"><b>Category</b></th>
+                <th scope="col"><b>Regular Price</b></th>
                 <th scope="col"><b>Sale Price</b></th>
                 <th scope="col"><b>Offer Price</b></th>
                 <th scope="col"><b>Offer</b></th>
@@ -36,6 +37,7 @@
                 <td><%=data[i].productName%></td>
                 <td><%=data[i].brand%></td>
                 <td><%=data[i].category.name%></td>
+                <td><%=data[i].regularPrice%></td>
                 <td><%=data[i].salePrice%></td>
                 <td>
                     <%if(locals.data[i].productOffer){%>
@@ -58,7 +60,11 @@
                     </button>
                     <%}%>
                 </td>
-                <td><%=data[i].quantity%></td>
+                <td>
+                     <% data[i].sizes.forEach((s) => { %>
+                        <div><b><%= s.size %>years</b> :  <%= s.quantity %>nos</div>
+                    <% }) %>
+                </td>
                 <td>
                     <%if(data[i].isBlocked===false){%>
                     <button class="btn btn-danger" style="width: 80px;">

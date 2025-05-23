@@ -350,7 +350,134 @@ body {
 
      </div>
  </div>
- <section class="mt-5 mb-5">
+
+<section class="mt-5 mb-5">
+  <div class="container">
+    <div class="row g-5">
+      <!-- Left: Product Gallery -->
+      <div class="col-lg-6">
+        <div class="detail-gallery">
+          <div class="product-img-action-wrap position-relative">
+            <img id="main-image" src="/uploads/re-image/<%= product.productImage[0] %>" class="img-fluid rounded" alt="Product Image">
+          </div>
+          <div class="slider-nav-thumbnails d-flex mt-3">
+            <% product.productImage.forEach(img => { %>
+              <div class="thumbnail">
+                <img src="/uploads/re-image/<%= img %>" onclick="changeMainImage('<%= img %>')" class="img-thumbnail" alt="Thumb">
+              </div>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Product Info -->
+      <div class="col-lg-6">
+        <div class="detail-info">
+          <h2 class="title-detail"><%= product.productName %></h2>
+
+          <div class="product-detail-rating mb-3">
+            <div class="pro-details-brand">
+              <span>Brand: <a href="#"><%= product.brand %></a></span>
+            </div>
+            <div class="product-rate-cover text-end">
+              <div class="product-rate d-inline-block">
+                <div class="product-rating" style="width: 90%;"></div>
+              </div>
+              <span class="font-small text-muted">(25 reviews)</span>
+            </div>
+          </div>
+
+          <div class="product-price">
+            <ins>₹<%= product.salePrice %></ins>
+            <span class="old-price">₹<%= product.regularPrice %></span>
+            <span class="save-price">
+              <% if (!totalOffer) { %>
+                No Offers
+              <% } else { %>
+                <%= totalOffer %>% Off
+              <% } %>
+            </span>
+          </div>
+
+          <div class="short-desc mt-4">
+            <h3 class="desc-title">Product Description</h3>
+            <p><%= product.description %></p>
+          </div>
+
+          <ul class="product_sort_info">
+            <li><i class="fa fa-shield-alt"></i> 1 Year Brand Warranty</li>
+            <li><i class="fa fa-undo-alt"></i> 30 Day Return Policy</li>
+            <li><i class="fa fa-truck"></i> Cash on Delivery available</li>
+          </ul>
+
+          <div class="d-flex align-items-center gap-3 mt-4">
+            <div class="detail-qty">
+              <button class="btn qty-down" type="button"><i class="fas fa-minus"></i></button>
+              <span class="qty-val" id="quantity">1</span>
+              <button class="btn qty-up" type="button"><i class="fas fa-plus"></i></button>
+            </div>
+            <form action="/addToCart" method="POST" class="d-inline">
+              <input type="hidden" name="productId" value="<%= product._id %>">
+              <input type="hidden" name="quantity" id="cartQty" value="1">
+              <button type="submit" class="btn button-add-to-cart">Add to Cart</button>
+            </form>
+            <a aria-label="Add To Wishlist" class="btn action-btn" href="#"><i class="fa-regular fa-heart"></i></a>
+          </div>
+
+          <ul class="product-meta mt-4">
+            <li>Tags: <a href="#"><%= category.name %></a></li>
+            <li>Availability: <span class="text-success"><%= quantity %> in stock</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mt-5 mb-5">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-12">
+        <h4 class="fw-bold">Similar Products</h4>
+      </div>
+    </div>
+    <div class="row g-4">
+      <% if (similarProducts && similarProducts.length > 0) { %>
+        <% similarProducts.forEach(product => { %>
+          <div class="col-md-6 col-lg-3">
+            <div class="product-cart-wrap">
+              <div class="product-img-action-wrap">
+                <div class="product-img">
+                  <a href="/productdetails?id=<%= product._id %>">
+                    <img class="img-fluid" src="/uploads/re-image/<%= product.productImage[0] %>" alt="<%= product.productName %>">
+                  </a>
+                </div>
+                <a href="#" class="wishlist-btn" aria-label="Add to wishlist">
+                  <i class="fas fa-heart"></i>
+                </a>
+              </div>
+              <div class="product-content-wrap">
+                <h6 class="mb-2"><%= product.productName %></h6>
+                <h5>₹<%= product.salePrice %></h5>
+                <a href="#" class="btn btn-sm btn-primary mt-2">Add to cart</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="col-12">
+          <p class="text-danger">No similar products found.</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+ <!-- <section class="mt-5 mb-5">
      <div class="container">
          <div class="row">
              <div class="col-lg-9">
@@ -417,7 +544,11 @@ body {
                                          <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
                                      </div>
                                      <div class="product-extra-link2 mt-3">
-                                         <button type="submit" class="button button-add-to-cart">Add to Cart</button>
+                                        <form action="/addToCart" method="POST">
+                                            <input type="hidden" name="productId" value="<%= product._id %>">
+                                            <input type="hidden" name="quantity" id="cartQty" value="1">
+                                            <button type="submit" class="button button-add-to-cart">Add to Cart</button>
+                                        </form>
                                           <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fa-regular fa-heart"></i></a> 
                                      </div>
                                  </div>
@@ -474,7 +605,7 @@ body {
       <% } %>
     </div>
   </div>
-</section>
+</section> -->
 
 </main>
 
@@ -486,31 +617,28 @@ function changeMainImage(imageSrc) {
     document.getElementById("main-image").src = "/uploads/re-image/" + imageSrc;
 }
 
-// Function to enable zoom effect on the main image
-let zoomImg = document.getElementById("main-image");
-
-zoomImg.addEventListener('mousemove', function(e) {
-    let zoomLens = document.createElement('div');
-    zoomLens.style.position = "absolute";
-    zoomLens.style.width = "150px";
-    zoomLens.style.height = "150px";
-    zoomLens.style.border = "3px solid #fff";
-    zoomLens.style.borderRadius = "50%";
-    zoomLens.style.pointerEvents = "none";
-    zoomLens.style.backgroundSize = "300% 300%";
-    zoomLens.style.backgroundImage = `url(${zoomImg.src})`;
-
-    zoomLens.style.left = e.pageX - zoomImg.offsetLeft - zoomLens.offsetWidth / 2 + "px";
-    zoomLens.style.top = e.pageY - zoomImg.offsetTop - zoomLens.offsetHeight / 2 + "px";
-
-    //zoomImg.parentElement.appendChild(zoomLens);
-
-    zoomImg.addEventListener('mouseout', () => {
-        zoomLens.remove();
-    });
-});
-
 </script>
+
+<script>
+  document.querySelector(".qty-up").addEventListener("click", () => {
+    let qty = parseInt(document.getElementById("quantity").innerText);
+    document.getElementById("quantity").innerText = ++qty;
+    document.getElementById("cartQty").value = qty;
+  });
+
+  document.querySelector(".qty-down").addEventListener("click", () => {
+    let qty = parseInt(document.getElementById("quantity").innerText);
+    if (qty > 1) {
+      document.getElementById("quantity").innerText = --qty;
+      document.getElementById("cartQty").value = qty;
+    }
+  });
+
+  function changeMainImage(imageSrc) {
+    document.getElementById("main-image").src = "/uploads/re-image/" + imageSrc;
+  }
+</script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
