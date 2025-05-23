@@ -123,18 +123,20 @@
                   <!-- Edit Profile Modal -->
           <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
             <div class="modal-dialog">
-              <form class="modal-content" id="editProfileForm">
+              <form class="modal-content" id="editProfileForm" method="POST" action="/editProfile?id=<%= user._id %>" enctype="multipart/form-data">
                 <div class="modal-header">
                   <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                   <div class="mb-3 text-center">
-                    <img id="previewImage" src="<%= user.profileImage %>" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;" alt="Profile Image">
+                    <% const defaultProfileImage = '/img/defaultProfileImage.jpg'; %>
+                    <img id="previewImage" src="<%= user.profileImage && user.profileImage !== '' ? user.profileImage : defaultProfileImage %>" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;" alt="Profile Image">
                   </div>
                   <div class="text-end">
                     <a href="" class="removeProfileImage text-danger text-decoration-none">Remove Profile Image</a>
                   </div>
+                  <input type="hidden" name="removeImage" id="removeImageInput" value="false">
                   <div class="mb-3">
                     <label for="editName" class="form-label">Profile Image</label>
                     <input type="file" class="form-control mt-2" id="editProfileImage" name="profileImage" accept="image/*">
@@ -297,6 +299,32 @@
     return confirm("Are you sure you want to delete this address?");
   }
 </script>
+<script>
+  const defaultProfileImage = "/img/defaultProfileImage.jpg";
+
+  // Preview the uploaded profile image
+  const imageInput = document.getElementById("editProfileImage");
+  const previewImage = document.getElementById("previewImage");
+  const removeImageInput = document.getElementById("removeImageInput");
+  const removeButton = document.getElementById("removeImageBtn");
+
+  imageInput?.addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (file) {
+      previewImage.src = URL.createObjectURL(file);
+      removeImageInput.value = "false"; // Do not remove if new image selected
+    }
+  });
+
+  // Reset image to default on "Remove" button click
+  removeButton?.addEventListener("click", function (event) {
+    event.preventDefault(); // Prevent default anchor behavior if it's an <a>
+    previewImage.src = defaultProfileImage;
+    imageInput.value = ""; // Clear the file input
+    removeImageInput.value = "true"; // Mark for removal
+  });
+</script>
+
 
 
 

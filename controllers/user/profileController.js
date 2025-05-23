@@ -4,6 +4,8 @@ const nodemailer=require('nodemailer');
 const bcrypt=require('bcrypt');
 const env=require('dotenv').config();
 const session=require('express-session');
+const fs = require("fs");
+const path = require("path");
 
 
 function generateOtp(){
@@ -167,7 +169,9 @@ const postNewPassword = async (req,res)=>{
 
   const userProfile = async (req,res)=>{
     try {
-      const userData = req.session.user;
+      const userId = req.session.user._id;
+
+      const userData = await User.findById(userId);
       const addressData = await Address.findOne({userId:userData._id})
 
       const userAddresses = addressData ? addressData.address : [];
@@ -183,6 +187,53 @@ const postNewPassword = async (req,res)=>{
       res.redirect("/pageNotFound")
 
     }
+  }
+
+  const editProfile = async (req,res) => {
+
+    try {
+    const userId = req.query.id;
+    const { name, phone, removeImage } = req.body;
+
+    const updateData = {
+      name,
+      phone
+    };
+
+    
+   
+    const user = await User.findById(userId);
+
+    
+    if (removeImage === "true" && user.profileImage) {
+      const existingImagePath = path.join('public', user.profileImage);
+      if (fs.existsSync(existingImagePath)) {
+        fs.unlinkSync(existingImagePath);
+      }
+      updateData.profileImage = "/img/defaultProfileImage.jpg"; 
+    }
+
+    
+    if (req.file) {
+      const newImagePath = `/uploads/profiles/${req.file.filename}`;
+
+      
+      if (user.profileImage && fs.existsSync(path.join('public', user.profileImage))) {
+        fs.unlinkSync(path.join('public', user.profileImage));
+      }
+
+      updateData.profileImage = newImagePath;
+    }
+
+    await User.findByIdAndUpdate(userId, updateData);
+
+    res.redirect('/userProfile'); 
+
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).send('Something went wrong');
+  }
+    
   }
 
 
@@ -385,33 +436,8 @@ const postAddAddress = async (req,res) => {
 }
 
 
-// const editAddress = async (req,res) => {
-//   try {
 
-//     const addressId = req.query.id;
-//     const user = req.session.user;
-//     const currentAddress = await Address.findOne({
-//       "address._id" : addressId,
-//     })
 
-//     if(!currentAddress){
-//       return res.redirect("/pageNotFound");
-//     }
-    
-//     const addressData = currentAddress.address.find((item)=>{
-//       return item._id.toString()===addressId.toString();
-//     })
-
-//     if(!addressData){
-//       return res.redirect("/pageNotFound");
-//     }
-
-//     res.render
-
-//   } catch (error) {
-    
-//   }
-// }
 
 const postEditAddress = async (req,res) => {
   try {
@@ -490,6 +516,7 @@ module.exports ={
     resendOtp,
     postNewPassword,
     userProfile,
+    editProfile,
     changeEmail,
     changeEmailValidation,
     verifyEmailOtp,

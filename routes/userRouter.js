@@ -7,6 +7,9 @@ const productController = require("../controllers/user/productController")
 const wishlistController = require("../controllers/user/wishListController")
 const cartController = require("../controllers/user/cartController");
 const {userAuth,adminAuth} = require("../middlewares/auth")
+const multer = require("multer")
+const storage = require("../helpers/multer")
+const uploads = multer({storage:storage});
 
 
 
@@ -36,6 +39,7 @@ router.get('/reset-password',profileController.getResetPassPage)
 router.post("/resend-forgot-otp",profileController.resendOtp)
 router.post("/reset-password",profileController.postNewPassword);
 router.get("/userProfile",userAuth,profileController.userProfile);
+router.post("/editProfile",userAuth,uploads.single('profileImage'),profileController.editProfile);
 router.get("/change-email",userAuth,profileController.changeEmail);
 router.post("/change-email",userAuth,profileController.changeEmailValidation);
 router.post("/verify-email-otp",userAuth,profileController.verifyEmailOtp)
@@ -47,7 +51,6 @@ router.post("/verify-changepassword-otp",userAuth,profileController.verifyChange
 
 router.get("/addAddress",userAuth,profileController.addAddress);
 router.post("/addAddress",userAuth,profileController.postAddAddress)
-//router.get("/editAddress",userAuth,profileController.editAddress);
 router.post("/editAddress",userAuth,profileController.postEditAddress);
 router.get("/deteAddress",userAuth,profileController.deleteAddress);
 
