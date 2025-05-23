@@ -1,0 +1,160 @@
+<%- include("../../views/partials/user/header") %>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+/* General layout */
+.main {
+  padding: 50px 0;
+  background-color: #f8f9fa;
+}
+
+/* Table styling */
+.table {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.table thead {
+  background-color: #3f51b5;
+  color: white;
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
+.image.product-thumbnail img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+/* Button styling */
+.btn {
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #3f51b5;
+  color: white;
+}
+
+.btn-danger {
+  background-color: #f44336;
+  color: white;
+}
+
+.btn i {
+  margin-right: 5px;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+</style>
+
+
+<main class="main">
+
+
+
+   <section class="mt-50 mb-50">
+       <div class="container">
+           <div class="row">
+               <div class="col-12">
+                   <div class="table-responsive">
+                       <table class="table shopping-summery text-center clean">
+                           <thead>
+                               <tr class="main-heading">
+                                   <th scope="col">Image</th>
+                                   <th scope="col">Name</th>
+                                   <th scope="col">Price</th>
+                                   <th scope="col">Add to Cart</th>
+                                   <th scope="col">Remove</th>
+                               </tr>
+                           </thead>
+                           <tbody>
+                                        <%if(wishlist.length>0){%>
+
+                                            <%for(let product of wishlist){%>
+                                       <tr>
+                                           <td class="image product-thumbnail">
+                                               <img src="/uploads/re-image/<%=product.productImage[0]%>" />
+                                           </td>
+                                           <td class="product-des product-name">
+                                               <h5 class="product-name">
+                                                   <a href="">
+                                                      <%=product.productName%>
+                                                   </a>
+                                               </h5>
+                                               <p class="font-xs">
+                                                <%=product.category.name%>
+                                                   <br />
+                                                  <%=product.brand%>
+                                               </p>
+                                           </td>
+                                           <td class="price" data-title="Price">₹<span>
+                                            <%=product.salePrice%>
+                                           </span></td>
+                                           <td class="text-center" data-title="Add to Cart">
+                                               <a href="#" onclick="" class="btn btn-sm btn-primary">Add to Cart</a>
+                                           </td>
+                                           <td class="action" data-title="Remove">
+                                               <a class="btn btn-sm btn-primary" href="#" onclick="confirmRemove('<%=product._id%>')">
+                                               <i class="fa-solid fa-trash"></i>
+                                               </a>
+                                           </td>
+                                       </tr>
+                                       <%}%>
+                                       <%}else{%>
+                                   <tr>
+                                       <td colspan="5" class="text-center">
+                                           <p class="lead mb-4">No items found in Wishlist</p>
+                                       </td>
+                                   </tr>
+                                   <%}%>
+                           </tbody>
+                       </table>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </section>
+</main>
+<%- include("../../views/partials/user/footer") %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+    function confirmRemove(productId){
+
+        Swal.fire({
+               title: 'Are you sure',
+               text: ' You want to remove this product from wishlist',
+               icon: 'warning',
+               showCancelButton : true,
+               confirmButtonColor : 'blue',
+               cancelButtonColor : '#d33',
+               confirmButtonText : 'yes, remove it'
+           }).then((result)=>{
+                if(result.isConfirmed){
+                    window.location.href = `/removeFromWishlist?productId=${productId}`
+                }
+           })
+
+    }
+
+</script>
+
+
+

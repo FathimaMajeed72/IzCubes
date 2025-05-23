@@ -28,7 +28,7 @@ const loadHomepage = async (req,res) => {
         let productData = await Product.find({
             isBlocked:false,
             category:{$in:categories.map(category=>category._id)},
-            quantity:{$gt:0}
+            //quantity:{$gt:0}
         }).sort({createdAt:-1}).limit(4)
 
        // productData.sort((a,b)=>new Date(b.createdOn)-new Date(a.createdOn));
@@ -348,13 +348,13 @@ const loadShoppingPage= async (req,res) => {
       const products = await Product.find({
         isBlocked:false,
         category:{$in:categoryIds},
-        quantity:{$gt:0}
+       // quantity:{$gt:0}
       }).sort({createdOn:-1}).skip(skip).limit(limit);
   
       const totalProducts = await Product.countDocuments({
         isBlocked:false,
         category:{$in:categoryIds},
-        quantity:{$gt:0}
+        //quantity:{$gt:0}
       });
       const totalPages = Math.ceil(totalProducts/limit);
   
@@ -388,7 +388,7 @@ const filterProducts = async (req,res) => {
         const brands = await Brand.find({}).lean();
         const filterQuery ={
             isBlocked:false,
-            quantity:{$gt:0}
+           // quantity:{$gt:0}
         }
 
         if(findCategory){
@@ -454,7 +454,7 @@ const filterByPrice = async (req,res) => {
         let findProducts = await Product.find({
             salePrice:{$gt:req.query.gt,$lte:req.query.lt},
             isBlocked:false,
-            quantity:{$gt:0}
+           // quantity:{$gt:0}
         }).lean();
 
         findProducts.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
@@ -503,7 +503,7 @@ const searchProducts = async (req,res) => {
                 searchResult = await Product.find({
                 productName : {$regex:".*"+search+".*",$options:"i"},
                 isBlocked : false,
-                quantity : {$gt:0},
+               // quantity : {$gt:0},
                 category:{$in:categoryIds}
             })
 
@@ -558,7 +558,7 @@ const sortProducts = async (req,res) => {
         
             products = await Product.find({
             isBlocked: false,
-            quantity: { $gt: 0 }
+           // quantity: { $gt: 0 }
         }).lean();
     }
 

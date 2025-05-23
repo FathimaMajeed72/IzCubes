@@ -40,6 +40,19 @@ const userSchema = new Schema({
         type : Boolean,
         default : false
     },
+    cart : [{
+        type : Schema.Types.ObjectId,
+        ref : "Cart",
+    }],
+    wishlist : [{
+        type : Schema.Types.ObjectId,
+        ref : "Wishlist",
+        default: []
+    }],
+    orderHistory : [{
+        type : Schema.Types.ObjectId,
+        ref : "Order"
+    }],
     createdOn : {
         type : Date,
         default : Date.now,

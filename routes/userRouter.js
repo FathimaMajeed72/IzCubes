@@ -4,6 +4,7 @@ const userController = require("../controllers/user/userController")
 const passport = require("passport");
 const profileController = require("../controllers/user/profileController")
 const productController = require("../controllers/user/productController")
+const wishlistController = require("../controllers/user/wishListController")
 const {userAuth,adminAuth} = require("../middlewares/auth")
 
 
@@ -59,7 +60,13 @@ router.get("/sort",userAuth,userController.sortProducts)
 
 
 
-router.get("/productDetails",userAuth,productController.productDetails)
+router.get("/productDetails",userAuth,productController.productDetails);
+
+
+router.get("/wishlist",userAuth,wishlistController.loadWishlist);
+router.post("/addToWishlist",userAuth,wishlistController.addToWishlist);
+router.get("/removeFromWishlist",userAuth,wishlistController.removeProduct);
+
 
 
 module.exports = router;
