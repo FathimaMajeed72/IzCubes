@@ -5,6 +5,7 @@ const passport = require("passport");
 const profileController = require("../controllers/user/profileController")
 const productController = require("../controllers/user/productController")
 const wishlistController = require("../controllers/user/wishListController")
+const cartController = require("../controllers/user/cartController");
 const {userAuth,adminAuth} = require("../middlewares/auth")
 
 
@@ -67,6 +68,12 @@ router.get("/wishlist",userAuth,wishlistController.loadWishlist);
 router.post("/addToWishlist",userAuth,wishlistController.addToWishlist);
 router.get("/removeFromWishlist",userAuth,wishlistController.removeProduct);
 
+
+
+router.get("/cart", userAuth, cartController.getCartPage)
+router.post("/addToCart",userAuth, cartController.addToCart)
+router.post("/changeQuantity", userAuth,cartController.changeQuantity)
+router.get("/deleteItem", userAuth, cartController.deleteProduct)
 
 
 module.exports = router;
