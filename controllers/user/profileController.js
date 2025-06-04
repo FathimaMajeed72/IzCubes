@@ -215,7 +215,7 @@ const postNewPassword = async (req,res)=>{
 
     
     if (req.file) {
-      const newImagePath = `/uploads/profiles/${req.file.filename}`;
+      const newImagePath = `/uploads/re-image/${req.file.filename}`;
 
       
       if (user.profileImage && fs.existsSync(path.join('public', user.profileImage))) {
@@ -253,17 +253,17 @@ const changeEmail = async (req,res) => {
 const changeEmailValidation = async (req,res) => {
   try {
 
-    const {email} = req.body;
+    const {email,newEmail} = req.body;
     const user = await User.findOne({email});
     if(user){
       const otp = generateOtp();
-      const emailSent = await sendVerificationEmail(email,otp);
+      const emailSent = await sendVerificationEmail(newEmail,otp);
       if(emailSent){
         req.session.userOtp = otp;
         req.session.userData = req.body;
         req.session.email = email;
         res.render("change-email-otp");
-        console.log("Email sent to :",email);
+        console.log("Email sent to :",newEmail);
         console.log("OTP : ",otp);
         
       }else{
