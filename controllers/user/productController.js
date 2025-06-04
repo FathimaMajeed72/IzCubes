@@ -31,11 +31,14 @@ const productDetails = async (req, res) => {
       }).limit(4);
 
 
+      const totalStock = product.sizes.reduce((sum, item) => sum + item.quantity, 0);
+
       
       res.render('product-details', {
         user: userData,
         product: product,
         quantity: product.quantity,
+        totalStock,
         totalOffer: totalOffer,
         category: findCategory,
         similarProducts: similarProducts,

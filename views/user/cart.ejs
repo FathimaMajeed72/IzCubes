@@ -154,6 +154,7 @@
                                 <tr class="main-heading">
                                     <th scope="col">Image</th>
                                     <th scope="col">Name</th>
+                                    <th scope="col">Size(in yrs)</th>
                                     <th scope="col">Price</th>
                                     <th scope="col">Quantity</th>
                                     <th scope="col">Remove</th>
@@ -170,25 +171,32 @@
                                                 <h5 class="product-name"><a href="cart"><%= item.product.productName %></a></h5>
                                                 <p class="font-xs"><%= item.categoryName %><br /><%= item.product.brand %></p>
                                             </td>
+                                            <td class="product-size">
+                                                <p class="font-xs"><%= item.size %> yrs</p>
+                                            </td>
                                             <td class="price" data-title="Price">₹<text id="subTotal<%= i %>"><%= item.totalPrice %></text>
                                                 <br>
                                                 <small class="text-muted">₹<%= item.product.salePrice %> / per item</small>
                                             </td>
                                             <td class="text-center" data-title="Stock">
                                                 <div class="detail-qty border radius m-auto">
+                                                  <% const stockQty = item.product.sizes.find(s => s.size === item.size)?.quantity || 0; %>
                                                     <div class="quantity-control">
                                                         <button class="btn btn-sm increment-button"
-                                                            onclick="changeQuantity('<%= item.product._id %>', '<%= item.quantity %>', 1, '<%= item.product.salePrice %>','<%= i %>', '<%= item.product.quantity %>')">+</button>
+                                                            onclick="changeQuantity('<%= item.product._id %>','<%= item.size %>', '<%= item.quantity %>', 1, '<%= item.product.salePrice %>','<%= i %>', '<%= stockQty %>')" <%= stockQty === 0 ? 'disabled' : '' %>>+</button>
                                                         <input class="quantity-input"
                                                             id="cartProductQuantity<%= i %>" value="<%= item.quantity %>"
                                                             style="width: 45px;" type="text" readonly>
                                                         <button class="btn btn-sm decrement-button"
-                                                            onclick="changeQuantity('<%= item.product._id %>','<%= item.quantity %>', -1, '<%= item.product.salePrice %>', '<%= i %>','<%= item.product.quantity %>')">-</button>
+                                                            onclick="changeQuantity('<%= item.product._id %>','<%= item.size %>','<%= item.quantity %>', -1, '<%= item.product.salePrice %>', '<%= i %>','<%= stockQty %>')" <%= stockQty === 0 ? 'disabled' : '' %>>-</button>
                                                     </div>
+                                                    <% if (stockQty === 0) { %>
+                                                      <p class="text-danger small">Out of stock</p>
+                                                    <% } %>
                                                 </div>
                                             </td>
                                             <td class="action" data-title="Remove">
-                                                <a class="btn btn-sm" href="#" onclick="confirmRemove('<%= item.product._id %>')">
+                                                <a class="btn btn-sm" href="#" onclick="confirmRemove('<%= item.product._id %>','<%= item.size %>')">
                                                     <i class="fa-solid fa-trash-can"></i>
                                                 </a>
                                             </td>
@@ -231,7 +239,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function changeQuantity(productId, cartQuantity, count, productPrice, i, productStock) {
+    function changeQuantity(productId, size, cartQuantity, count, productPrice, i, productStock) {
         console.log(productId, cartQuantity, count, productPrice, i, productStock);
         const cartQuantityElement = document.getElementById(`cartProductQuantity${i}`);
         const subtotalElement = document.getElementById(`subTotal${i}`);
@@ -259,19 +267,20 @@
         $.ajax({
             url: '/changeQuantity',
             method: 'POST',
-            data: { productId, quantity: newQuantity, count },
+            data: { productId, quantity: newQuantity, size },
             success: (res) => {
                 if (res.grandTotal !== undefined) {
                     totalElement.innerText = res.grandTotal;
                 }
             },
             error: (err) => {
-                console.error('Quantity update failed', err);
+                const errMsg = err.responseJSON?.error || 'Update failed';
+                Swal.fire({ title: 'Error', text: errMsg, icon: 'error', timer: 3000 });
             }
         });
     }
 
-    function confirmRemove(productId) {
+    function confirmRemove(productId,size) {
         Swal.fire({
             title: 'Are you sure?',
             text: "Item will be removed from cart.",
@@ -280,7 +289,7 @@
             confirmButtonText: 'Yes, remove it!',
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = `/deleteItem?id=${productId}`;
+                window.location.href = `/deleteItem?id=${productId}&size=${size}`;
             }
         });
     }

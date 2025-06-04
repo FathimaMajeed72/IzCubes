@@ -309,6 +309,31 @@ body {
     background-color: #ff4c4c;
 }
 
+.product-meta {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.product-meta li {
+  font-size: 14px;
+  color: #6c757d;
+}
+
+
+ select.no-default-arrow {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23666' class='bi bi-caret-down-fill' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14l-4.796-5.481c-.566-.647-.106-1.659.753-1.659h9.592c.86 0 1.32 1.012.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2rem; 
+  }
+ 
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -410,15 +435,22 @@ body {
             <li><i class="fa fa-truck"></i> Cash on Delivery available</li>
           </ul>
 
-          <div class="mt-4">
-            <h5>Select Size:</h5>
-            <div class="d-flex gap-3 flex-wrap">
-              <% product.sizes.forEach(item => { %>
-                <label class="btn btn-outline-primary <%= item.quantity === 0 ? 'disabled' : '' %>">
-                  <input type="radio" name="size" value="<%= item.size %>" <%= item.quantity === 0 ? 'disabled' : '' %>> 
-                  <%= item.size %> (<%= item.quantity %> available)
-                </label>
-              <% }) %>
+          <div class="mt-4 d-flex align-items-center gap-4">
+            <div>
+              <h5>Select Size:</h5>
+              <select class="form-select no-default-arrow" id="sizeSelect" name="size" required>
+                <option value="" selected disabled>Choose a size</option>
+                <% product.sizes.forEach(item => { %>
+                  <option value="<%= item.size %>" <%= item.quantity === 0 ? 'disabled' : '' %>>
+                    <%= item.size %> years <%= item.quantity === 0 ? '(Out of stock)' : '' %>
+                  </option>
+                <% }) %>
+              </select>
+            </div>
+
+            <div class="pt-4 mt-2">
+              <span class="fw-bold">Total Stock Available:</span>
+              <span class="text-success"><%= totalStock %> items</span>
             </div>
           </div>
 
@@ -492,56 +524,16 @@ body {
 
 
 <script>
-    // Function to change the main image when a thumbnail is clicked
-function changeMainImage(imageSrc) {
-    // Update the source of the main image
-    document.getElementById("main-image").src = "/uploads/re-image/" + imageSrc;
-}
-
-</script>
-
-<script>
-  document.querySelector(".qty-up").addEventListener("click", () => {
-    let qty = parseInt(document.getElementById("quantity").innerText);
-    document.getElementById("quantity").innerText = ++qty;
-    document.getElementById("cartQty").value = qty;
-  });
-
-  document.querySelector(".qty-down").addEventListener("click", () => {
-    let qty = parseInt(document.getElementById("quantity").innerText);
-    if (qty > 1) {
-      document.getElementById("quantity").innerText = --qty;
-      document.getElementById("cartQty").value = qty;
-    }
-  });
-
-  function changeMainImage(imageSrc) {
-    document.getElementById("main-image").src = "/uploads/re-image/" + imageSrc;
-  }
-
-  document.querySelectorAll('input[name="size"]').forEach(radio => {
-    radio.addEventListener('change', function () {
-      document.getElementById('selectedSize').value = this.value;
-    });
-  });
-
-  document.querySelector("form").addEventListener("submit", function(e) {
-  const selectedSize = document.getElementById("selectedSize").value;
-  if (!selectedSize) {
-    e.preventDefault();
-    alert("Please select a size before adding to cart.");
-  }
-});
-
-</script>
-
-<script>
   document.addEventListener("DOMContentLoaded", function () {
     const qtyVal = document.getElementById("quantity");
     const cartQty = document.getElementById("cartQty");
     const plusBtn = document.querySelector(".qty-up");
     const minusBtn = document.querySelector(".qty-down");
+    const sizeSelect = document.getElementById('sizeSelect');
+    const hiddenSelectedSize = document.getElementById('selectedSize');
+    const form = document.querySelector("form");
 
+    // Initialize quantity
     let quantity = 1;
 
     plusBtn.addEventListener("click", () => {
@@ -557,8 +549,27 @@ function changeMainImage(imageSrc) {
         cartQty.value = quantity;
       }
     });
+
+    sizeSelect.addEventListener('change', function () {
+      hiddenSelectedSize.value = this.value;
+    });
+
+    form.addEventListener("submit", function (e) {
+
+      hiddenSelectedSize.value = sizeSelect.value;
+      if (!hiddenSelectedSize.value) {
+        e.preventDefault();
+        alert("Please select a size before adding to cart.");
+      }
+    });
   });
+
+  function changeMainImage(imageSrc) {
+    document.getElementById("main-image").src = "/uploads/re-image/" + imageSrc;
+  }
 </script>
+
+
 
 
 
