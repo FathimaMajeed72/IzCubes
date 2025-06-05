@@ -6,6 +6,7 @@ const profileController = require("../controllers/user/profileController")
 const productController = require("../controllers/user/productController")
 const wishlistController = require("../controllers/user/wishListController")
 const cartController = require("../controllers/user/cartController");
+const checkoutController = require("../controllers/user/checkoutController")
 const {userAuth,adminAuth} = require("../middlewares/auth")
 const multer = require("multer")
 const storage = require("../helpers/multer")
@@ -73,6 +74,10 @@ router.get("/cart", userAuth, cartController.getCartPage)
 router.post("/addToCart",userAuth, cartController.addToCart)
 router.post("/changeQuantity", userAuth,cartController.changeQuantity)
 router.get("/deleteItem", userAuth, cartController.deleteProduct)
+
+
+
+router.get("/checkout", userAuth, checkoutController.checkout)
 
 
 module.exports = router;

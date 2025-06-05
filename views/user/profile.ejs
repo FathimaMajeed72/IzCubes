@@ -172,7 +172,7 @@
             </a>
           </div>
           <% if (userAddresses && userAddresses.length > 0) { %>
-            <% userAddresses.forEach((address, index) => { %>
+            <% userAddresses.forEach(( address, index) => { %>
               <div class="border p-3 mb-3 rounded">
                 <p><strong><u><%= address.addressType %></u></strong></p>
                 <p><b><%= address.name %></b><br><%= address.houseName %>,<br><%= address.streetName %>,<br><%= address.landMark %>,<br><%= address.city %> - <%= address.pincode %>,<br><%= address.state %>,<br>Phone no: <%= address.phone %>,<br>Alternate Phone no: <%= address.altPhone %></p>
