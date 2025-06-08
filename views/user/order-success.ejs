@@ -1,0 +1,52 @@
+<%- include("../../views/partials/user/header") %>
+<style>
+     body {
+      background-color: #f5f5f5;
+    }
+    .btn-outline-custom {
+        color: #46698f;
+        border: 2px solid #2b6eb5;
+        background-color: transparent;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        
+    }
+
+    .btn-outline-custom:hover {
+        background-color: #2b6eb5;
+        color: white;
+    }
+
+    .btn-custom-color {
+        background-color: #46698f;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        
+    }
+
+    .btn-custom-color:hover{
+        background-color: #2b6eb5;
+        color: #fff;
+    }
+
+</style>
+<div class="container text-center my-5 ">
+  <div class="card shadow p-4">
+    <div class="card-body">
+      <i class="fa fa-check-circle text-success mb-3" style="font-size: 4rem;"></i>
+      <h2 class="card-title mb-3">Thank you for your order!</h2>
+      <p class="lead">Your order has been placed successfully and is now being processed.</p>
+
+      <div class="mt-4">
+        <a href="/userProfile?tab=orders" class="btn btn-outline-custom">View My Orders</a>
+        <a href="/shop" class="btn btn-custom-color">Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../../views/partials/user/footer') %>

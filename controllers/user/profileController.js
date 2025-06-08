@@ -1,5 +1,6 @@
 const User=require('../../models/userSchema');
 const Address = require('../../models/addressSchema');
+const Order = require('../../models/orderSchema')
 const nodemailer=require('nodemailer');
 const bcrypt=require('bcrypt');
 const env=require('dotenv').config();
@@ -170,15 +171,20 @@ const postNewPassword = async (req,res)=>{
   const userProfile = async (req,res)=>{
     try {
       const userId = req.session.user._id;
+      const tab = req.query.tab || 'profile';
 
       const userData = await User.findById(userId);
       const addressData = await Address.findOne({userId:userData._id})
+      const orders = await Order.find({user:userId}).sort({ createdOn: -1 }).populate('orderedItems.product');
 
       const userAddresses = addressData ? addressData.address : [];
 
+
       res.render("profile",{
         user : userData,
-        userAddresses
+        userAddresses,
+        orders,
+        tab
       })
       
     } catch (error) {
@@ -404,10 +410,10 @@ const postAddAddress = async (req,res) => {
 
     const user = req.session.user;
     //const userData = await User.findOne({_id:user._id});
-    const {addressType,name,houseName,streetName,city,landMark,state,pincode,phone,altPhone} = req.body;
+    const {addressType,name,houseName,streetName,city,landMark,state,pincode,phone,altPhone,isDefault} = req.body;
     
     let userAddress = await Address.findOne({userId : user._id})
-    const newAddress = { addressType, name, houseName, streetName, city, landMark, state, pincode, phone, altPhone };
+    const newAddress = { addressType, name, houseName, streetName, city, landMark, state, pincode, phone, altPhone, isDefault: !!isDefault };
 
     if (!userAddress) {
       userAddress = new Address({
@@ -416,6 +422,10 @@ const postAddAddress = async (req,res) => {
       });
       await userAddress.save();
     } else {
+
+      if (newAddress.isDefault) {
+        userAddress.address.forEach(addr => addr.isDefault = false);
+      }
       userAddress.address.push(newAddress);
       await userAddress.save();
     }
@@ -449,6 +459,14 @@ const postEditAddress = async (req,res) => {
     if(!findAddress){
       res.redirect("/pageNotFound");
     }
+
+    const setAsDefault = !!data.isDefault; 
+    if (setAsDefault) {
+      findAddress.address.forEach(addr => {
+        addr.isDefault = addr._id.toString() === addressId;
+      });
+    }
+
     await Address.updateOne(
       {"address._id" : addressId},
       {$set : {
@@ -464,9 +482,15 @@ const postEditAddress = async (req,res) => {
           state : data.state,
           phone : data.phone,
           altPhone : data.altPhone,
+          isDefault : setAsDefault
         }
       }}
     )
+
+    
+    if (setAsDefault) {
+      await findAddress.save(); 
+    }
 
     res.redirect("/userProfile");
 

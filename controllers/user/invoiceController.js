@@ -1,0 +1,98 @@
+const PDFDocument = require('pdfkit');
+const Order = require('../../models/orderSchema');
+const fs = require('fs');
+const path = require('path');
+
+const generateInvoice = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.orderId)
+      .populate('orderedItems.product');
+
+    if (!order) return res.status(404).send('Order not found');
+
+    const doc = new PDFDocument({ margin: 50 });
+
+    res.setHeader('Content-Disposition', `attachment; filename=invoice-${order.orderId}.pdf`);
+    res.setHeader('Content-Type', 'application/pdf');
+
+    doc.pipe(res);
+
+    
+    const logoPath = path.join(__dirname, '..', 'public', 'img', 'logo.png');
+    if (fs.existsSync(logoPath)) {
+      doc.image(logoPath, 50, 45, { width: 100 });
+    }
+
+    doc.fontSize(20).text('INVOICE', 200, 50, { align: 'right' }).moveDown(2);
+
+    
+    doc.fontSize(12)
+      .text(`Order ID: ${order.orderId}`)
+      .text(`Order Date: ${order.createdOn.toDateString()}`)
+      .text(`Customer: ${order.address.name}`)
+      .text(`Phone: ${order.address.phone}`)
+      .text(`Address: ${order.address.houseName}, ${order.address.streetName}, ${order.address.city} - ${order.address.pincode}`)
+      .moveDown();
+
+    
+    const tableTop = doc.y;
+    doc
+      .font('Helvetica-Bold')
+      .fontSize(12)
+      .text('No', 50, tableTop)
+      .text('Product', 80, tableTop)
+      .text('Qty', 250, tableTop)
+      .text('Price', 300, tableTop)
+      .text('Total', 360, tableTop)
+      .text('Status', 430, tableTop);
+
+    doc.moveTo(50, doc.y + 5).lineTo(550, doc.y + 5).stroke();
+    doc.moveDown();
+
+    let subtotal = 0;
+
+   
+    order.orderedItems.forEach((item, i) => {
+      const { product, quantity, price, status } = item;
+      const itemTotal = price * quantity;
+      const y = doc.y + 5;
+
+      if (status !== 'Cancelled') subtotal += itemTotal;
+
+      doc
+        .font('Helvetica')
+        .fontSize(11)
+        .fillColor(status === 'Cancelled' ? 'gray' : 'black')
+        .text(`${i + 1}`, 50, y)
+        .text(product.productName, 80, y)
+        .text(quantity.toString(), 250, y)
+        .text(`₹${price}`, 300, y)
+        .text(`₹${itemTotal}`, 360, y)
+        .text(status, 430, y);
+
+      doc.moveDown();
+    });
+
+    
+    doc.moveDown(1.5).fontSize(12).fillColor('black');
+    const shipping = 40;
+    const discount = order.discount || 0;
+    const finalTotal = subtotal - discount + shipping;
+
+    doc.text(`Subtotal: ₹${subtotal}`, { align: 'right' });
+    doc.text(`Discount: -₹${discount}`, { align: 'right' });
+    doc.text(`Shipping: ₹${shipping}`, { align: 'right' });
+    doc.moveDown(0.5);
+    doc.font('Helvetica-Bold').text(`Total Payable: ₹${finalTotal}`, { align: 'right' });
+
+    doc.end();
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error generating invoice');
+  }
+};
+
+module.exports = {
+    generateInvoice,
+}

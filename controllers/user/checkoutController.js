@@ -14,6 +14,9 @@ const checkout = async (req, res) => {
 
     const userAddresses = addressData ? addressData.address : [];
 
+    const selectedAddress = userAddresses.find(addr => addr.isDefault) || null
+
+
     const cart = await Cart.findOne({ userId }).populate('items.productId');
 
     if (!cart || !cart.items.length) {
@@ -56,7 +59,8 @@ const checkout = async (req, res) => {
       discount,
       tax,
       shipping: SHIPPING_FEE,
-      total 
+      total,
+      selectedAddress
     });
 
   } catch (err) {

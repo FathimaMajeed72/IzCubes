@@ -6,7 +6,9 @@ const profileController = require("../controllers/user/profileController")
 const productController = require("../controllers/user/productController")
 const wishlistController = require("../controllers/user/wishListController")
 const cartController = require("../controllers/user/cartController");
+const orderController = require("../controllers/user/orderController")
 const checkoutController = require("../controllers/user/checkoutController")
+const invoiceController = require("../controllers/user/invoiceController")
 const {userAuth,adminAuth} = require("../middlewares/auth")
 const multer = require("multer")
 const storage = require("../helpers/multer")
@@ -78,6 +80,20 @@ router.get("/deleteItem", userAuth, cartController.deleteProduct)
 
 
 router.get("/checkout", userAuth, checkoutController.checkout)
+
+
+router.post("/orders",userAuth, orderController.placeCodOrder);
+router.get("/order-success",userAuth,orderController.orderSuccess)
+router.get("/orders/:orderId",userAuth,orderController.getOrderDetail);
+router.post("/cancel-order",userAuth, orderController.cancelEntireOrder);
+router.post("/cancel-item",userAuth, orderController.cancelOrderItem);
+//router.post("/return-item",userAuth, orderController.returnOrderItem);
+router.post("/return-order",userAuth, orderController.returnEntireOrder);
+router.get('/orders/search',userAuth, orderController.searchUserOrders);
+
+
+
+router.get('/invoice/:orderId',userAuth, invoiceController.generateInvoice);
 
 
 module.exports = router;

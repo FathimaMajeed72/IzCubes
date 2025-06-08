@@ -131,6 +131,12 @@
                         <label for="altPhone<%= index %>" class="form-label fw-bold">Alternate Phone</label>
                         <input type="text" id="altPhone<%= index %>" class="form-control" name="altPhone" value="<%= address.altPhone %>" required>
                       </div>
+                      <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" name="isDefault" id="isDefault<%= index %>" value="true" <%= address.isDefault ? 'checked' : '' %>>
+                        <label class="form-check-label fw-bold" for="isDefault<%= index %>">
+                          Set as default address
+                        </label>
+                      </div>
                     </div>
                     <div class="modal-footer">
                       <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -152,10 +158,10 @@
         <!-- Payment Method -->
         <div class="card">
           <div class="card-header">
-            <h5 class="my-0" style="color: #46698f;">Payment Method</h5>
+            <h5 class="my-2" style="color: #46698f;">Payment Method</h5>
           </div>
           <div class="card-body">
-            <form action="/checkout/place-order" method="POST">
+            <form action="/orders" method="POST">
               <div class="form-check mb-2">
                 <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD" checked>
                 <label class="form-check-label" for="cod">
@@ -163,30 +169,65 @@
                 </label>
               </div>
               <div class="form-check mb-2">
-                <input class="form-check-input" type="radio" name="paymentMethod" id="upi" value="UPI">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="upi" value="UPI" disabled>
                 <label class="form-check-label" for="upi">
                   UPI / Google Pay / PhonePe
                 </label>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="paymentMethod" id="card" value="Card">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="card" value="Card" disabled>
                 <label class="form-check-label" for="card">
                   Credit / Debit Card
                 </label>
               </div>
               <div class="text-end mt-3">
-                <button class="btn btn-success newbtn" type="submit">Place Order</button>
+                <button type="button" class="btn newbtn" data-bs-toggle="modal" data-bs-target="#codConfirmModal">
+                  Place Order with COD
+                </button>
               </div>
             </form>
           </div>
         </div>
       </div>
 
+
+      <!-- Modal -->
+      <div class="modal fade" id="codConfirmModal" tabindex="-1" aria-labelledby="codConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+
+            <form action="/orders" method="POST">
+              <!-- Hidden Inputs -->
+              <!-- <input type="hidden" name="addressId" value="<%= selectedAddress._id %>"> -->
+              <input type="hidden" id="modalAddressId" name="addressId" value="">
+              <input type="hidden" name="paymentMethod" value="COD">
+
+              <div class="modal-header">
+                <h5 class="modal-title" id="codConfirmModalLabel">Confirm Your Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+
+              <div class="modal-body">
+                <p>Are you sure you want to place this order using <strong>Cash on Delivery</strong>?</p>
+                <p>Total Amount: <strong>₹<%= total %></strong></p>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn newbtn" style="background-color: grey;" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn newbtn">Confirm & Place Order</button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+
       <!-- Right Column: Order Summary -->
       <div class="col-md-5">
         <div class="card">
           <div class="card-header">
-            <h5 style="color: #46698f;">Order Summary</h5> 
+            <h5 class="my-2" style="color: #46698f;">Order Summary</h5> 
           </div>
           <div class="card-body">
             <ul class="list-group mb-3">
@@ -218,10 +259,10 @@
                 <span>Discount</span>
                 <span class="text-success">- ₹<%= discount %></span>
               </div>
-              <div class="d-flex mb-2">
+              <!-- <div class="d-flex mb-2">
                 <span>Tax (5%)</span>
                 <span>₹<%= tax %></span>
-              </div>
+              </div> -->
               <div class="d-flex mb-2">
                 <span>Shipping</span>
                 <span>₹<%= shipping %></span>
@@ -237,6 +278,22 @@
       </div>
     </div>
   </div>
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const placeOrderBtn = document.querySelector('[data-bs-target="#codConfirmModal"]');
+      const addressRadios = document.querySelectorAll('input[name="selectedAddress"]');
+      const modalAddressInput = document.getElementById('modalAddressId');
+
+      placeOrderBtn.addEventListener("click", () => {
+        const selectedRadio = Array.from(addressRadios).find(r => r.checked);
+        if (selectedRadio) {
+          modalAddressInput.value = selectedRadio.value;
+        }
+      });
+    });
+  </script>
 
 
 

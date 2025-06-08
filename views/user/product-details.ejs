@@ -442,7 +442,7 @@ body {
                 <option value="" selected disabled>Choose a size</option>
                 <% product.sizes.forEach(item => { %>
                   <option value="<%= item.size %>" <%= item.quantity === 0 ? 'disabled' : '' %>>
-                    <%= item.size %> years <%= item.quantity === 0 ? '(Out of stock)' : '' %>
+                    <%= item.size %> years (<%= item.quantity %>) <%= item.quantity === 0 ? '(Out of stock)' : '' %>
                   </option>
                 <% }) %>
               </select>

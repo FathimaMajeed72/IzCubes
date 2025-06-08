@@ -67,6 +67,13 @@
         background-color: #2b6eb5;
         color: #fff;
     }
+
+
+    #orderSection table th,
+    #orderSection table td {
+      vertical-align: middle;
+    }
+
  
     
   </style>
@@ -242,6 +249,14 @@
                         <label for="altPhone<%= index %>" class="form-label fw-bold">Alternate Phone</label>
                         <input type="text" id="altPhone<%= index %>" class="form-control" name="altPhone" value="<%= address.altPhone %>" required>
                       </div>
+
+                      <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" name="isDefault" id="addIsDefault" value="true">
+                        <label class="form-check-label fw-bold" for="addIsDefault">
+                          Set as default address
+                        </label>
+                      </div>
+
                     </div>
                     <div class="modal-footer">
                       <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -256,6 +271,122 @@
           <% } %>
         </div>
       </div>
+
+       <!-- Order Details Section (Initially Hidden) -->
+      <!-- <div class="col-md-9 profile-section content-section" id="orderSection" style="display: none;">
+        <div class="profile-card">
+          <h4 class="mb-4">My Orders</h4>
+
+          <% if (orders && orders.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th>#</th>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% orders.forEach((order, index) => { %>
+                    <tr>
+                      <td><%= index + 1 %></td>
+                      <td><%= order.orderId %></td>
+                      <td><%= order.createdOn.toLocaleDateString() %></td>
+                      <td>
+                        <span class="badge 
+                          <%= order.status === 'Delivered' ? 'bg-success' : 
+                                order.status === 'Cancelled' ? 'bg-danger' :
+                                'bg-warning text-dark' %>">
+                          <%= order.status %>
+                        </span>
+                      </td>
+                      <td>₹<%= order.finalAmount ? order.finalAmount.toFixed(2) : '0.00' %></td>
+                      <td>
+                        <a href="/orderDetails/<%= order._id %>" class="btn btn-sm btn-outline-primary">
+                          View
+                        </a>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <p class="text-muted">You have no orders yet.</p>
+          <% } %>
+        </div>
+      </div> -->
+
+      <div class="col-md-9 profile-section content-section" id="orderSection" style="display: none;">
+        <div class="profile-card">
+          <h4 class="mb-4">My Orders</h4>
+
+          <form class="mb-4 d-flex" method="GET" action="/orders/search">
+            <input type="text" class="form-control me-2" name="q" placeholder="Search by Order ID or Product Name" value="<%= typeof query !== 'undefined' ? query : '' %>" required>
+            <button type="submit" class="btn btn-outline-success">Search</button>
+          </form>
+
+          <% if (typeof query !== 'undefined') { %>
+            <p class="text-muted">Search results for: "<%= query %>"</p>
+          <% } %>
+
+
+          <% if (orders && orders.length > 0) { %>
+            <% orders.forEach(order => { %>
+              <div class="border p-3 mb-4 rounded">
+                <p><strong>Order ID:</strong> <%= order.orderId %></p>
+                <p><strong>Date:</strong> <%= order.createdOn.toDateString() %></p>
+                <p><strong>Status:</strong> 
+                  <span class="badge bg-info text-dark"><%= order.status %></span>
+                </p>
+                <p><strong>Total Amount:</strong> ₹<%= order.finalAmount?.toFixed(2) || '0.00' %></p>
+
+                <% if (order.orderedItems && order.orderedItems.length > 0) { %>
+                  <% order.orderedItems.forEach(item => { %>
+                    <% if (!item.product) { %>
+                      <p class="text-danger">Product not found or deleted.</p>
+                    <%} else if (item.product) { %>
+                      <div class="d-flex align-items-center border rounded p-2 mb-2 bg-light">
+                        <img src="/uploads/re-image/<%= item.product.productImage[0] %>" 
+                            alt="Product" 
+                            class="me-3" 
+                            style="width: 60px; height: 60px; object-fit: cover;">
+                        
+                        <div class="flex-grow-1">
+                          <p class="mb-1"><strong><%= item.product.productName %></strong></p>
+                          <p class="mb-0 text-muted">
+                            Qty: <%= item.quantity %> | 
+                            Size: <%= item.size %> | 
+                            Price: ₹<%= item.price.toFixed(2) %>
+                          </p>
+                        </div>
+                      </div>
+                    <% } %>
+                  <% }) %>
+                <% } %>
+
+                <a href="/orders/<%= order.orderId %>" class="btn btn-sm btn-outline-primary mt-2">View Details</a>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <div class="alert alert-warning">
+              <% if (typeof query !== 'undefined') { %>
+                No orders found matching "<%= query %>"
+              <% } else { %>
+            <p class="text-muted">You have no orders yet.</p>
+          <% } %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+
+
+
 
 
     </div>
