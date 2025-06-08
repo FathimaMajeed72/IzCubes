@@ -1,0 +1,60 @@
+<%- include("../../views/partials/admin/header") %>
+
+
+<div class="container mt-4">
+  <h3>All Orders</h3>
+
+  <% function getBadgeClass(status) {
+  switch(status) {
+    case 'Pending': return 'bg-secondary';
+    case 'Processing': return 'bg-warning text-dark';
+    case 'Shipped': return 'bg-primary';
+    case 'Out for Delivery': return 'bg-info text-dark';
+    case 'Delivered': return 'bg-success';
+    case 'Cancelled': return 'bg-danger';
+    default: return 'bg-light text-dark';
+  }
+} %>
+
+
+
+
+  <table class="table table-bordered table-striped mt-3">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Placed On</th>
+        <th>Customer Details</th>
+        <th>Total Amount</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% orders.forEach(order => { %>
+        <tr>
+          <td><%= order.orderId %></td>
+          <td><%= new Date(order.createdOn).toLocaleDateString() %></td>
+          <td>
+            <%= order.user?.name || 'Unknown' %> <br>
+            (<%= order.user?.email || 'N/A' %>) <br>
+            Phone nos:<%= order.address.phone %>/<%= order.address.altPhone %>
+          </td>
+          <td>₹<%= order.finalAmount?.toFixed(2) || "0.00" %></td>
+          <td>
+          <span class="badge <%= getBadgeClass(order.status) %> py-2 px-3">
+            <%= order.status %>
+          </span>
+          </td>
+
+          <td>
+            <a href="/admin/orderList/<%= order._id %>" class="btn btn-sm btn-primary">View</a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+
+<%- include("../../views/partials/admin/footer") %>

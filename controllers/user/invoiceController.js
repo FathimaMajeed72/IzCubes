@@ -18,20 +18,23 @@ const generateInvoice = async (req, res) => {
     doc.pipe(res);
 
     
-    const logoPath = path.join(__dirname, '..', 'public', 'img', 'logo.png');
+    const logoPath = path.join(__dirname, '..','..', 'public', 'img', 'logo_IzCubes.png');
+    console.log('Loading logo from:', logoPath);
     if (fs.existsSync(logoPath)) {
       doc.image(logoPath, 50, 45, { width: 100 });
+    }else {
+       console.log('Logo file not found:', logoPath);
     }
 
     doc.fontSize(20).text('INVOICE', 200, 50, { align: 'right' }).moveDown(2);
 
     
     doc.fontSize(12)
-      .text(`Order ID: ${order.orderId}`)
-      .text(`Order Date: ${order.createdOn.toDateString()}`)
-      .text(`Customer: ${order.address.name}`)
-      .text(`Phone: ${order.address.phone}`)
-      .text(`Address: ${order.address.houseName}, ${order.address.streetName}, ${order.address.city} - ${order.address.pincode}`)
+      .text(`Order ID: ${order.orderId}`,50,100)
+      .text(`Order Date: ${order.createdOn.toDateString()}`,50,120)
+      .text(`Customer: ${order.address.name}`,50,140)
+      .text(`Phone: ${order.address.phone}`,50,160)
+      .text(`Address: ${order.address.houseName}, ${order.address.streetName}, ${order.address.city} - ${order.address.pincode}`,50,180)
       .moveDown();
 
     

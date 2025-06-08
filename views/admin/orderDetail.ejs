@@ -1,0 +1,71 @@
+<%- include("../../views/partials/admin/header") %>
+
+<div class="container mt-5">
+  <div class="card shadow-sm p-4">
+    <h4 class="mb-3">Order Details</h4>
+    
+    <div class="mb-3">
+      <label class="form-label fw-bold">Order ID:</label>
+      <div><%= order.orderId %></div>
+    </div>
+
+    <% function getBadgeClass(status) {
+        switch(status) {
+            case 'Pending': return 'bg-secondary';
+            case 'Processing': return 'bg-warning text-dark';
+            case 'Shipped': return 'bg-primary';
+            case 'Out for Delivery': return 'bg-info text-dark';
+            case 'Delivered': return 'bg-success';
+            case 'Cancelled': return 'bg-danger';
+            default: return 'bg-light text-dark';
+        }
+        } %>
+
+        
+
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Status:</label>
+      <div>
+        <span class="badge <%= getBadgeClass(order.status) %> py-2 px-3">
+        <%= order.status %>
+        </span>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label fw-bold">Shipping Address:</label>
+      <div class="ps-3">
+        <div><strong><%= order.address.addressType %></strong></div>
+        <div><%= order.address.name %></div>
+        <div><%= order.address.houseName %>, <%= order.address.streetName %></div>
+        <div><%= order.address.city %> - <%= order.address.pincode %></div>
+        <div><%= order.address.state %></div>
+        <div>Phone: <%= order.address.phone %> / <%= order.address.altPhone %></div>
+      </div>
+    </div>
+
+    <form action="/admin/orderList/update-status" method="POST">
+      <input type="hidden" name="orderId" value="<%= order._id %>">
+
+      <div class="row align-items-end">
+        <div class="col-md-6">
+          <label for="status" class="form-label fw-bold">Change Order Status:</label>
+          <select name="newStatus" id="status" class="form-select" required>
+            <% ['Pending', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'].forEach(s => { %>
+              <option value="<%= s %>" <%= order.status === s ? 'selected' : '' %>><%= s %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="col-md-3 mt-3 mt-md-0">
+          <button type="submit" class="btn btn-success w-100" <%= order.status === 'Cancelled' ? 'disabled' : '' %>>
+            Update Status
+          </button>
+
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include("../../views/partials/admin/footer") %>

@@ -222,7 +222,7 @@
 
 
       <% if (order.status === 'Delivered') { %>
-        <button type="button" class="btn btn-outline-warning w-100" data-bs-toggle="modal" data-bs-target="#returnOrderModal">
+        <button type="button" class="btn btn-warning w-100 mt-3" data-bs-toggle="modal" data-bs-target="#returnOrderModal">
           Return Order
         </button>
       <% } %>
@@ -238,7 +238,7 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <input type="hidden" name="orderId" value="<%= order._id %>">
+              <input type="hidden" name="orderId" value="<%= order.orderId %>">
               <label for="returnReason" class="form-label">Reason for return <span class="text-danger">*</span></label>
               <textarea class="form-control" name="reason" id="returnReason" rows="3" required placeholder="State reason for returning the order"></textarea>
             </div>

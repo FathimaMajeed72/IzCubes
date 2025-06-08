@@ -9,6 +9,7 @@ const storage = require("../helpers/multer")
 const uploads = multer({storage:storage});
 const brandController = require("../controllers/admin/brandController")
 const productController = require("../controllers/admin/productController")
+const orderController = require("../controllers/admin/orderController")
 
 router.get("/pageerror",adminController.pageerror);
 
@@ -46,6 +47,10 @@ router.get('/unblockProduct',adminAuth,productController.unblockProduct);
 router.get('/editProduct',adminAuth,productController.getEditProduct);
 router.post('/editProduct/:id',adminAuth,uploads.array("images",4),productController.editProduct);
 router.post("/deleteImage",adminAuth,productController.deleteSingleImage)
+
+router.get("/orderList",adminAuth,orderController.listOrders)
+router.get("/orderList/:id", adminAuth, orderController.viewOrderDetails);
+router.post("/orderList/update-status", adminAuth, orderController.updateOrderStatus);
 
 
 

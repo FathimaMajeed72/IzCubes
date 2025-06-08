@@ -304,7 +304,7 @@ const returnEntireOrder = async (req, res) => {
     order.returnReason = reason;
     await order.save();
 
-    res.redirect('/profile/orders');
+    res.redirect('/userProfile');
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");

@@ -340,9 +340,18 @@
               <div class="border p-3 mb-4 rounded">
                 <p><strong>Order ID:</strong> <%= order.orderId %></p>
                 <p><strong>Date:</strong> <%= order.createdOn.toDateString() %></p>
+                <% let statusClass = 'secondary'; %>
+                <% if (order.status === 'Pending') statusClass = 'secondary'; %>
+                <% if (order.status === 'Processing') statusClass = 'primary'; %>
+                <% if (order.status === 'Shipped') statusClass = 'info'; %>
+                <% if (order.status === 'Returned') statusClass = 'warning'; %>
+                <% if (order.status === 'Delivered') statusClass = 'success'; %>
+                <% if (order.status === 'Cancelled') statusClass = 'danger'; %>
+
                 <p><strong>Status:</strong> 
-                  <span class="badge bg-info text-dark"><%= order.status %></span>
+                  <span class="badge bg-<%= statusClass %>"><%= order.status %></span>
                 </p>
+
                 <p><strong>Total Amount:</strong> ₹<%= order.finalAmount?.toFixed(2) || '0.00' %></p>
 
                 <% if (order.orderedItems && order.orderedItems.length > 0) { %>
