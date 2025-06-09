@@ -1,5 +1,6 @@
 
 const Order = require('../../models/orderSchema');
+const Product = require("../../models/productSchema")
 
 const listOrders = async (req, res) => {
   try {
@@ -44,44 +45,35 @@ const updateOrderStatus = async (req, res) => {
 
 
 
-const handleReturnResponse = async (req, res) => {
+const handleReturnRequest = async (req, res) => {
   try {
-    const { orderId, productId, size, action } = req.body;
+    const { orderId, action } = req.body;
 
     const order = await Order.findById(orderId);
     if (!order) return res.status(404).send("Order not found");
 
-    const item = order.orderedItems.find(
-      i => i.product.toString() === productId && i.size === size
-    );
+    if (!['Accepted', 'Rejected'].includes(action)) {
+      return res.status(400).send("Invalid action");
+    }
 
-    if (!item) return res.status(404).send("Ordered item not found");
-
-    if (action === "Accept") {
-      item.status = "Returned";
-      order.returnStatus = "Accepted";
-
-
-      const product = await Product.findById(productId);
-      if (product) {
-        const sizeEntry = product.sizes.find(s => s.size === size);
-        if (sizeEntry) {
-          sizeEntry.quantity += item.quantity;
+    order.returnStatus = action;
+    if (action === 'Accepted') {
+      // Optional: increment product quantity
+      for (const item of order.orderedItems) {
+        const product = await Product.findById(item.product);
+        if (product) {
+          const sizeVariant = product.sizes.find(s => s.size === item.size);
+          if (sizeVariant) sizeVariant.quantity += item.quantity;
+          await product.save();
         }
-        await product.save();
       }
-
-   
-
-    } else if (action === "Reject") {
-      order.returnStatus = "Rejected";
     }
 
     await order.save();
-    res.redirect(`/admin/orderList/${orderId}?return=${action.toLowerCase()}`);
+    res.redirect(`/admin/orderList/${orderId}?updated=true`);
   } catch (err) {
-    console.error("Return response error:", err);
-    res.status(500).send("Internal Server Error");
+    console.error(err);
+    res.status(500).send("Server error");
   }
 };
 
@@ -92,5 +84,5 @@ module.exports = {
     listOrders,
     viewOrderDetails,
     updateOrderStatus,
-    handleReturnResponse
+    handleReturnRequest
 };
