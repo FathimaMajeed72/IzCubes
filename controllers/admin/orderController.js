@@ -58,7 +58,7 @@ const handleReturnRequest = async (req, res) => {
 
     order.returnStatus = action;
     if (action === 'Accepted') {
-      // Optional: increment product quantity
+      
       for (const item of order.orderedItems) {
         const product = await Product.findById(item.product);
         if (product) {
