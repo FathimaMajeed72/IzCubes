@@ -166,7 +166,8 @@ const cancelEntireOrder = async (req, res) => {
     order.cancellationReason = reason || '';
     await order.save();
 
-    res.redirect('/profile/orders');
+    res.redirect(`/orders/${orderId}?cancelSuccess=true`);
+    // res.redirect('/profile/orders');
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -232,7 +233,7 @@ const cancelOrderItem = async (req, res) => {
 
 
     await order.save();
-    res.redirect(`/orders/${orderId}`);
+    res.redirect(`/orders/${orderId}?itemCancelSuccess=true`);
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -240,39 +241,6 @@ const cancelOrderItem = async (req, res) => {
 };
 
 
-const returnOrderItem = async (req, res) => {
-  try {
-    const { orderId, productId, reason } = req.body;
-
-    const order = await Order.findOne({ orderId });
-    if (!order || order.status !== 'Delivered') {
-      return res.status(400).send("Return not allowed unless delivered");
-    }
-
-    const item = order.orderedItems.find(i => i.product.toString() === productId);
-    if (!item || item.status !== 'Confirmed') {
-      return res.status(400).send("Item not eligible for return");
-    }
-
-    if (!reason) return res.status(400).send("Return reason is required");
-
-    item.status = 'Returned';
-    item.returnReason = reason;
-    order.status = 'Return Request';
-
-   await Product.updateOne(
-      { _id: item.product._id, "sizes.size": item.size },
-      { $inc: { "sizes.$.quantity": item.quantity } }
-    );
-
-
-    await order.save();
-    res.redirect(`/orders/${orderId}`);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-};
 
 
 
@@ -300,11 +268,15 @@ const returnEntireOrder = async (req, res) => {
       }
     }
 
-    order.status = 'Returned';
+    order.status = 'Return Request';
+    order.isReturnRequested = true;
     order.returnReason = reason;
+    order.returnStatus = 'Pending';
     await order.save();
 
-    res.redirect('/userProfile');
+    // res.redirect('/userProfile?returnSuccess=true');
+
+     res.redirect(`/orders/${orderId}?returnSuccess=true`);
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -353,7 +325,6 @@ module.exports = {
     getOrderDetail,
     cancelEntireOrder,
     cancelOrderItem,
-    returnOrderItem,
     returnEntireOrder,
     searchUserOrders,
 

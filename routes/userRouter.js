@@ -87,7 +87,6 @@ router.get("/order-success",userAuth,orderController.orderSuccess)
 router.get("/orders/:orderId",userAuth,orderController.getOrderDetail);
 router.post("/cancel-order",userAuth, orderController.cancelEntireOrder);
 router.post("/cancel-item",userAuth, orderController.cancelOrderItem);
-//router.post("/return-item",userAuth, orderController.returnOrderItem);
 router.post("/return-order",userAuth, orderController.returnEntireOrder);
 router.get('/orders/search',userAuth, orderController.searchUserOrders);
 

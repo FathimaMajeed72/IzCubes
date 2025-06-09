@@ -45,20 +45,66 @@
       </div>
     </div>
 
+    <h5 class="mt-4">Ordered Items</h5>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>ProductImage</th>
+          <th>Product</th>
+          <th>Size</th>
+          <th>Qty</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% order.orderedItems.forEach(item => { %>
+          <tr>
+            <td class="align-middle">
+              <img src="/uploads/re-image/<%= item.product.productImage[0] %>" 
+                  alt="product image"
+                  class="img-thumbnail"
+                  style="width: 80px; height: 80px; object-fit: cover;">
+            </td>
+            <td class="align-middle"><%= item.product.productName %></td>
+            <td class="align-middle"><%= item.size %></td>
+            <td class="align-middle"><%= item.quantity %></td>
+            <td class="align-middle">₹<%= item.price %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+
+    
+
+    <% if (order.isReturnRequested) { %>
+      <div class="mt-3">
+        <label class="fw-bold">Return Request Status:</label>
+        <span class="badge 
+          <%= order.returnStatus === 'Accepted' ? 'bg-success' : 
+              order.returnStatus === 'Rejected' ? 'bg-danger' : 'bg-warning text-dark' %>">
+          <%= order.returnStatus %>
+        </span>
+      </div>
+    <% } %>
+
+
+
+
     <form action="/admin/orderList/update-status" method="POST">
       <input type="hidden" name="orderId" value="<%= order._id %>">
 
       <div class="row align-items-end">
         <div class="col-md-6">
           <label for="status" class="form-label fw-bold">Change Order Status:</label>
-          <select name="newStatus" id="status" class="form-select" required>
+          <select name="newStatus" id="status" class="form-select" required <%= ['Cancelled', 'Delivered'].includes(order.status) ? 'disabled' : '' %>>
             <% ['Pending', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'].forEach(s => { %>
               <option value="<%= s %>" <%= order.status === s ? 'selected' : '' %>><%= s %></option>
             <% }) %>
           </select>
         </div>
         <div class="col-md-3 mt-3 mt-md-0">
-          <button type="submit" class="btn btn-success w-100" <%= order.status === 'Cancelled' ? 'disabled' : '' %>>
+          <button type="submit" class="btn btn-success w-100" <%= order.status === ('Cancelled'||'Delivered') ? 'disabled' : '' %>>
             Update Status
           </button>
 
@@ -67,5 +113,19 @@
     </form>
   </div>
 </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<% if (req.query.updated) { %>
+  <script>
+    Swal.fire({
+      icon: 'success',
+      title: 'Order status updated',
+      showConfirmButton: false,
+      timer: 1500
+    });
+  </script>
+<% } %>
+
 
 <%- include("../../views/partials/admin/footer") %>

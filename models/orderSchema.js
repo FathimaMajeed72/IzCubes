@@ -82,6 +82,15 @@ const orderSchema = new Schema({
         type: String,
         default: "" 
     },
+    isReturnRequested: {
+         type: Boolean, 
+         default: false 
+    },
+    returnStatus: { 
+        type: String, 
+        enum: ["None", "Pending", "Accepted", "Rejected"], 
+        default: "None" 
+    },
     returnReason: {
         type: String,
         default: ""
@@ -91,10 +100,6 @@ const orderSchema = new Schema({
         default : Date.now,
         required :true
     },
-    couponApplied : {
-        type : Boolean,
-        default : false
-    }
 })
 
 const Order = mongoose.model("Order",orderSchema);
