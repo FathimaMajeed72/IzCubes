@@ -55,7 +55,7 @@ router.post("/verify-changepassword-otp",userAuth,profileController.verifyChange
 router.get("/addAddress",userAuth,profileController.addAddress);
 router.post("/addAddress",userAuth,profileController.postAddAddress)
 router.post("/editAddress",userAuth,profileController.postEditAddress);
-router.get("/deteAddress",userAuth,profileController.deleteAddress);
+router.get("/deleteAddress",userAuth,profileController.deleteAddress);
 
 
 

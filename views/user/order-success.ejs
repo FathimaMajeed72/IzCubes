@@ -1,52 +1,310 @@
 <%- include("../../views/partials/user/header") %>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
 <style>
-     body {
-      background-color: #f5f5f5;
-    }
-    .btn-outline-custom {
-        color: #46698f;
-        border: 2px solid #2b6eb5;
-        background-color: transparent;
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 10px;
-        
+    /* General Layout - Matching Cart Page */
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: #fafbfc;
+        color: #1a1d29;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
     }
 
-    .btn-outline-custom:hover {
-        background-color: #2b6eb5;
+    .main-wrapper {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 40px 0;
+    }
+
+    /* Breadcrumb Styling - Matching Cart Page */
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px 0;
+        margin-bottom: 40px;
+    }
+
+    .breadcrumb {
+        color: white;
+        font-size: 14px;
+        margin: 0;
+        background: transparent;
+        padding: 0;
+    }
+
+    .breadcrumb a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .breadcrumb a:hover {
         color: white;
     }
 
-    .btn-custom-color {
-        background-color: #46698f;
-        color: #fff;
-        border: none;
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 10px;
+    .breadcrumb span {
+        color: white;
+        margin: 0 8px;
+    }
+
+    /* Success Card Container - Matching Cart Page Style */
+    .success-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .success-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    /* Success Header */
+    .success-header {
+        background: linear-gradient(135deg, #f8f9ff 0%, #e3e7ff 100%);
+        padding: 40px 40px 20px;
+        text-align: center;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    /* Success Icon */
+    .success-icon {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        box-shadow: 0 8px 32px rgba(72, 187, 120, 0.3);
+        animation: successPulse 2s ease-in-out infinite;
+        position: relative;
+    }
+
+    .success-icon::before {
+        content: '';
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        border: 2px solid rgba(72, 187, 120, 0.3);
+        border-radius: 50%;
         
     }
 
-    .btn-custom-color:hover{
-        background-color: #2b6eb5;
-        color: #fff;
+    .success-icon i {
+        font-size: 40px;
+        color: white;
     }
 
-</style>
-<div class="container text-center my-5 ">
-  <div class="card shadow p-4">
-    <div class="card-body">
-      <i class="fa fa-check-circle text-success mb-3" style="font-size: 4rem;"></i>
-      <h2 class="card-title mb-3">Thank you for your order!</h2>
-      <p class="lead">Your order has been placed successfully and is now being processed.</p>
 
-      <div class="mt-4">
-        <a href="/userProfile?tab=orders" class="btn btn-outline-custom">View My Orders</a>
-        <a href="/shop" class="btn btn-custom-color">Continue Shopping</a>
-      </div>
+
+    /* Success Content */
+    .success-content {
+        padding: 40px;
+        text-align: center;
+    }
+
+    .success-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 16px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .success-message {
+        font-size: 16px;
+        color: #6c757d;
+        margin-bottom: 40px;
+        line-height: 1.7;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+ 
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-outline-custom {
+        background: transparent;
+        color: #667eea;
+        border: 2px solid #667eea;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 160px;
+        justify-content: center;
+    }
+
+    .btn-outline-custom:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        text-decoration: none;
+    }
+
+    .btn-custom-color {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 160px;
+        justify-content: center;
+    }
+
+    .btn-custom-color:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .success-header,
+        .success-content {
+            padding: 30px 20px;
+        }
+
+        .success-title {
+            font-size: 24px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+        }
+
+        .success-icon i {
+            font-size: 32px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn-outline-custom,
+        .btn-custom-color {
+            width: 100%;
+            max-width: 280px;
+        }
+
+        
+    }
+
+    @media (max-width: 576px) {
+        .main-wrapper {
+            padding: 20px 0;
+        }
+
+        .success-container {
+            margin: 0 15px;
+        }
+
+        .success-title {
+            font-size: 22px;
+        }
+
+        .success-message {
+            font-size: 14px;
+        }
+
+        .btn-outline-custom,
+        .btn-custom-color {
+            padding: 12px 20px;
+            font-size: 14px;
+        }
+    }
+</style>
+
+<div class="main-wrapper">
+    <!-- Breadcrumb Section -->
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/" rel="nofollow">Home</a>
+                <span>></span><a href="/shop" rel="nofollow">Shop</a>
+                <span>></span><a href="/cart" rel="nofollow">Cart</a>
+                <span>></span> Order Success
+            </div>
+        </div>
     </div>
-  </div>
+
+    <!-- Success Content -->
+    <div class="container">
+        <div class="success-container">
+         
+
+            <div class="success-header">
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+
+            <div class="success-content">
+                <h2 class="success-title">Thank you for your order!</h2>
+                <p class="success-message">Your order has been placed successfully and is now being processed. You will receive a confirmation email shortly with your order details.</p>
+
+            
+
+                <div class="action-buttons">
+                    <a href="/userProfile?tab=orders" class="btn-outline-custom">
+                        <i class="fas fa-list-alt"></i>
+                        View My Orders
+                    </a>
+                    <a href="/shop" class="btn-custom-color">
+                        <i class="fas fa-shopping-bag"></i>
+                        Continue Shopping
+                    </a>
+                </div>
+
+                
+            </div>
+        </div>
+    </div>
 </div>
 
 <%- include('../../views/partials/user/footer') %>

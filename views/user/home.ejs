@@ -1,104 +1,310 @@
 <%- include("../../views/partials/user/header") %>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
-  .btn {
-      display: inline-block;
-      padding: 12px 20px;
-      font-size: 16px;
-      font-weight: bold;
-      color: #fff;
-      background-color: #ff6b6b;
-      border: none;
-      border-radius: 5px;
-      transition: background-color 0.3s, transform 0.3s;
-      cursor: pointer;
-      text-align: center;
-  }
+       /* Product Section */
+    .product {
+        padding: 40px 0;
+    }
+
+    .product-header {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        text-align: center;
+    }
+
+    .product-header h2 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .product-header h2 i {
+        color: #667eea;
+    }
+
+    .product-header p {
+        color: #6c757d;
+        font-size: 16px;
+        margin: 0;
+    }
+
+    .filter__controls {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 30px 0;
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .filter__controls li {
+        padding: 12px 24px;
+        background: #f7fafc;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        border: 2px solid #e2e8f0;
+    }
+
+    .filter__controls li:hover,
+    .filter__controls li.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: transparent;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Product Grid - Single Row Layout */
+    .product__filter {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+
+    /* Product Cards - Exact Match with Shop Page */
+    .product-cart-wrap {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s ease;
+        position: relative;
+        border: 1px solid transparent;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        min-width: 0; /* Prevents overflow issues */
+    }
+
+    .product-cart-wrap:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        border-color: #e2e8f0;
+    }
+
+    .product-img-action-wrap {
+        position: relative;
+        overflow: hidden;
+        height: 280px;
+        background: #f8f9fa;
+    }
+
+    .product-img {
+        position: relative;
+        display: block;
+        height: 100%;
+    }
+
+    .product-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .product-cart-wrap:hover .product-img img {
+        transform: scale(1.1);
+    }
+
+    .wishlist-btn {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: rgba(255, 255, 255, 0.95);
+        color: #fc8181;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+    }
+
+    .wishlist-btn:hover {
+        background: white;
+        color: #f56565;
+        transform: scale(1.1);
+        text-decoration: none;
+    }
+
+    .product-content-wrap {
+        padding: 24px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-content-wrap h6 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 8px;
+        line-height: 1.4;
+       
+    }
+
+    .product-content-wrap h5 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #667eea;
+        margin-bottom: 16px;
+        flex: 1;
+    }
+
+    .product-content-wrap h5::before {
+        content: '₹';
+        font-size: 16px;
+    }
+
+    .product-content-wrap a {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .product-content-wrap a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        text-decoration: none;
+        color: white;
+    }
 
 
-  .btn:hover {
-      background-color: #ff4c4c;
-      transform: translateY(-2px);
-  }
+    /* No Products Message */
+    .no-products {
+        text-align: center;
+        padding: 80px 20px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        grid-column: 1 / -1;
+    }
 
+    .no-products i {
+        font-size: 64px;
+        color: #e2e8f0;
+        margin-bottom: 24px;
+    }
 
-  .btn:active {
-      transform: translateY(1px);
-  }
-  .wishlist-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: rgba(255, 255, 255, 0.8);
-      padding: 10px;
-      border-radius: 50%;
-      color: #ff6b6b;
-      font-size: 18px;
-      z-index: 10;
-      transition: background-color 0.3s, color 0.3s, transform 0.3s;
-  }
+    .no-products h3 {
+        font-size: 24px;
+        color: #2d3748;
+        margin-bottom: 12px;
+    }
 
+    .no-products p {
+        color: #6c757d;
+        font-size: 16px;
+    }
 
-  .wishlist-btn:hover {
-      background-color: rgba(255, 255, 255, 1);
-      color: #ff4c4c;
-      transform: translateY(-2px);
-  }
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .product__filter {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+    }
 
+    @media (max-width: 992px) {
+        .product__filter {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+    }
 
-  .wishlist-btn:active {
-      transform: translateY(1px);
-  }
+    @media (max-width: 768px) {
+        .main-container {
+            padding: 20px 10px;
+        }
+        
+        .hero__text h2 {
+            font-size: 28px;
+        }
+        
+        .product-header h2 {
+            font-size: 24px;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .filter__controls {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .filter__controls li {
+            width: 200px;
+            text-align: center;
+        }
+        
+        .product__filter {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .banner__item__text h2 {
+            font-size: 18px;
+        }
+    }
 
+    @media (max-width: 576px) {
+        .product__filter {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        
+        .hero__text h2 {
+            font-size: 24px;
+        }
+        
+        .primary-btn {
+            padding: 12px 20px;
+        }
+    }
 
-  .product-img-action-wrap {
-      position: relative;
-  }
-
-
-  .product-img {
-      position: relative;
-      display: block;
-      overflow: hidden;
-  }
-
-
-  .product-cart-wrap {
-      border: 1px solid #eee;
-      padding: 20px;
-      margin-bottom: 30px;
-  }
-
-
-  .product-content-wrap h6 {
-      font-size: 18px;
-      color: #333;
-      margin-bottom: 5px;
-  }
-
-
-  .product-content-wrap h5 {
-      font-size: 16px;
-      color: #ff6b6b;
-      margin-bottom: 10px;
-  }
-
-
-  .product-content-wrap a {
-      display: inline-block;
-      padding: 8px 12px;
-      background-color: #ff6b6b;
-      color: white;
-      text-transform: uppercase;
-      font-size: 14px;
-      border-radius: 4px;
-      text-decoration: none;
-  }
-
-
-  .product-content-wrap a:hover {
-      background-color: #ff4c4c;
-  }
+    /* Special handling for exactly 4 products */
+    @media (min-width: 1201px) {
+        .product__filter:has(.product-cart-wrap:nth-child(4):last-child) {
+            grid-template-columns: repeat(4, 1fr);
+            max-width: 1200px;
+            margin: 0 auto 40px;
+        }
+    }
 </style>
 <section class="hero">
   <div class="hero__slider owl-carousel">
@@ -171,7 +377,71 @@
       </div>
   </div>
 </section>
-<section class="product spad">
+
+ <!-- Product Section -->
+    <section class="product">
+        <div class="container">
+            <!-- Product Header -->
+            <div class="product-header">
+                <h2>
+                    <i class="fas fa-gems"></i>
+                    Featured Products
+                </h2>
+                <p>Discover our handpicked selection of the finest children's fashion</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="filter__controls">
+                        <li class="active" data-filter=".new-arrivals">
+                            <i class="fas fa-sparkles me-2"></i>New Arrivals
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="product__filter">
+                <% if (products && products.length > 0) { %>
+                    <% for(let i = 0; i < products.length; i++) { %>
+                        <div class="product-cart-wrap">
+                            <div class="product-img-action-wrap">
+                                <div class="product-img">
+                                    <a href="/productdetails?id=<%=products[i]._id%>&from=home">
+                                        <img src="/uploads/re-image/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>">
+                                    </a>
+                                </div>
+                                <a href="#" class="wishlist-btn" onclick="addToWishlist('<%=products[i]._id%>')" aria-label="Add to wishlist">
+                                    <i class="fas fa-heart"></i>
+                                </a>
+                            </div>
+
+                            <div class="product-content-wrap">
+                               
+                                <h6 ><%=products[i].productName%></h6>
+                                <h5><%=products[i].salePrice.toLocaleString('en-IN')%></h5>
+                                <a href="#" onclick="addToCart('<%=products[i]._id%>')">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    Add to cart
+                                </a>
+                            </div>
+                        </div>
+                    <% } %>
+                <% } else { %>
+                    <div class="no-products">
+                        <i class="fas fa-box-open"></i>
+                        <h3>No Products Available</h3>
+                        <p>We're currently updating our inventory. Please check back soon for amazing deals!</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+<!-- <section class="product spad">
   <div class="container">
       <div class="row">
           <div class="col-lg-12">
@@ -206,7 +476,7 @@
               <%}%>
       </div>
   </div>
-</section>
+</section> -->
 <%- include("../../views/partials/user/footer") %>
 
 

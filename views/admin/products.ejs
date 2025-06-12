@@ -1,12 +1,28 @@
 <%- include("../../views/partials/admin/header") %>
+
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+    <style>
+    .table-contain{
+    background-color: white;
+    border-radius: 10px;
+    margin-left: 10px;
+    margin-right: 2px;
+    }
+    .table-body{
+    background-color: white;
+    border-radius: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    }
+</style>
 </head>
 <div class="content-header">
     <div>
-        <h2 class="content-title card-title">Products</h2>
+        <h2 class="content-title card-title mt-3 ms-5">Products</h2>
     </div>
 </div>
+<div class="table-contain">
 <header class="card-header text-center mb-20">
     <form action="" method="get" class="d-inline">
         <div class="input-group input-group-sm border border-1 border-grey rounded-pill" style="width: 500px; margin-left: 230px;">
@@ -15,20 +31,21 @@
         </div>
     </form>
 </header>
+</div>
 <div class="right mt-5">
-    <table class="table table-striped">
-        <thead>
+    <table class="table table-striped table-body mt-3">
+        <thead style="background-color: lightgrey;">
             <tr>
-                <th scope="col"><b>Product name</b></th>
-                <th scope="col"><b>Brand</b></th>
-                <th scope="col"><b>Category</b></th>
-                <th scope="col"><b>Regular Price</b></th>
-                <th scope="col"><b>Sale Price</b></th>
-                <th scope="col"><b>Offer Price</b></th>
-                <th scope="col"><b>Offer</b></th>
-                <th scope="col"><b>Quantity</b></th>
-                <th scope="col"><b>Action</b></th>
-                <th scope="col"><b>Edit</b></th>
+                <th scope="col"><h6>Product name</h6></th>
+                <th scope="col"><h6>Brand</h6></th>
+                <th scope="col"><h6>Category</h6></th>
+                <th scope="col"><h6>Regular Price</h6></th>
+                <th scope="col"><h6>Sale Price</h6></th>
+                <th scope="col"><h6>Offer Price</h6></th>
+                <th scope="col"><h6>Offer</h6></th>
+                <th scope="col"><h6>Quantity</h6></th>
+                <th scope="col"><h6>Action</h6></th>
+                <th scope="col"><h6>Edit</h6></th>
             </tr>
         </thead>
         <tbody>

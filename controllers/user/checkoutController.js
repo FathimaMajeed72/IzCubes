@@ -20,7 +20,7 @@ const checkout = async (req, res) => {
     const cart = await Cart.findOne({ userId }).populate('items.productId');
 
     if (!cart || !cart.items.length) {
-      return res.redirect("/cart"); // redirect if cart is empty
+      return res.redirect("/cart");
     }
 
     let subtotal = 0;
@@ -48,8 +48,8 @@ const checkout = async (req, res) => {
       discount += offerAmount * item.quantity;
     }
 
-    const tax = Math.round((subtotal * TAX_PERCENT) / 100);
-    const total = subtotal - discount + tax + SHIPPING_FEE;
+    //const tax = Math.round((subtotal * TAX_PERCENT) / 100);
+    const total = subtotal - discount + SHIPPING_FEE;
 
     
     res.render("checkout", { 
@@ -57,7 +57,6 @@ const checkout = async (req, res) => {
       cart,
       subtotal,
       discount,
-      tax,
       shipping: SHIPPING_FEE,
       total,
       selectedAddress

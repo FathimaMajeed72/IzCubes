@@ -236,9 +236,9 @@
         <button class="btn btn-secondary w-100 mt-3" disabled>Return Request Pending</button>
       <% } else if (order.status === 'Returned') { %>
         <button class="btn btn-success w-100 mt-3" disabled>Order Returned</button>
+      <% } else if(order.status ==='Return Rejected'){ %>
+        <button class="btn btn-danger w-100 mt-3" disabled>Return request Rejected</button>
       <% } %>
-
-
 
       <!-- Return Order Modal -->
       <div class="modal fade" id="returnOrderModal" tabindex="-1" aria-labelledby="returnOrderModalLabel" aria-hidden="true">

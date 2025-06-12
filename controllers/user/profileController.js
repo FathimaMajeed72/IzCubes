@@ -398,7 +398,9 @@ const addAddress = async (req,res) => {
   try {
     
       const user = req.session.user;
-      res.render("add-address",{user:user})
+      const from = req.query.from
+      
+      res.render("add-address",{user:user,from})
 
   } catch (error) {
     res.redirect("/pageNotFound")
@@ -409,8 +411,10 @@ const postAddAddress = async (req,res) => {
   try {
 
     const user = req.session.user;
+    
     //const userData = await User.findOne({_id:user._id});
     const {addressType,name,houseName,streetName,city,landMark,state,pincode,phone,altPhone,isDefault} = req.body;
+    const from = req.body.from || 'profile';
     
     let userAddress = await Address.findOne({userId : user._id})
     const newAddress = { addressType, name, houseName, streetName, city, landMark, state, pincode, phone, altPhone, isDefault: !!isDefault };
@@ -432,10 +436,15 @@ const postAddAddress = async (req,res) => {
 
     const userAddresses = userAddress.address;
 
-    res.render("profile", {
-      user,
-      userAddresses,
-    });
+      if (from === 'checkout') {
+        return res.redirect('/checkout');
+      } else {
+          res.render("profile", {
+          user,
+          userAddresses,
+        });
+      }
+    
 
   } catch (error) {
 

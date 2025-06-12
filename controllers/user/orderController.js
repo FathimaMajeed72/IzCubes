@@ -9,6 +9,15 @@ const SHIPPING_FEE = 40;
 const placeCodOrder = async (req, res) => {
   try {
     const userId = req.session.user._id;
+    const addressId = req.body.addressId;
+    console.log(userId);
+    
+    console.log(addressId);
+    
+    if (!addressId) {
+      return res.status(400).send("No address selected.");
+    }
+
 
     const cart = await Cart.findOne({ userId }).populate('items.productId');
     if (!cart || cart.items.length === 0) {
@@ -39,18 +48,14 @@ const placeCodOrder = async (req, res) => {
       throw new Error("Final amount is not a number");
     }
 
-    const selectedAddressDoc = await Address.findOne({
-      userId,
-      "address.isDefault": true
-    });
-
-    if (!selectedAddressDoc) {
-      return res.status(400).send("No default address found");
+    const addressDoc = await Address.findOne({ userId });
+    if (!addressDoc) {
+      return res.status(400).send("No address document found for user.");
     }
 
-    const selectedAddress = selectedAddressDoc.address.find(addr => addr.isDefault);
+    const selectedAddress = addressDoc.address.find(addr => addr._id.toString() === addressId);
     if (!selectedAddress) {
-      return res.status(400).send("Default address not found in user's address list");
+      return res.status(400).send("Selected address not found");
     }
 
     const orderedItems = cart.items.map(item => ({

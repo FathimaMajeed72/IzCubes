@@ -2,303 +2,801 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
+
+<style>
+    /* General Layout */
     body {
-      background-color: #f5f5f5;
-    }
-    .card-header {
-      background-color: #f8f9fa;
-      font-weight: 600;
-    }
-    .price-summary .d-flex {
-      justify-content: space-between;
-    }
-    .form-check-label {
-      cursor: pointer;
-    }
-    .item-img {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 5px;
-      margin-right: 10px;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: #fafbfc;
+        color: #1a1d29;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
     }
 
-    .newbtn{
-        background-color: #46698f;
-        color: #fff;
-        padding: 10px;
+    .main {
+        padding: 40px 0;
+    }
+
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px 0;
+        margin-bottom: 40px;
+    }
+
+    .checkout-title {
+        color: white;
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .checkout-title i {
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Card Styling */
+    .checkout-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        margin-bottom: 30px;
         border: none;
-        border-radius: 5px;
+    }
+
+    .checkout-card .card-header {
+        background: linear-gradient(135deg, #f8f9ff 0%, #e3e7ff 100%);
+        border-bottom: 1px solid #e9ecef;
+        padding: 25px 30px;
+        border-radius: 0;
+    }
+
+    .checkout-card .card-header h5 {
+        color: #2d3748;
+        font-weight: 700;
+        font-size: 20px;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .checkout-card .card-header h5 i {
+        color: #667eea;
+    }
+
+    .checkout-card .card-body {
+        padding: 30px;
+    }
+
+    /* Address Section */
+    .address-item {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .address-item:hover {
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.1);
+        border-color: #667eea;
+    }
+
+    .address-item.selected {
+        border-color: #667eea;
+        background: linear-gradient(135deg, #f8f9ff 0%, #e3e7ff 100%);
+    }
+
+    .form-check-input {
+        width: 1.5em;
+        height: 1.5em;
+        margin-top: 0;
+        margin-right: 12px;
+        border: 2px solid #cbd5e0;
+        border-radius: 50%;
+    }
+
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+
+    .form-check-label {
         cursor: pointer;
-        margin-top: 10px;
+        width: 100%;
     }
-    .newbtn:hover{
-        background-color: #2b6eb5;
-        color: #fff;
+
+    .address-type {
+        background: #667eea;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        display: inline-block;
+        margin-bottom: 12px;
     }
-  </style>
 
+    .address-details {
+        color: #4a5568;
+        font-size: 14px;
+        line-height: 1.6;
+    }
 
-<div class="container my-5">
-    <h2 class="mb-4">Checkout</h2>
-    <div class="row g-4">
-      <!-- Left Column: Address and Payment -->
-      <div class="col-md-7">
-        <!-- Address Section -->
-        <div class="card mb-4">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="my-0" style="color: #46698f">Delivery Address</h5>
-            <a href="/addAddress">
-            <button class="btn btn-sm newbtn my-0" data-bs-toggle="modal" data-bs-target="#addAddressModal">
-              <i class="fa fa-plus"></i> Add Address
-            </button>
-            </a>
-          </div>
-          <div class="card-body">
-            <% if (userAddresses && userAddresses.length > 0) { %>
-              <% userAddresses.forEach((address, index) => { %>
-                <div class="form-check p-3 mb-3 rounded">
-                <input class="form-check-input" type="radio" name="selectedAddress" id="address<%= index %>" value="<%= address._id %>" <%= address.isDefault ? 'checked' : '' %> required>
-                <label class="form-check-label w-100" for="address<%= index %>">
-                  <p><strong><u><%= address.addressType %></u></strong></p>
-                  <p><b><%= address.name %></b><br><%= address.houseName %>,<br><%= address.streetName %>,<br><%= address.landMark %>,<br><%= address.city %> - <%= address.pincode %>,<br><%= address.state %>,<br>Phone no: <%= address.phone %>,<br>Alternate Phone no: <%= address.altPhone %></p>
-                </label>
-                <div class="text-end">
-                  <button class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#editAddressModal<%= index %>"><i class="fa fa-pen"></i></button>
-                  <form method="POST" action="/deleteAddress?id=<%= address._id %>" class="d-inline" onsubmit="return confirmDelete()">
-                    <button class="btn btn-sm btn-outline-danger" type="submit"><i class="fa fa-trash"></i></button>
-                  </form>
-                </div>
-              </div>
+    .address-details strong {
+        color: #2d3748;
+    }
 
+    .address-actions {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        gap: 8px;
+    }
 
-            <!-- Edit Address Modal -->
-              <div class="modal fade" id="editAddressModal<%= index %>" tabindex="-1">
-                <div class="modal-dialog">
-                  <form class="modal-content" method="POST" action="/editAddress?id=<%= address._id %>">
-                    <div class="modal-header">
-                      <h5 style="color: #46698f">Edit Address</h5>
-                      <button class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                       <div class="mb-2">
-                        <label for="addressType<%= index %>" class="form-label fw-bold">Address Type</label>
-                        <input type="text" id="addressType<%= index %>" class="form-control" name="addressType" value="<%= address.addressType %>" required>
-                      </div>
+    .address-actions .btn {
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
 
-                      <div class="mb-2">
-                        <label for="name<%= index %>" class="form-label fw-bold">Name</label>
-                        <input type="text" id="name<%= index %>" class="form-control" name="name" value="<%= address.name %>" required>
-                      </div>
+    .address-actions .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
 
-                      <div class="mb-2">
-                        <label for="houseName<%= index %>" class="form-label fw-bold">House Name/no:(or Work Place)</label>
-                        <input type="text" id="houseName<%= index %>" class="form-control" name="houseName" value="<%= address.houseName %>" required>
-                      </div>
+    /* Add Address Button */
+    .add-address-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-                      <div class="mb-2">
-                        <label for="streetName<%= index %>" class="form-label fw-bold">Street Name</label>
-                        <input type="text" id="streetName<%= index %>" class="form-control" name="streetName" value="<%= address.streetName %>" required>
-                      </div>
+    .add-address-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        color: white;
+    }
 
-                      <div class="mb-2">
-                        <label for="landMark<%= index %>" class="form-label fw-bold">Landmark</label>
-                        <input type="text" id="landMark<%= index %>" class="form-control" name="landMark" value="<%= address.landMark %>" required>
-                      </div>
+    /* Payment Method Section */
+    .payment-option {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 12px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 
-                      <div class="mb-2">
-                        <label for="city<%= index %>" class="form-label fw-bold">City</label>
-                        <input type="text" id="city<%= index %>" class="form-control" name="city" value="<%= address.city %>" required>
-                      </div>
+    .payment-option:hover {
+        border-color: #667eea;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+    }
 
-                      <div class="mb-2">
-                        <label for="pincode<%= index %>" class="form-label fw-bold">Pincode</label>
-                        <input type="text" id="pincode<%= index %>" class="form-control" name="pincode" value="<%= address.pincode %>" required>
-                      </div>
+    .payment-option.selected {
+        border-color: #667eea;
+        background: linear-gradient(135deg, #f8f9ff 0%, #e3e7ff 100%);
+    }
 
-                      <div class="mb-2">
-                        <label for="state<%= index %>" class="form-label fw-bold">State</label>
-                        <input type="text" id="state<%= index %>" class="form-control" name="state" value="<%= address.state %>" required>
-                      </div>
+    .payment-option input[type="radio"] {
+        width: 1.2em;
+        height: 1.2em;
+        border: 2px solid #cbd5e0;
+    }
 
-                      <div class="mb-2">
-                        <label for="phone<%= index %>" class="form-label fw-bold">Phone</label>
-                        <input type="text" id="phone<%= index %>" class="form-control" name="phone" value="<%= address.phone %>" required>
-                      </div>
+    .payment-option input[type="radio"]:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
 
-                      <div class="mb-2">
-                        <label for="altPhone<%= index %>" class="form-label fw-bold">Alternate Phone</label>
-                        <input type="text" id="altPhone<%= index %>" class="form-control" name="altPhone" value="<%= address.altPhone %>" required>
-                      </div>
-                      <div class="form-check mt-3">
-                        <input class="form-check-input" type="checkbox" name="isDefault" id="isDefault<%= index %>" value="true" <%= address.isDefault ? 'checked' : '' %>>
-                        <label class="form-check-label fw-bold" for="isDefault<%= index %>">
-                          Set as default address
-                        </label>
-                      </div>
-                    </div>
-                    <div class="modal-footer">
-                      <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                      <button type="submit" class="btn btn-primary">Update</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
+    .payment-option label {
+        margin: 0;
+        font-weight: 500;
+        color: #2d3748;
+        cursor: pointer;
+        flex: 1;
+    }
 
+    .payment-option.disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 
+    .payment-option.disabled label {
+        cursor: not-allowed;
+    }
 
-              <% }) %>
-            <% } else { %>
-              <p class="text-muted">No address found. Please add one.</p>
-            <% } %>
-          </div>
+    /* Order Summary */
+    .order-summary {
+        position: sticky;
+        top: 100px;
+    }
+
+    .order-item {
+        display: flex;
+        align-items: center;
+        padding: 16px 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .order-item:last-child {
+        border-bottom: none;
+    }
+
+    .item-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-right: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .item-details h6 {
+        margin: 0 0 4px 0;
+        font-size: 15px;
+        font-weight: 600;
+        color: #2d3748;
+    }
+
+    .item-details .text-muted {
+        font-size: 13px;
+        color: #6c757d;
+        margin: 0;
+    }
+
+    .item-price {
+        font-weight: 700;
+        color: #2d3748;
+        margin-left: auto;
+    }
+
+    .offer-badge {
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-top: 4px;
+        display: inline-block;
+    }
+
+    /* Price Summary */
+    .price-summary {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+
+    .price-summary h5 {
+        color: #2d3748;
+        font-weight: 700;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .price-summary h5 i {
+        color: #667eea;
+    }
+
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .price-row:last-child {
+        border-bottom: none;
+        padding-top: 16px;
+        font-weight: 700;
+        font-size: 18px;
+        color: #2d3748;
+    }
+
+    .price-row .text-success {
+        font-weight: 600;
+    }
+
+    /* Place Order Button */
+    .place-order-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 16px 24px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 16px;
+        width: 100%;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .place-order-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.3);
+        color: white;
+    }
+
+    .place-order-btn:disabled {
+        background: #cbd5e0;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Modal Enhancements */
+    .modal-content {
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #f8f9ff 0%, #e3e7ff 100%);
+        border-bottom: 1px solid #e9ecef;
+        border-radius: 16px 16px 0 0;
+        padding: 20px 30px;
+    }
+
+    .modal-header h5 {
+        color: #2d3748;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .modal-body {
+        padding: 30px;
+        color: #4a5568;
+        font-size: 16px;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #e9ecef;
+        padding: 20px 30px;
+        background: #f8f9fa;
+        border-radius: 0 0 16px 16px;
+    }
+
+    .modal-footer .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    /* Empty State */
+    .empty-address {
+        text-align: center;
+        padding: 40px 20px;
+        color: #6c757d;
+    }
+
+    .empty-address i {
+        font-size: 48px;
+        color: #e2e8f0;
+        margin-bottom: 16px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .checkout-title {
+            font-size: 24px;
+        }
+        
+        .checkout-card .card-header,
+        .checkout-card .card-body {
+            padding: 20px;
+        }
+        
+        .address-item {
+            padding: 16px;
+        }
+        
+        .address-actions {
+            position: static;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+        
+        .order-summary {
+            position: static;
+            margin-top: 30px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .main {
+            padding: 20px 0;
+        }
+        
+        .page-header {
+            margin-bottom: 20px;
+        }
+        
+        .item-image {
+            width: 50px;
+            height: 50px;
+            margin-right: 12px;
+        }
+        
+        .modal-header,
+        .modal-body,
+        .modal-footer {
+            padding: 20px;
+        }
+    }
+</style>
+
+<main class="main">
+    <div class="page-header">
+        <div class="container">
+            <h2 class="checkout-title">
+                <i class="fas fa-credit-card"></i>
+                Checkout
+            </h2>
         </div>
+    </div>
 
-        <!-- Payment Method -->
-        <div class="card">
-          <div class="card-header">
-            <h5 class="my-2" style="color: #46698f;">Payment Method</h5>
-          </div>
-          <div class="card-body">
-            <form action="/orders" method="POST">
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD" checked>
-                <label class="form-check-label" for="cod">
-                  Cash on Delivery (COD)
-                </label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="radio" name="paymentMethod" id="upi" value="UPI" disabled>
-                <label class="form-check-label" for="upi">
-                  UPI / Google Pay / PhonePe
-                </label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="paymentMethod" id="card" value="Card" disabled>
-                <label class="form-check-label" for="card">
-                  Credit / Debit Card
-                </label>
-              </div>
-              <div class="text-end mt-3">
-                <button type="button" class="btn newbtn" data-bs-toggle="modal" data-bs-target="#codConfirmModal">
-                  Place Order with COD
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+    <div class="container">
+        <div class="row g-4">
+            <!-- Left Column: Address and Payment -->
+            <div class="col-lg-7">
+                <!-- Address Section -->
+                <div class="checkout-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>
+                            <i class="fas fa-map-marker-alt"></i>
+                            Delivery Address
+                        </h5>
+                        <a href="/addAddress?from=checkout">
+                            <button class="add-address-btn">
+                                <i class="fas fa-plus"></i>
+                                Add Address
+                            </button>
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <% if (userAddresses && userAddresses.length > 0) { %>
+                            <% userAddresses.forEach((address, index) => { %>
+                                <div class="address-item <%= address.isDefault ? 'selected' : '' %>">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="selectedAddress" 
+                                               id="address<%= index %>" value="<%= address._id %>" 
+                                               <%= address.isDefault ? 'checked' : '' %> required>
+                                        <label class="form-check-label" for="address<%= index %>">
+                                            <div class="address-type"><%= address.addressType %></div>
+                                            <div class="address-details">
+                                                <strong><%= address.name %></strong><br>
+                                                <%= address.houseName %>, <%= address.streetName %><br>
+                                                <%= address.landMark %>, <%= address.city %> - <%= address.pincode %><br>
+                                                <%= address.state %><br>
+                                                <strong>Phone:</strong> <%= address.phone %><br>
+                                                <strong>Alt Phone:</strong> <%= address.altPhone %>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="address-actions">
+                                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editAddressModal<%= index %>">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form method="GET" action="/deleteAddress?id=<%= address._id %>" class="d-inline" onsubmit="return confirmDelete()">
+                                            <button class="btn btn-outline-danger btn-sm" type="submit">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
 
-
-      <!-- Modal -->
-      <div class="modal fade" id="codConfirmModal" tabindex="-1" aria-labelledby="codConfirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-
-            <form action="/orders" method="POST">
-              <!-- Hidden Inputs -->
-              <!-- <input type="hidden" name="addressId" value="<%= selectedAddress._id %>"> -->
-              <input type="hidden" id="modalAddressId" name="addressId" value="">
-              <input type="hidden" name="paymentMethod" value="COD">
-
-              <div class="modal-header">
-                <h5 class="modal-title" id="codConfirmModalLabel">Confirm Your Order</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-
-              <div class="modal-body">
-                <p>Are you sure you want to place this order using <strong>Cash on Delivery</strong>?</p>
-                <p>Total Amount: <strong>₹<%= total %></strong></p>
-              </div>
-
-              <div class="modal-footer">
-                <button type="button" class="btn newbtn" style="background-color: grey;" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn newbtn">Confirm & Place Order</button>
-              </div>
-            </form>
-
-          </div>
-        </div>
-      </div>
-
-
-      <!-- Right Column: Order Summary -->
-      <div class="col-md-5">
-        <div class="card">
-          <div class="card-header">
-            <h5 class="my-2" style="color: #46698f;">Order Summary</h5> 
-          </div>
-          <div class="card-body">
-            <ul class="list-group mb-3">
-              <% cart.items.forEach(item => { %>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <div class="d-flex align-items-center">
-                    <img src="/uploads/re-image/<%= item.productId.productImage[0] %>" alt="<%= item.productId.productName %>" class="item-img">
-                    <div>
-                      <h6 class="my-0"><%= item.productId.productName %></h6>
-                      <small class="text-muted">
-                        Qty: <%= item.quantity %> | ₹<%= item.price %> each
-                        <% if (item.productId.productOffer) { %>
-                          <br><span class="text-danger">Offer: <%= item.productId.productOffer %>% Off</span>
+                                <!-- Edit Address Modal -->
+                                <div class="modal fade" id="editAddressModal<%= index %>" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <form class="modal-content" method="POST" action="/editAddress?id=<%= address._id %>">
+                                            <div class="modal-header">
+                                                <h5>Edit Address</h5>
+                                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="addressType<%= index %>" class="form-label fw-bold">Address Type</label>
+                                                    <input type="text" id="addressType<%= index %>" class="form-control" name="addressType" value="<%= address.addressType %>" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="name<%= index %>" class="form-label fw-bold">Name</label>
+                                                    <input type="text" id="name<%= index %>" class="form-control" name="name" value="<%= address.name %>" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="houseName<%= index %>" class="form-label fw-bold">House Name/No</label>
+                                                    <input type="text" id="houseName<%= index %>" class="form-control" name="houseName" value="<%= address.houseName %>" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="streetName<%= index %>" class="form-label fw-bold">Street Name</label>
+                                                    <input type="text" id="streetName<%= index %>" class="form-control" name="streetName" value="<%= address.streetName %>" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="landMark<%= index %>" class="form-label fw-bold">Landmark</label>
+                                                    <input type="text" id="landMark<%= index %>" class="form-control" name="landMark" value="<%= address.landMark %>" required>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="city<%= index %>" class="form-label fw-bold">City</label>
+                                                        <input type="text" id="city<%= index %>" class="form-control" name="city" value="<%= address.city %>" required>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="pincode<%= index %>" class="form-label fw-bold">Pincode</label>
+                                                        <input type="text" id="pincode<%= index %>" class="form-control" name="pincode" value="<%= address.pincode %>" required>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="state<%= index %>" class="form-label fw-bold">State</label>
+                                                    <input type="text" id="state<%= index %>" class="form-control" name="state" value="<%= address.state %>" required>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="phone<%= index %>" class="form-label fw-bold">Phone</label>
+                                                        <input type="text" id="phone<%= index %>" class="form-control" name="phone" value="<%= address.phone %>" required>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="altPhone<%= index %>" class="form-label fw-bold">Alt Phone</label>
+                                                        <input type="text" id="altPhone<%= index %>" class="form-control" name="altPhone" value="<%= address.altPhone %>" required>
+                                                    </div>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="isDefault" id="isDefault<%= index %>" value="true" <%= address.isDefault ? 'checked' : '' %>>
+                                                    <label class="form-check-label fw-bold" for="isDefault<%= index %>">
+                                                        Set as default address
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary">Update Address</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="empty-address">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <p class="mb-0">No addresses found. Please add one to continue.</p>
+                            </div>
                         <% } %>
-                      </small>
                     </div>
-                  </div>
-                  <span>₹<%= item.totalPrice %></span>
-                </li>
-              <% }) %>
-            </ul>
-            <h5 style="color: #46698f;"><b>Price Details</b></h5>
-            <div class="price-summary mb-3">
-              <div class="d-flex mb-2">
-                <span>Subtotal</span>
-                <span>₹<%= subtotal %></span>
-              </div>
-              <div class="d-flex mb-2">
-                <span>Discount</span>
-                <span class="text-success">- ₹<%= discount %></span>
-              </div>
-              <!-- <div class="d-flex mb-2">
-                <span>Tax (5%)</span>
-                <span>₹<%= tax %></span>
-              </div> -->
-              <div class="d-flex mb-2">
-                <span>Shipping</span>
-                <span>₹<%= shipping %></span>
-              </div>
-              <div class="d-flex fw-bold border-top pt-2 mt-2">
-                <span>Total</span>
-                <span>₹<%= total %></span>
-              </div>
+                </div>
+
+                <!-- Payment Method Section -->
+                <div class="checkout-card">
+                    <div class="card-header">
+                        <h5>
+                            <i class="fas fa-credit-card"></i>
+                            Payment Method
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="/orders" id="checkoutForm">
+                            <div class="payment-option selected">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD" checked>
+                                <label class="form-check-label" for="cod">
+                                    <i class="fas fa-money-bill-wave text-success me-2"></i>
+                                    Cash on Delivery (COD)
+                                </label>
+                            </div>
+                            <div class="payment-option disabled">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="upi" value="UPI" disabled>
+                                <label class="form-check-label" for="upi">
+                                    <i class="fab fa-google-pay text-primary me-2"></i>
+                                    UPI / Google Pay / PhonePe
+                                </label>
+                            </div>
+                            <div class="payment-option disabled">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="card" value="Card" disabled>
+                                <label class="form-check-label" for="card">
+                                    <i class="fas fa-credit-card text-info me-2"></i>
+                                    Credit / Debit Card
+                                </label>
+                            </div>
+
+                            <input type="hidden" name="addressId" id="formAddressId" value="">
+
+                            <div class="mt-4">
+                                <% if (userAddresses && userAddresses.length > 0) { %>
+                                    <button type="button" class="place-order-btn" id="placeOrderBtn" data-bs-toggle="modal" data-bs-target="#codConfirmModal">
+                                        <i class="fas fa-check-circle"></i>
+                                        Place Order
+                                    </button>
+                                <% } else { %>
+                                    <button type="button" class="place-order-btn" disabled title="Please add an address to place order">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        Add Address to Continue
+                                    </button>
+                                <% } %>
+                            </div>
+
+                            <!-- COD Confirmation Modal -->
+                            <div class="modal fade" id="codConfirmModal" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">
+                                                <i class="fas fa-check-circle text-success me-2"></i>
+                                                Confirm Your Order
+                                            </h5>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p class="mb-3">You're about to place an order with Cash on Delivery payment method.</p>
+                                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                                <i class="fas fa-info-circle text-primary me-2"></i>
+                                                <small class="text-muted">Please keep the exact amount ready for payment upon delivery.</small>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fas fa-check"></i>
+                                                Confirm Order
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
 
-          </div>
+            <!-- Right Column: Order Summary -->
+            <div class="col-lg-5">
+                <div class="order-summary">
+                    <div class="checkout-card">
+                        <div class="card-header">
+                            <h5>
+                                <i class="fas fa-receipt"></i>
+                                Order Summary
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Order Items -->
+                            <div class="order-items">
+                                <% cart.items.forEach(item => { %>
+                                    <div class="order-item">
+                                        <img src="/uploads/re-image/<%= item.productId.productImage[0] %>" 
+                                             alt="<%= item.productId.productName %>" class="item-image">
+                                        <div class="item-details">
+                                            <h6><%= item.productId.productName %></h6>
+                                            <p class="text-muted">
+                                                Qty: <%= item.quantity %> × ₹<%= item.price %>
+                                                <% if (item.productId.productOffer) { %>
+                                                    <span class="offer-badge"><%= item.productId.productOffer %>% OFF</span>
+                                                <% } %>
+                                            </p>
+                                        </div>
+                                        <div class="item-price">₹<%= item.totalPrice %></div>
+                                    </div>
+                                <% }) %>
+                            </div>
+
+                            <!-- Price Summary -->
+                            <div class="price-summary">
+                                <h5>
+                                    <i class="fas fa-calculator"></i>
+                                    Price Details
+                                </h5>
+                                <div class="price-row">
+                                    <span>Subtotal</span>
+                                    <span>₹<%= subtotal %></span>
+                                </div>
+                                <div class="price-row">
+                                    <span>Discount</span>
+                                    <span class="text-success">- ₹<%= discount %></span>
+                                </div>
+                                <div class="price-row">
+                                    <span>Shipping</span>
+                                    <span>₹<%= shipping %></span>
+                                </div>
+                                <div class="price-row">
+                                    <span>Total Amount</span>
+                                    <span class="text-brand">₹<%= total %></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+</main>
 
-
-  <script>
+<script>
     document.addEventListener("DOMContentLoaded", function () {
-      const placeOrderBtn = document.querySelector('[data-bs-target="#codConfirmModal"]');
-      const addressRadios = document.querySelectorAll('input[name="selectedAddress"]');
-      const modalAddressInput = document.getElementById('modalAddressId');
+        const placeOrderBtn = document.getElementById("placeOrderBtn");
+        const addressRadios = document.querySelectorAll('input[name="selectedAddress"]');
+        const formAddressId = document.getElementById('formAddressId');
+        const addressItems = document.querySelectorAll('.address-item');
+        const paymentOptions = document.querySelectorAll('.payment-option');
 
-      placeOrderBtn.addEventListener("click", () => {
-        const selectedRadio = Array.from(addressRadios).find(r => r.checked);
-        if (selectedRadio) {
-          modalAddressInput.value = selectedRadio.value;
-        }
-      });
+        // Handle address selection visual feedback
+        addressRadios.forEach((radio, index) => {
+            radio.addEventListener('change', function() {
+                addressItems.forEach(item => item.classList.remove('selected'));
+                if (this.checked) {
+                    addressItems[index].classList.add('selected');
+                }
+            });
+        });
+
+        // Handle payment method visual feedback
+        document.querySelectorAll('input[name="paymentMethod"]').forEach((radio, index) => {
+            radio.addEventListener('change', function() {
+                paymentOptions.forEach(option => option.classList.remove('selected'));
+                if (this.checked) {
+                    paymentOptions[index].classList.add('selected');
+                }
+            });
+        });
+
+        // Handle place order button
+        placeOrderBtn.addEventListener("click", (e) => {
+            const selectedRadio = Array.from(addressRadios).find(r => r.checked);
+            if (selectedRadio) {
+                formAddressId.value = selectedRadio.value;
+                console.log("Selected Address ID:", selectedRadio.value);
+            } else {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Address Selected',
+                    text: 'Please select or add a delivery address to proceed.',
+                    confirmButtonColor: '#667eea',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
     });
-  </script>
 
+    // Confirm delete function
+    function confirmDelete() {
+        return confirm('Are you sure you want to delete this address?');
+    }
+</script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 <%- include("../../views/partials/user/footer") %>

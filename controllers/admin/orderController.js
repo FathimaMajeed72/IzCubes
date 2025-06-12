@@ -58,7 +58,9 @@ const handleReturnRequest = async (req, res) => {
 
     order.returnStatus = action;
     if (action === 'Accepted') {
-      
+
+      order.status="Returned"
+
       for (const item of order.orderedItems) {
         const product = await Product.findById(item.product);
         if (product) {
@@ -67,6 +69,8 @@ const handleReturnRequest = async (req, res) => {
           await product.save();
         }
       }
+    }else{
+      order.status="Return Rejected"
     }
 
     await order.save();

@@ -95,12 +95,12 @@
         </div>
         <nav class="nav flex-column">
           <h6 class="ml-3 fw-bold">ACCOUNT SETTINGS</h6>
-          <a class="nav-link sidebar-link active" href="#" data-target="profileSection"><i class="fa fa-user-circle"></i> Profile details</a>
-          <a class="nav-link sidebar-link" href="#" data-target="addressSection"><i class="fa-solid fa-address-card"></i> Manage Address</a>
+          <a class="nav-link sidebar-link active" href="#profileSection" data-target="profileSection"><i class="fa fa-user-circle"></i> Profile details</a>
+          <a class="nav-link sidebar-link" href="#addressSection" data-target="addressSection"><i class="fa-solid fa-address-card"></i> Manage Address</a>
           <h6 class="mt-4 ml-3 fw-bold">MY STUFFS</h6>
-          <a class="nav-link sidebar-link" href="#" data-target="orderSection"><i class="fa fa-box"></i> My Orders</a>
-          <a class="nav-link sidebar-link" href="#" data-target="couponSection"><i class="fa fa-box"></i> My Coupons</a>
-          <a class="nav-link sidebar-link" href="#" data-target="walletSection"><i class="fa fa-wallet"></i> My Wallet</a>
+          <a class="nav-link sidebar-link" href="#orderSection" data-target="orderSection"><i class="fa fa-box"></i> My Orders</a>
+          <a class="nav-link sidebar-link" href="#couponSection" data-target="couponSection"><i class="fa fa-box"></i> My Coupons</a>
+          <a class="nav-link sidebar-link" href="#walletSection" data-target="walletSection"><i class="fa fa-wallet"></i> My Wallet</a>
           <a class="nav-link" href="/logout"><i class="fa fa-sign-out-alt"></i>  Logout</a>
         </nav>
       </div>
@@ -172,7 +172,7 @@
         <div class="profile-card">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Manage Address</h4>
-            <a href="/addAddress">
+            <a href="/addAddress?from=profile">
             <button class="btn btn-sm pwdbtn" data-bs-toggle="modal" data-bs-target="#addAddressModal">
               <i class="fa fa-plus"></i> Add Address
             </button>
@@ -185,7 +185,7 @@
                 <p><b><%= address.name %></b><br><%= address.houseName %>,<br><%= address.streetName %>,<br><%= address.landMark %>,<br><%= address.city %> - <%= address.pincode %>,<br><%= address.state %>,<br>Phone no: <%= address.phone %>,<br>Alternate Phone no: <%= address.altPhone %></p>
                 <div class="text-end">
                   <button class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#editAddressModal<%= index %>"><i class="fa fa-pen"></i></button>
-                  <form method="POST" action="/deleteAddress?id=<%= address._id %>" class="d-inline" onsubmit="return confirmDelete()">
+                  <form method="GET" action="/deleteAddress?id=<%= address._id %>" class="d-inline" onsubmit="return confirmDelete()">
                     <button class="btn btn-sm btn-outline-danger" type="submit"><i class="fa fa-trash"></i></button>
                   </form>
                 </div>

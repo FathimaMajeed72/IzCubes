@@ -1,12 +1,26 @@
 <%- include("../../views/partials/admin/header") %>
+<style>
+    .table-header{
+    background-color: white;
+    border-radius: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    }
+    .table-body{
+    background-color: white;
+    border-radius: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    }
+</style>
+
 <div class="content-header row">
     <div class="d-flex justify-content-between align-items-center">
         <h2 class="content-title card-title ps-5 pt-3">Customers</h2>
        
     </div>
 </div>         
-        </div>
-        
+            <div class="table-header">
             <header class="card-header text-center mb-20">
                 <form action="/admin/users/" method="get" class="d-inline">
                     <div class="input-group input-group-sm border border-1 border-grey rounded-pill" style="width: 500px; margin-left: 230px;">
@@ -15,14 +29,15 @@
                     </div>
                 </form>
             </header>
-            <div class="right mt-5">
-                <table class="table table-striped">
-                    <thead class="bg-success text-white">
+            </div>
+            <div class="right mt-5 table-body ">
+                <table class="table table-striped" >
+                    <thead class="" style="background-color:lightgrey;">
                       <tr>
-                        <th class="ps-5" scope="col"><b>Name</b></th>
-                        <th class="ps-5" scope="col"><b>Email</b></th>
-                        <th class="ps-5" scope="col"><b>Phone No</b></th>
-                        <th class="ps-5" scope="col"><b>Action</b></th>
+                        <th class="ps-5" scope="col"><h6>Name</h6></th>
+                        <th class="ps-5" scope="col"><h6>Email</h6></th>
+                        <th class="ps-5" scope="col"><h6>Phone No</h6></th>
+                        <th class="ps-5" scope="col"><h6>Action</h6></th>
                       </tr>
                     </thead>
                     <tbody>
