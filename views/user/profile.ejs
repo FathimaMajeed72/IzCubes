@@ -403,6 +403,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script>
   document.addEventListener("DOMContentLoaded", function () {
     const sidebarLinks = document.querySelectorAll(".sidebar-link");
@@ -464,6 +466,37 @@
     removeImageInput.value = "true"; // Mark for removal
   });
 </script>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const emailVerified = urlParams.get('emailVerified') === 'true';
+  const emailUpdated = urlParams.get('emailUpdated') === 'true';
+
+  if (emailVerified && emailUpdated) {
+    Swal.fire({
+      icon: 'success',
+      title: 'Email Verified!',
+      text: 'Your new email has been verified successfully.',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Continue'
+    }).then(() => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Email Updated!',
+        text: 'Your email address has been successfully updated.',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
+      });
+
+      // Optionally clean the URL
+      if (history.pushState) {
+        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.pushState({ path: newUrl }, '', newUrl);
+      }
+    });
+  }
+</script>
+
 
 
 

@@ -46,10 +46,11 @@ router.post("/editProfile",userAuth,uploads.single('profileImage'),profileContro
 router.get("/change-email",userAuth,profileController.changeEmail);
 router.post("/change-email",userAuth,profileController.changeEmailValidation);
 router.post("/verify-email-otp",userAuth,profileController.verifyEmailOtp)
-router.post("/update-email",userAuth,profileController.updateEmail)
-router.get("/change-password",userAuth,profileController.changePassword);
-router.post("/change-password",userAuth,profileController.changePasswordValid);
-router.post("/verify-changepassword-otp",userAuth,profileController.verifyChangePassOtp)
+router.post("/resend-email-otp",userAuth,profileController.resendOtp)
+router.get("/change-password",userAuth,profileController.getChangePassword);
+router.post("/change-password",userAuth,profileController.postChangePassword);
+// router.post("/change-password",userAuth,profileController.changePasswordValid);
+// router.post("/verify-changepassword-otp",userAuth,profileController.verifyChangePassOtp)
 
 
 router.get("/addAddress",userAuth,profileController.addAddress);

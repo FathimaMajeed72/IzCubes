@@ -127,7 +127,7 @@
  function resendOTP() {
    $.ajax({
      type: 'POST',
-     url: '/resend-otp',
+     url: '/resend-email-otp',
      success: function (response) {
        if (response.success) {
          startOTPTimer(60);
