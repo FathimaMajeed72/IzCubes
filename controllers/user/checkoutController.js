@@ -44,7 +44,7 @@ const checkout = async (req, res) => {
       subtotal += item.totalPrice;
 
       const productOffer = product.productOffer || 0;
-      const offerAmount = Math.round((product.salePrice * productOffer) / 100);
+      const offerAmount = Math.round((product.regularPrice * productOffer) / 100);
       discount += offerAmount * item.quantity;
     }
 

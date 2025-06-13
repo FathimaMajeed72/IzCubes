@@ -559,10 +559,16 @@
                         <table class="table">
                             <tbody>
                                 <tr>
+                                    <td class="cart_total_label">Subtotal</td>
+                                    <td class="cart_total_amount">₹<%= subtotal %></td>
+                                </tr>
+                                <tr>
+                                    <td class="cart_total_label">Discount</td>
+                                    <td class="cart_total_amount">-₹<%= discount %></td>
+                                </tr>
+                                <tr>
                                     <td class="cart_total_label">Shipping</td>
-                                    <td class="cart_total_amount">
-                                        <span class="shipping-badge">Free Shipping</span>
-                                    </td>
+                                    <td class="cart_total_amount">₹<%= shipping %></td>
                                 </tr>
                                 <tr>
                                     <td class="cart_total_label">Total Amount</td>

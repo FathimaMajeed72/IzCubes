@@ -174,17 +174,46 @@ const postNewPassword = async (req,res)=>{
       const tab = req.query.tab || 'profile';
 
       const userData = await User.findById(userId);
+       
       const addressData = await Address.findOne({userId:userData._id})
-      const orders = await Order.find({user:userId}).sort({ createdOn: -1 }).populate('orderedItems.product');
+
+      const query = req.query.query || '';
+      
+      const page = parseInt(req.query.page) || 1;
+      const perPage = 3;
+
+     
+      const orderQuery = {
+        user: userId,
+        ...(query ? { orderId: { $regex: query, $options: 'i' } } : {}) 
+      };
+
+      let allOrders = await Order.find(orderQuery)
+      .sort({ createdOn: -1 })
+      .populate('orderedItems.product');
+
+
+      
+
+      const totalCount = allOrders.length;
+      const totalPages = Math.ceil(totalCount / perPage);
+
+       const paginatedOrders = allOrders.slice((page - 1) * perPage, page * perPage);
 
       const userAddresses = addressData ? addressData.address : [];
+
+
+      console.log("userAddresses array:", userAddresses);
 
 
       res.render("profile",{
         user : userData,
         userAddresses,
-        orders,
-        tab
+        orders: paginatedOrders,
+        tab,
+        query: query,
+        totalPages,
+        currentPage: page
       })
       
     } catch (error) {
@@ -389,65 +418,7 @@ if (newPass1 !== newPass2) {
 }
 
 
-// const changePassword = async (req,res) => {
-//   try {
 
-//     res.render("change-password")
-    
-//   } catch (error) {
-    
-//     res.redirect("/pageNotFound")
-
-//   }
-// } 
-
-// const changePasswordValid = async (req,res) => {
-//   try {
-
-//     const {email} = req.body;
-
-//     const user = await User.findOne({email});
-//     if(user){
-//       const otp = generateOtp();
-//       const emailSent = await sendVerificationEmail(email,otp);
-//       if(emailSent){
-//         req.session.userOtp = otp;
-//         req.session.userData = req.body;
-//         req.session.email = email;
-//         res.render("change-password-otp")
-//         console.log("OTP: ",otp);
-        
-//       }else{
-//         res.json({
-//           success : false,
-//           meassage : "Failed to send OTP. Please try again"
-//         })
-//       }
-
-//     }else{
-//       res.render("change-password",{
-//         message : "User with this email does not exist"
-//       })
-//     }
-    
-//   } catch (error) {
-//     console.log("Error in change password validation",error);
-//     res.redirect("/pageNotFound")
-//   }
-// }
-
-// const verifyChangePassOtp = async (req, res) => {
-//     try {
-//       const enteredOtp = req.body.otp;
-//       if (enteredOtp === req.session.userOtp) {
-//         res.json({ success: true, redirectUrl: "/reset-password" });
-//       } else {
-//         res.json({ success: false, message: "OTP not matching" });
-//       }
-//     } catch (error) {
-//       res.status(500).json({ success: false, message: "An error occured. Please try again" });
-//     }
-//   };
 
 
 const addAddress = async (req,res) => {
@@ -490,6 +461,11 @@ const postAddAddress = async (req,res) => {
       await userAddress.save();
     }
 
+    
+    const addresses = await Address.find({ userId:user._id});
+    const orders = await Order.find({ userId:user._id }).sort({ createdAt: -1 });
+
+
     const userAddresses = userAddress.address;
 
       if (from === 'checkout') {
@@ -498,6 +474,7 @@ const postAddAddress = async (req,res) => {
           res.render("profile", {
           user,
           userAddresses,
+          orders,
         });
       }
     
@@ -571,27 +548,34 @@ const postEditAddress = async (req,res) => {
 
 const deleteAddress = async (req,res) => {
   try {
-    const addressId = req.query.id;
-    const findAddress = await Address.findOne({"address._id":addressId})
-    if(!findAddress){
-      return res.status(404).send("Address not found")
+    const userId = req.session.user?._id;
+    const addressId = req.query.id||req.body.id;
+
+    console.log("User ID:", userId);
+    console.log("Address ID:", req.query.id);
+
+    console.log("Original URL:", req.originalUrl);
+    console.log("Query object:", req.query);
+
+
+    const findAddress = await Address.findOne({
+      userId,
+      "address._id": addressId
+    });
+
+    if (!findAddress) {
+      return res.status(404).send("Address not found");
     }
 
+   
     await Address.updateOne(
-      {"address._id" : addressId},
-      {
-        $pull : {
-          address : {
-            _id :addressId,
+      { userId },
+      { $pull: { address: { _id: addressId } } }
+    );
 
-          }
-        }
-      }
-    )
-    res.redirect("/userProfile")
-
+    res.redirect("/userProfile"); 
   } catch (error) {
-    console.error("Error in delete address",error);
+    console.error("Error in delete address", error);
     res.redirect("/pageNotFound");
   }
 }
@@ -611,10 +595,6 @@ module.exports ={
     verifyEmailOtp,
     getChangePassword,
     postChangePassword,
-    //updateEmail,
-    //changePassword,
-    // changePasswordValid,
-    // verifyChangePassOtp,
     addAddress,
     postAddAddress,
     postEditAddress,

@@ -10,6 +10,10 @@ const addressSchema = new  Schema({
         required : true
     },
     address : [{
+        _id: {
+             type: mongoose.Schema.Types.ObjectId, 
+             auto: true 
+        },
         addressType : {
             type : String,
             required : true

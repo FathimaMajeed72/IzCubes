@@ -49,8 +49,6 @@ router.post("/verify-email-otp",userAuth,profileController.verifyEmailOtp)
 router.post("/resend-email-otp",userAuth,profileController.resendOtp)
 router.get("/change-password",userAuth,profileController.getChangePassword);
 router.post("/change-password",userAuth,profileController.postChangePassword);
-// router.post("/change-password",userAuth,profileController.changePasswordValid);
-// router.post("/verify-changepassword-otp",userAuth,profileController.verifyChangePassOtp)
 
 
 router.get("/addAddress",userAuth,profileController.addAddress);

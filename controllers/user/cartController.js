@@ -2,6 +2,7 @@ const User = require("../../models/userSchema");
 const Product = require("../../models/productSchema");
 const Cart = require("../../models/cartSchema")
 const MAX_QUANTITY_LIMIT = 3;
+const SHIPPING_FEE = 40;
 
 
 
@@ -20,7 +21,7 @@ const getCartPage = async (req, res) => {
       });
 
     if (!cart || cart.items.length === 0) {
-      return res.render('cart', { cartItems: [], total: 0 });
+      return res.render('cart', { cartItems: [],subtotal:0,discount:0, total: 0,shipping:0 });
     }
 
 
@@ -30,13 +31,21 @@ const getCartPage = async (req, res) => {
       quantity: item.quantity,
       size: item.size,
       totalPrice: item.totalPrice,
+      regularPrice:item.productId.regularPrice,
+      offer:item.productId.productOffer||0,
+      discount:(item.productId.regularPrice*item.productId.productOffer/100)*item.quantity,
       categoryName: item.productId.category ? item.productId.category.name : 'Unknown'
     }));
 
-    const total = cart.items.reduce((sum, item) => sum + item.totalPrice, 0);
+    const subtotal = cart.items.reduce((sum, item) => sum + item.totalPrice, 0);
+    const discount = cartItems.reduce((sum, item) => sum + item.discount, 0);
+    const total = subtotal-discount+SHIPPING_FEE;
 
     res.render('cart', {
       cartItems,
+      subtotal,
+      discount,
+      shipping:SHIPPING_FEE,
       total
     });
   } catch (error) {
