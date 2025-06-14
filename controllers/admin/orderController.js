@@ -4,18 +4,57 @@ const Product = require("../../models/productSchema")
 
 const listOrders = async (req, res) => {
   try {
-    const orders = await Order.find({})
-      .populate('user') 
-      .sort({ orderDate: -1 });
+
+    const { search = "", sort = "desc", status, page = 1, limit = 4 } = req.query;
+
+    const query = {};
+
+   
+    if (status && status !== "All") {
+      query.status = status;
+    }
+
+    let allOrders = await Order.find(query)
+      .populate('user')
+      .sort({ createdOn: sort === "asc" ? 1 : -1 });
+
+
+    if (search.trim()) {
+      const s = search.toLowerCase();
+      allOrders = allOrders.filter(order =>
+        order.orderId.toLowerCase().includes(s) ||
+        (order.user?.name?.toLowerCase().includes(s)) ||
+        (order.user?.email?.toLowerCase().includes(s))
+      );
+    }
+
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    
+    const totalOrders = allOrders.length;
+    const totalPages = Math.ceil(totalOrders / limit);
+    const paginatedOrders = allOrders.slice(skip, skip + parseInt(limit));
+
+
+
 
     res.render('orders', {
-         orders 
+         orders:paginatedOrders,
+         search,
+         sort,
+         status,
+         currentPage: parseInt(page),
+         totalPages
         });
+
   } catch (err) {
     console.error("Error fetching orders:", err);
     res.status(500).send("Internal Server Error");
   }
 };
+
+
 
 const viewOrderDetails = async (req, res) => {
   try {
@@ -29,6 +68,9 @@ const viewOrderDetails = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+
+
 
 const updateOrderStatus = async (req, res) => {
   try {
