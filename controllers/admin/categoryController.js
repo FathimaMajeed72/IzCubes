@@ -6,23 +6,31 @@ const Product = require("../../models/productSchema")
 const categoryInfo =async (req,res) => {
     try {
 
+
+        let search ="";
+        if(req.query.search){
+            search = req.query.search;
+        }
+
         const page = parseInt(req.query.page) || 1;
         const limit =4;
         const skip = (page-1)*limit;
 
-        const categoryData = await Category.find({})
+        const categoryData = await Category.find({name:{$regex:".*"+search+".*",$options:"i"}})
         .sort({createdAt:-1})
         .skip(skip)
         .limit(limit);
 
 
-        const totalCategories = await Category.countDocuments();
+        const totalCategories = await Category.countDocuments({name:{$regex:".*"+search+".*",$options:"i"}});
+     
         const totalPages = Math.ceil(totalCategories/limit)
         res.render("category",{
             cat : categoryData,
             currentPage : page,
             totalPages : totalPages,
-            totalCategories : totalCategories
+            totalCategories : totalCategories,
+            search
         })
 
     } catch (error) {

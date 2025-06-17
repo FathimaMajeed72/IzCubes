@@ -994,7 +994,7 @@ select.form-control:focus {
               <!-- Edit Address Modal -->
               <div class="modal fade" id="editAddressModal<%=index%>" tabindex="-1">
                 <div class="modal-dialog">
-                  <form class="modal-content" method="POST" action="/editAddress?id=<%=address._id%>">
+                  <form class="modal-content" method="POST" action="/editAddress?id=<%=address._id%>&section=addressSection">
                     <div class="modal-header">
                       <h5 class="modal-title">Edit Address</h5>
                       <button class="btn-close" data-bs-dismiss="modal"></button>
@@ -1243,10 +1243,10 @@ select.form-control:focus {
               <li class="page-item <%= currentPage === i ? 'active' : '' %>">
                 <a 
                   class="page-link" 
-                  href="?tab=orders&query=<%= query %>&page=<%= i %>"
-                  style="border-radius: 8px; margin: 0 2px; font-weight: 600;">
+                  href="/userProfile?page=<%= i %><%= query ? `&query=${query}` : '' %>#orderSection">
                   <%= i %>
                 </a>
+
               </li>
             <% } %>
           </ul>
@@ -1316,11 +1316,20 @@ select.form-control:focus {
         }
 
         this.classList.add("active");
+
+        history.pushState(null, null, `#${targetId}`);
       });
     });
 
-    document.querySelector('[data-target="profileSection"]').click();
-  });
+    // Automatically open section based on URL hash (or default to profileSection)
+    const hash = window.location.hash.substring(1); // remove the #
+    const defaultSection = "profileSection";
+    const initialTarget = hash || defaultSection;
+
+    const initialLink = document.querySelector(`[data-target="${initialTarget}"]`);
+    if (initialLink) initialLink.click();
+
+      });
 </script>
 
 <script>

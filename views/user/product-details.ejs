@@ -757,13 +757,13 @@
         const hiddenSelectedSize = document.getElementById('selectedSize');
         const form = document.querySelector("form");
 
-        // Initialize quantity
         let quantity = 1;
 
         plusBtn.addEventListener("click", () => {
-            quantity++;
-            qtyVal.textContent = quantity;
-            cartQty.value = quantity;
+                quantity++;
+                qtyVal.textContent = quantity;
+                cartQty.value = quantity;
+             
         });
 
         minusBtn.addEventListener("click", () => {
@@ -775,7 +775,9 @@
         });
 
         sizeSelect.addEventListener('change', function () {
-            hiddenSelectedSize.value = this.value;
+            const selected = this.value;
+            hiddenSelectedSize.value = selected;
+           
         });
 
         form.addEventListener("submit", function (e) {

@@ -172,7 +172,7 @@ const cancelEntireOrder = async (req, res) => {
     await order.save();
 
     res.redirect(`/orders/${orderId}?cancelSuccess=true`);
-    // res.redirect('/profile/orders');
+    
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");

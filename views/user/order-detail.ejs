@@ -464,10 +464,9 @@
                         'Pending': 'secondary',
                         'Processing': 'info',
                         'Shipped': 'primary',
-                        'Out for delivery': 'warning',
                         'Delivered': 'success',
-                        'Cancelled': 'danger',
-                        'Returned': 'dark'
+                        'Cancelled': 'warning',
+                        'Returned': 'danger'
                     };
                     const badgeColor = statusBadgeMap[order.status] || 'secondary';
                 %>
@@ -479,10 +478,11 @@
                     <strong>Return Reason:</strong> <%= order.returnReason %>
                 </div>
             <% } %>
-
+            <% if (order.status === 'Delivered' || order.status === 'Returned') { %>
             <a href="/invoice/<%= order._id %>" class="invoice-btn" target="_blank">
                 <i class="bi bi-download"></i> Download Invoice
             </a>
+            <% } %>
         </div>
 
         <div class="row">
@@ -496,10 +496,11 @@
                         </div>
                         <div>
                             <% const allItemsCancelled = order.orderedItems.every(item => item.status === 'Cancelled')%>
-                            <% if (order.status === 'Cancelled'|| allItemsCancelled) { %>
-                             
+                            <% const isCancelable = ['Pending', 'Processing'].includes(order.status); %>
+                            <% if (order.status === 'Cancelled'|| allItemsCancelled || !isCancelable) { %>
+                                 <% if (order.status === 'Cancelled'|| allItemsCancelled) { %>
                                 <button type="button" class="cancel-order-btn" disabled>Order Cancelled</button>
-                              
+                                 <% } %>
                             <% } else { %>
                               
                                 <button type="button" class="cancel-order-btn" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">Cancel Order</button>
@@ -526,31 +527,13 @@
                                     <p class="product-price">₹<%= totalItemPrice %></p>
                                     
                                     <% if (order.status !== 'Cancelled') { %>
-                                        <% if (item.status === 'Confirmed') { %>
-                                            <button type="button" class="cancel-item-btn" data-bs-toggle="modal" data-bs-target="#cancelItemModal<%= item.product._id %>">
+                                        <% if (['Confirmed'].includes(item.status) && ['Pending', 'Processing'].includes(order.status)) { %>
+                                            <button type="button" class="cancel-item-btn" data-bs-toggle="modal" data-bs-target="#cancelItemModal" data-order-id="<%= order.orderId %>" data-product-id="<%= item.product._id %>">
                                                 Cancel Item
                                             </button>
 
-                                            <!-- Cancel Item Modal -->
-                                            <div class="modal fade" id="cancelItemModal<%= item.product._id %>" tabindex="-1" aria-labelledby="cancelItemModalLabel<%= item.product._id %>" aria-hidden="true" data-bs-backdrop="static">
-                                                <div class="modal-dialog">
-                                                    <form action="/cancel-item" method="POST" class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="cancelItemModalLabel<%= item.product._id %>">Cancel Product</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <input type="hidden" name="orderId" value="<%= order.orderId %>">
-                                                            <input type="hidden" name="productId" value="<%= item.product._id %>">
-                                                            <label for="itemCancelReason<%= item.product._id %>" class="form-label">Reason (optional)</label>
-                                                            <textarea class="form-control" name="reason" id="itemCancelReason<%= item.product._id %>" rows="3" placeholder="Why cancel this item?"></textarea>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="submit" class="btn btn-outline-danger">Confirm Cancel</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
+                                            
+
                                         <% } else if (item.status === 'Cancelled') { %>
                                             <button type="button" class="cancel-item-btn" disabled>Item Cancelled</button>
                                         <% } %>
@@ -640,6 +623,27 @@
     </div>
 </main>
 
+<!-- Single Cancel Item Modal -->
+<div class="modal fade" id="cancelItemModal" tabindex="-1" aria-labelledby="cancelItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="/cancel-item" method="POST" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelItemModalLabel">Cancel Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="orderId" id="cancelOrderIdInput">
+                <input type="hidden" name="productId" id="cancelProductIdInput">
+                <label for="itemCancelReason" class="form-label">Reason (optional)</label>
+                <textarea class="form-control" name="reason" id="itemCancelReason" rows="3" placeholder="Why cancel this item?"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-outline-danger">Confirm Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>                                           
+
 <!-- Cancel Order Modal -->
 <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -726,45 +730,36 @@
 </script>
 
 <script>
-// Prevent modal flickering
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all modals properly
-    const modals = document.querySelectorAll('.modal');
-    modals.forEach(function(modal) {
-        new bootstrap.Modal(modal, {
-            backdrop: 'static',
-            keyboard: true,
-            focus: true
-        });
+  document.addEventListener('DOMContentLoaded', function () {
+    const cancelItemModal = document.getElementById('cancelItemModal');
+
+    cancelItemModal.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+
+      // Get values from button
+      const orderId = button.getAttribute('data-order-id');
+      const productId = button.getAttribute('data-product-id');
+
+      // Set values to the form inputs
+      document.getElementById('cancelOrderIdInput').value = orderId;
+      document.getElementById('cancelProductIdInput').value = productId;
+
+      // Optional: clear the reason input each time
+      document.getElementById('itemCancelReason').value = '';
     });
-    
-    // Prevent multiple rapid clicks
-    let modalOpening = false;
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('cancel-item-btn')) {
-            if (modalOpening) {
-                e.preventDefault();
-                e.stopPropagation();
-                return;
-            }
-            modalOpening = true;
-            setTimeout(() => {
-                modalOpening = false;
-            }, 500);
-        }
-    });
-    
-    // Ensure only one modal is open at a time
+
+    // Optional: Hide any currently open modal before opening a new one
     document.addEventListener('show.bs.modal', function (event) {
-        const openModals = document.querySelectorAll('.modal.show');
-        openModals.forEach(function(modal) {
-            if (modal !== event.target) {
-                bootstrap.Modal.getInstance(modal)?.hide();
-            }
-        });
+      const openModals = document.querySelectorAll('.modal.show');
+      openModals.forEach(modal => {
+        if (modal !== event.target) {
+          bootstrap.Modal.getInstance(modal)?.hide();
+        }
+      });
     });
-});
+  });
 </script>
+
 
 
 <%- include('../partials/user/footer') %>

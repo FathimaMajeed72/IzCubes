@@ -471,11 +471,12 @@ const postAddAddress = async (req,res) => {
       if (from === 'checkout') {
         return res.redirect('/checkout');
       } else {
-          res.render("profile", {
-          user,
-          userAddresses,
-          orders,
-        });
+        //   res.render("profile", {
+        //   user,
+        //   userAddresses,
+        //   orders,
+        // });
+        res.redirect("/userProfile#addressSection")
       }
     
 
@@ -497,6 +498,7 @@ const postEditAddress = async (req,res) => {
     const data = req.body;
     const addressId = req.query.id;
     const user = req.session.user;
+    const section = req.query.section || 'profileSection';
     const findAddress = await Address.findOne({"address._id":addressId})
     if(!findAddress){
       res.redirect("/pageNotFound");
@@ -534,7 +536,7 @@ const postEditAddress = async (req,res) => {
       await findAddress.save(); 
     }
 
-    res.redirect("/userProfile");
+    res.redirect(`/userProfile#${section}`);
 
 
   } catch (error) {

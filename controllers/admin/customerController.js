@@ -42,7 +42,8 @@ const totalPages = Math.ceil(count / limit);
 res.render("customers", {
     data: userData,
     totalPages: totalPages,
-    currentPage: page
+    currentPage: page,
+    search
 });
 
 
