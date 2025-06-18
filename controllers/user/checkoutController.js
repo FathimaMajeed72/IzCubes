@@ -25,8 +25,11 @@ const checkout = async (req, res) => {
 
     let subtotal = 0;
     let discount = 0;
-    const TAX_PERCENT = 5;
+    //const TAX_PERCENT = 5;
     const SHIPPING_FEE = 40;
+
+    const validItems = [];
+    const removedItems = [];
    
 
     for (const item of cart.items) {
@@ -35,17 +38,23 @@ const checkout = async (req, res) => {
       
 
       if (!sizeStock || sizeStock.quantity < item.quantity) {
-        return res.status(400).render("user/cart", {
-          error: `Product "${product.productName}" in size "${item.size}" is out of stock.`,
-          cartItems: cart.items,
-          total: cart.items.reduce((sum, i) => sum + i.totalPrice, 0)
+        removedItems.push({
+          productName: product.productName,
+          size: item.size
         });
+        continue;
       }
       subtotal += item.totalPrice;
 
       const productOffer = product.productOffer || 0;
       const offerAmount = Math.round((product.regularPrice * productOffer) / 100);
       discount += offerAmount * item.quantity;
+
+      validItems.push(item);
+    }
+
+    if (!validItems.length) {
+      return res.redirect("/cart?error=All selected items are out of stock.");
     }
 
     //const tax = Math.round((subtotal * TAX_PERCENT) / 100);
@@ -54,12 +63,13 @@ const checkout = async (req, res) => {
     
     res.render("checkout", { 
       userAddresses,
-      cart,
+      cart:  { items: validItems },
       subtotal,
       discount,
       shipping: SHIPPING_FEE,
       total,
-      selectedAddress
+      selectedAddress,
+      removedItems
     });
 
   } catch (err) {
@@ -67,7 +77,6 @@ const checkout = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
 
 
 module.exports = {

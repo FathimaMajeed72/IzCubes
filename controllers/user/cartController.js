@@ -1,7 +1,7 @@
 const User = require("../../models/userSchema");
 const Product = require("../../models/productSchema");
 const Cart = require("../../models/cartSchema")
-const MAX_QUANTITY_LIMIT = 3;
+const MAX_QUANTITY_LIMIT = 5;
 const SHIPPING_FEE = 40;
 
 
@@ -25,20 +25,33 @@ const getCartPage = async (req, res) => {
     }
 
 
-    const cartItems = cart.items.map(item => ({
-      _id: item._id,
-      product: item.productId,
-      quantity: item.quantity,
-      size: item.size,
-      totalPrice: item.totalPrice,
-      regularPrice:item.productId.regularPrice,
-      offer:item.productId.productOffer||0,
-      discount:(item.productId.regularPrice*item.productId.productOffer/100)*item.quantity,
-      categoryName: item.productId.category ? item.productId.category.name : 'Unknown'
-    }));
+      const cartItems = cart.items.map(item => {
+      const product = item.productId;
+      const sizeInfo = product.sizes.find(s => s.size === item.size);
+      const isInStock = sizeInfo && sizeInfo.quantity >= item.quantity;
 
-    const subtotal = cart.items.reduce((sum, item) => sum + item.totalPrice, 0);
-    const discount = cartItems.reduce((sum, item) => sum + item.discount, 0);
+      const offer = product.productOffer || 0;
+      const regularPrice = product.regularPrice;
+      const discount = (regularPrice * offer / 100) * item.quantity;
+
+      return {
+        _id: item._id,
+        product,
+        quantity: item.quantity,
+        size: item.size,
+        totalPrice: item.totalPrice,
+        regularPrice,
+        offer,
+        discount,
+        categoryName: product.category ? product.category.name : 'Unknown',
+        inStock: isInStock
+      };
+    });
+
+    const validItems = cartItems.filter(item => item.inStock);
+
+    const subtotal = validItems.reduce((sum, item) => sum + item.totalPrice, 0);
+    const discount = validItems.reduce((sum, item) => sum + item.discount, 0);
     const total = subtotal-discount+SHIPPING_FEE;
 
     res.render('cart', {
@@ -59,7 +72,7 @@ const addToCart = async (req,res) => {
 
     try {
 
-        const {productId,quantity,selectedSize} = req.body;
+        const {productId,selectedSize} = req.body;
         const sessionUser = req.session.user;
         const userId = sessionUser._id;
 
@@ -74,29 +87,47 @@ const addToCart = async (req,res) => {
         if (!product.category?.isListed) {
           return res.status(403).json({ message: "This product's category is unavailable" });
         }
+     
 
 
-        const qty = parseInt(quantity) || 1;
+        const sizeStock = product.sizes.find(s => s.size === selectedSize);
+        if (!sizeStock || sizeStock.quantity <= 0) {
+          return res.status(400).json({ message: "Selected size out of stock" });
+        }
+
+        
         const price = product.salePrice;
-        const totalPrice = price * qty;
-
         let cart = await Cart.findOne({ userId });
 
         if (cart) {
-              const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId && item.size === selectedSize);
 
-              if (itemIndex > -1) {
-              cart.items[itemIndex].quantity += qty;
-              cart.items[itemIndex].totalPrice += totalPrice;
+              const item = cart.items.find(i =>
+                i.productId.toString() === productId && i.size === selectedSize
+              );
+              if (item) {
+                if (item.quantity >= 5) {
+                  return res.status(400).json({ message: "Max limit of 5 per item" });
+                }
+                if (item.quantity + 1 > sizeStock.quantity) {
+                  return res.status(400).json({ message: `Only ${sizeStock.quantity} items in stock` });
+                }
+
+                item.quantity += 1;
+                item.totalPrice = item.quantity * item.price;
               } else {
-        
-              cart.items.push({ productId,size : selectedSize, quantity:qty, price, totalPrice });
+                cart.items.push({
+                  productId,
+                  size: selectedSize,
+                  quantity: 1,
+                  price,
+                  totalPrice: price
+                });
               }
         } else {
       
         cart = new Cart({
         userId,
-        items: [{ productId,size : selectedSize, quantity : qty, price, totalPrice }]
+        items: [{ productId,size : selectedSize, quantity : 1, price, totalPrice : price }]
         });
     }
 

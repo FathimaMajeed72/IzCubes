@@ -674,7 +674,7 @@
                         </div>
 
                         <div class="action-section">
-                            <div class="quantity-selector">
+                            <!-- <div class="quantity-selector">
                                 <button class="qty-btn qty-down" type="button">
                                     <i class="fas fa-minus"></i>
                                 </button>
@@ -682,7 +682,7 @@
                                 <button class="qty-btn qty-up" type="button">
                                     <i class="fas fa-plus"></i>
                                 </button>
-                            </div>
+                            </div> -->
 
                             <form action="/addToCart" method="POST" class="d-flex flex-grow-1">
                                 <input type="hidden" name="productId" value="<%= product._id %>">
@@ -749,30 +749,32 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const qtyVal = document.getElementById("quantity");
+        //const qtyVal = document.getElementById("quantity");
         const cartQty = document.getElementById("cartQty");
-        const plusBtn = document.querySelector(".qty-up");
-        const minusBtn = document.querySelector(".qty-down");
+        // const plusBtn = document.querySelector(".qty-up");
+        // const minusBtn = document.querySelector(".qty-down");
         const sizeSelect = document.getElementById('sizeSelect');
         const hiddenSelectedSize = document.getElementById('selectedSize');
         const form = document.querySelector("form");
 
         let quantity = 1;
 
-        plusBtn.addEventListener("click", () => {
-                quantity++;
-                qtyVal.textContent = quantity;
-                cartQty.value = quantity;
-             
-        });
+        cartQty.value = quantity;
 
-        minusBtn.addEventListener("click", () => {
-            if (quantity > 1) {
-                quantity--;
-                qtyVal.textContent = quantity;
-                cartQty.value = quantity;
-            }
-        });
+        // plusBtn.addEventListener("click", () => {
+        //         quantity++;
+        //         qtyVal.textContent = quantity;
+        //         cartQty.value = quantity;
+             
+        // });
+
+        // minusBtn.addEventListener("click", () => {
+        //     if (quantity > 1) {
+        //         quantity--;
+        //         qtyVal.textContent = quantity;
+        //         cartQty.value = quantity;
+        //     }
+        // });
 
         sizeSelect.addEventListener('change', function () {
             const selected = this.value;

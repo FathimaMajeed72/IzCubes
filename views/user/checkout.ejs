@@ -710,6 +710,19 @@
                                 <% }) %>
                             </div>
 
+                            <div>
+                                <% if (removedItems && removedItems.length) { %>
+                                    <div class="alert alert-warning">
+                                        The following items were removed from checkout due to being out of stock:
+                                        <ul>
+                                        <% removedItems.forEach(item => { %>
+                                            <li><%= item.productName %> - Size <%= item.size %></li>
+                                        <% }); %>
+                                        </ul>
+                                    </div>
+                                    <% } %>
+                            </div>
+
                             <!-- Price Summary -->
                             <div class="price-summary">
                                 <h5>

@@ -396,6 +396,15 @@
         font-weight: 600;
         display: inline-block;
     }
+    .disabled-row {
+        opacity: 0.6;
+        background-color: #f9f9f9;
+    }
+    .quantity-control .btn[disabled] {
+        cursor: not-allowed;
+        background-color: #ddd;
+    }
+
 
     /* Responsive Design */
     @media (max-width: 992px) {
@@ -492,7 +501,7 @@
                                 <tbody>
                                     <% if (cartItems.length > 0) { %>
                                         <% cartItems.forEach((item, i) => { %>
-                                            <tr>
+                                            <tr class="<%= !item.inStock ? 'disabled-row' : '' %>">
                                                 <td class="image product-thumbnail">
                                                     <img src="/uploads/re-image/<%= item.product.productImage[0] %>" alt="<%= item.product.productName %>" />
                                                 </td>
@@ -510,20 +519,23 @@
                                                     <small class="text-muted">₹<%= item.product.salePrice %> / per item</small>
                                                 </td>
                                                 <td class="text-center" data-title="Stock">
-                                                    <div class="detail-qty border radius m-auto">
+                                                    <div class="detail-qty radius m-auto">
                                                         <% const stockQty = item.product.sizes.find(s => s.size === item.size)?.quantity || 0; %>
                                                         <div class="quantity-control">
                                                             <button class="btn decrement-button"
-                                                                onclick="changeQuantity('<%= item.product._id %>','<%= item.size %>','<%= item.quantity %>', -1, '<%= item.product.salePrice %>', '<%= i %>','<%= stockQty %>')" <%= stockQty === 0 ? 'disabled' : '' %>>-</button>
+                                                                onclick="changeQuantity('<%= item.product._id %>','<%= item.size %>','<%= item.quantity %>', -1, '<%= item.product.salePrice %>', '<%= i %>','<%= stockQty %>')" <%= !item.inStock ? 'disabled' : '' %>>-</button>
                                                             <input class="quantity-input"
                                                                 id="cartProductQuantity<%= i %>" value="<%= item.quantity %>"
                                                                 type="text" readonly>
                                                             <button class="btn increment-button"
-                                                                onclick="changeQuantity('<%= item.product._id %>','<%= item.size %>', '<%= item.quantity %>', 1, '<%= item.product.salePrice %>','<%= i %>', '<%= stockQty %>')" <%= stockQty === 0 ? 'disabled' : '' %>>+</button>
+                                                                onclick="changeQuantity('<%= item.product._id %>','<%= item.size %>', '<%= item.quantity %>', 1, '<%= item.product.salePrice %>','<%= i %>', '<%= stockQty %>')" <%= !item.inStock ? 'disabled' : '' %>>+</button>
                                                         </div>
-                                                        <% if (stockQty === 0) { %>
+                                                         <% if (!item.inStock) { %>
                                                             <p class="text-danger small">Out of stock</p>
+                                                        <% } else { %>
+                                                            <p class="text-muted small mt-1"><%= stockQty %> item<%= stockQty === 1 ? '' : 's' %> in stock</p>
                                                         <% } %>
+
                                                     </div>
                                                 </td>
                                                 <td class="action" data-title="Remove">
@@ -580,10 +592,18 @@
                         </table>
                     </div>
                     <% if (cartItems.length > 0) { %>
+                        <% const inStockItems = cartItems.filter(item => item.inStock); %>
+                        <% if (inStockItems.length > 0) { %>
                         <a href="/checkout?userId=<%= user._id %>" class="checkout-btn">
                             <i class="fas fa-credit-card"></i>
                             Proceed To Checkout
                         </a>
+                        <% } else { %>
+                        <button class="checkout-btn" disabled>
+                            <i class="fas fa-credit-card"></i>
+                            All items are out of stock
+                        </button>
+                        <% } %>
                     <% } else { %>
                         <a href="/shop" class="checkout-btn">
                             <i class="fas fa-shopping-bag"></i>
@@ -609,15 +629,15 @@
         const newQuantity = quantity + count;
         if (newQuantity < 1) return;
 
-        if (newQuantity > 3) {
+        if (newQuantity > 5) {
             Swal.fire({ 
                 title: 'Limit Exceeded', 
-                text: 'Maximum 3 items allowed per product', 
-                icon: 'error', 
+                text: 'Maximum 5 items allowed per product', 
+                icon: 'warning', 
                 timer: 3000,
                 showConfirmButton: false,
                 toast: true,
-                position: 'top-end'
+               
             });
             return;
         }
@@ -625,12 +645,12 @@
         if (newQuantity > productStock) {
             Swal.fire({ 
                 title: 'Out of Stock', 
-                text: 'Not enough stock available', 
+                text: `Only ${productStock} item${productStock === 1 ? '' : 's'} in stock.`, 
                 icon: 'error', 
                 timer: 3000,
                 showConfirmButton: false,
                 toast: true,
-                position: 'top-end'
+                
             });
             return;
         }
