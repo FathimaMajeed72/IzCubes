@@ -24,21 +24,38 @@ const placeCodOrder = async (req, res) => {
       return res.redirect("/cart");
     }
 
+    let validItems = [];
+    let removedItems = [];
     let subtotal = 0;
     let discount = 0;
 
     for (const item of cart.items) {
       const product = item.productId;
-      const productOffer = product.productOffer || 0;
-      const offerAmount = Math.round((product.salePrice * productOffer) / 100);
-      discount += offerAmount * item.quantity;
-      subtotal += item.totalPrice;
-
-      
       const sizeObj = product.sizes.find(s => s.size == item.size);
-      if (!sizeObj || sizeObj.quantity < item.quantity) {
-        return res.status(400).send(`Insufficient stock for ${product.productName} (Size ${item.size})`);
+
+      if (sizeObj && sizeObj.quantity >= item.quantity) {
+        const productOffer = product.productOffer || 0;
+        const offerAmount = Math.round((product.salePrice * productOffer) / 100);
+        discount += offerAmount * item.quantity;
+        subtotal += item.totalPrice;
+        validItems.push(item);
+      } else {
+        removedItems.push({
+          name: product.productName,
+          size: item.size
+        });
       }
+    }
+
+     if (validItems.length === 0) {
+      return res.render("cart", {
+        cartItems: cart.items,
+        subtotal: 0,
+        discount: 0,
+        total: 0,
+        shipping: 0,
+        error: "All items in your cart are out of stock."
+      });
     }
 
     const totalPrice = subtotal;
@@ -58,7 +75,7 @@ const placeCodOrder = async (req, res) => {
       return res.status(400).send("Selected address not found");
     }
 
-    const orderedItems = cart.items.map(item => ({
+    const orderedItems = validItems.map(item => ({
       product: item.productId._id,
       size: item.size,
       quantity: item.quantity,
@@ -289,6 +306,41 @@ const returnEntireOrder = async (req, res) => {
 };
 
 
+const returnOrderItem = async (req, res) => {
+  try {
+    const { orderId, productId, reason } = req.body;
+
+    const order = await Order.findOne({ orderId });
+    if (!order || order.status !== 'Delivered') {
+      return res.status(400).send("Return not allowed unless delivered");
+    }
+
+    const item = order.orderedItems.find(i => i.product.toString() === productId);
+    if (!item || item.status !== 'Confirmed') {
+      return res.status(400).send("Item not eligible for return");
+    }
+
+    if (!reason) return res.status(400).send("Return reason is required");
+
+    item.status = 'Returned';
+    item.returnReason = reason;
+    order.status = 'Return Request';
+
+   await Product.updateOne(
+      { _id: item.product._id, "sizes.size": item.size },
+      { $inc: { "sizes.$.quantity": item.quantity } }
+    );
+
+
+    await order.save();
+    res.redirect(`/orders/${orderId}`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+
 const searchUserOrders = async (req, res) => {
   try {
     const userId = req.session.user?._id;
@@ -331,6 +383,7 @@ module.exports = {
     cancelEntireOrder,
     cancelOrderItem,
     returnEntireOrder,
+    returnOrderItem,
     searchUserOrders,
 
 }

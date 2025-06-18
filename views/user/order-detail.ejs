@@ -318,6 +318,28 @@
     }
 
     /* Return Button */
+     .return-item-btn {
+        background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: transform 0.3s ease;
+    }
+
+    .return-item-btn:hover {
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    .return-item-btn:disabled {
+        background: #e2e8f0;
+        color: #a0aec0;
+        cursor: not-allowed;
+        transform: none;
+    }
     .return-btn {
         background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
         color: white;
@@ -532,11 +554,20 @@
                                                 Cancel Item
                                             </button>
 
-                                            
-
                                         <% } else if (item.status === 'Cancelled') { %>
                                             <button type="button" class="cancel-item-btn" disabled>Item Cancelled</button>
                                         <% } %>
+                                        <% if (order.status === 'Delivered' && item.status !== 'Cancelled' && item.status !== 'Returned') { %>
+                                            <button type="button" class="return-item-btn" data-bs-toggle="modal" data-bs-target="#returnItemModal" data-order-id="<%= order.orderId %>" data-product-id="<%= item.product._id %>">
+                                                Return Item
+                                            </button>
+                                            <% } else if (item.status === 'Returned' && order.status === 'Return Request') { %>
+                                            <button class="return-item-btn" disabled>Item Return Requested</button>
+                                            <% } else if (item.status === 'Returned' && order.status === 'Returned') { %>
+                                            <button class="return-item-btn" disabled>Item Returned</button>
+                                            <% } else if (item.status === 'Returned' && order.status === 'Return Rejected') { %>
+                                            <button class="return-item-btn" disabled>Item Return Rejected</button>
+                                            <% } %>
                                     <% } %>
                                 </div>
                             </div>
@@ -684,6 +715,28 @@
     </div>
 </div>
 
+
+<!-- Return Single Item Modal -->
+<div class="modal fade" id="returnItemModal" tabindex="-1" aria-labelledby="returnItemModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="/return-item" method="POST" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="returnItemModalLabel">Return Product</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="orderId" id="returnOrderIdInput">
+        <input type="hidden" name="productId" id="returnProductIdInput">
+        <label for="returnItemReason" class="form-label">Reason for return <span class="text-danger">*</span></label>
+        <textarea class="form-control" name="reason" id="returnItemReason" rows="3" required placeholder="Why are you returning this item?"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-warning">Submit Return Request</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -757,6 +810,20 @@
         }
       });
     });
+
+    // === 1. Handle Return Item Modal Button Click ===
+    const returnButtons = document.querySelectorAll('.return-item-btn');
+    const returnOrderIdInput = document.getElementById('returnOrderIdInput');
+    const returnProductIdInput = document.getElementById('returnProductIdInput');
+
+    returnButtons.forEach(btn => {
+      btn.addEventListener('click', function () {
+        returnOrderIdInput.value = this.dataset.orderId;
+        returnProductIdInput.value = this.dataset.productId;
+      });
+    });
+
+
   });
 </script>
 

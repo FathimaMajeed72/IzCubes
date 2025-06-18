@@ -551,13 +551,14 @@ const postEditAddress = async (req,res) => {
 const deleteAddress = async (req,res) => {
   try {
     const userId = req.session.user?._id;
-    const addressId = req.query.id||req.body.id;
+
+    const addressId = req.params.id;
 
     console.log("User ID:", userId);
-    console.log("Address ID:", req.query.id);
+    console.log("Address ID:", req.params.id);
 
     console.log("Original URL:", req.originalUrl);
-    console.log("Query object:", req.query);
+    
 
 
     const findAddress = await Address.findOne({
@@ -565,20 +566,27 @@ const deleteAddress = async (req,res) => {
       "address._id": addressId
     });
 
+    console.log("Found address doc:",findAddress);
+    
+
     if (!findAddress) {
       return res.status(404).send("Address not found");
     }
 
    
-    await Address.updateOne(
+   const result = await Address.updateOne(
       { userId },
       { $pull: { address: { _id: addressId } } }
     );
 
-    res.redirect("/userProfile"); 
+    console.log(result);
+
+    // res.redirect("/userProfile"); 
+    res.status(200).json({ message: "Address deleted successfully" });
   } catch (error) {
     console.error("Error in delete address", error);
-    res.redirect("/pageNotFound");
+    // res.redirect("/pageNotFound");
+     res.status(500).json({ message: "Internal server error" });
   }
 }
 

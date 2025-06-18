@@ -1,4 +1,10 @@
 <%- include("../../views/partials/admin/header") %>
+<style>
+  .table-danger.text-muted {
+  opacity: 0.6;
+}
+
+</style>
 
 <div class="container mt-5">
   <div class="card shadow-sm p-4">
@@ -58,14 +64,27 @@
       </thead>
       <tbody>
         <% order.orderedItems.forEach(item => { %>
-          <tr>
+          <tr class="<%= item.status === 'Cancelled' ? 'text-muted' : '' %>">
             <td class="align-middle">
               <img src="/uploads/re-image/<%= item.product.productImage[0] %>" 
                   alt="product image"
                   class="img-thumbnail"
                   style="width: 80px; height: 80px; object-fit: cover;">
             </td>
-            <td class="align-middle"><%= item.product.productName %></td>
+            <td class="align-middle">
+              <%= item.product.productName %>
+              <% if (item.status === 'Cancelled') { %>
+                <span class="badge bg-danger ms-2">Cancelled</span>
+                <% if (item.cancelReason) { %>
+                  <div class="small text-muted">Reason: <%= item.cancelReason %></div>
+                <% } %>
+              <% } else if (item.status === 'Returned') { %>
+                <span class="badge bg-warning text-dark ms-2">Returned</span>
+                <% if (item.returnReason) { %>
+                  <div class="small text-muted">Reason: <%= item.returnReason %></div>
+                <% } %>
+              <% } %>
+            </td>
             <td class="align-middle"><%= item.size %></td>
             <td class="align-middle"><%= item.quantity %></td>
             <td class="align-middle">₹<%= item.price %></td>
@@ -89,7 +108,7 @@
     <% } %> -->
 
 
-
+  <% if (order.status === 'Delivered'|| order.status === 'Return Request') { %>
     <% if (order.returnStatus === 'Pending') { %>
       <form action="/admin/orderList/handle-return" method="POST" class="d-flex gap-2 mt-3">
         <input type="hidden" name="orderId" value="<%= order._id %>">
@@ -110,6 +129,7 @@
         </span>
       </div>
     <% } %>
+  <% } %>
 
 
 
