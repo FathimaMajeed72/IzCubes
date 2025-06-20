@@ -43,7 +43,12 @@ const orderSchema = new Schema({
         returnReason: {
             type: String,
             default: ""
-        }
+        },
+        returnStatus: {
+        type: String,
+        enum: ['NotRequested', 'Pending', 'Accepted', 'Rejected'],
+        default: 'NotRequested'
+    }
     }],
     totalPrice : {
         type : Number,

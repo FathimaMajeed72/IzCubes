@@ -52,7 +52,7 @@ router.get("/orderList",adminAuth,orderController.listOrders)
 router.get("/orderList/:id", adminAuth, orderController.viewOrderDetails);
 router.post("/orderList/update-status", adminAuth, orderController.updateOrderStatus);
 router.post("/orderList/handle-return", adminAuth, orderController.handleReturnRequest);
-
+router.post("/orderList/handle-item-return", adminAuth, orderController.handleItemReturnRequest);
 
 
 

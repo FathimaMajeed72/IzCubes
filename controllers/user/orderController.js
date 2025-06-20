@@ -173,7 +173,8 @@ const cancelEntireOrder = async (req, res) => {
       return res.status(400).send("Order already cancelled");
     }
 
-    // Update stock for all products
+    
+    
     for (const item of order.orderedItems) {
       await Product.updateOne(
         { _id: item.product._id, "sizes.size": item.size },
@@ -186,6 +187,9 @@ const cancelEntireOrder = async (req, res) => {
 
     order.status = 'Cancelled';
     order.cancellationReason = reason || '';
+    order.totalPrice = 0;
+    order.discount = 0;
+    order.finalAmount = 0;
     await order.save();
 
     res.redirect(`/orders/${orderId}?cancelSuccess=true`);
@@ -282,10 +286,10 @@ const returnEntireOrder = async (req, res) => {
         item.status = 'Returned';
         item.returnReason = reason;
 
-        await Product.updateOne(
-          { _id: item.product._id, "sizes.size": item.size },
-          { $inc: { "sizes.$.quantity": item.quantity } }
-        );
+        // await Product.updateOne(
+        //   { _id: item.product._id, "sizes.size": item.size },
+        //   { $inc: { "sizes.$.quantity": item.quantity } }
+        // );
 
       }
     }
@@ -307,36 +311,32 @@ const returnEntireOrder = async (req, res) => {
 
 
 const returnOrderItem = async (req, res) => {
-  try {
+   try {
     const { orderId, productId, reason } = req.body;
 
     const order = await Order.findOne({ orderId });
-    if (!order || order.status !== 'Delivered') {
-      return res.status(400).send("Return not allowed unless delivered");
-    }
+    if (!order) return res.status(404).send("Order not found");
 
     const item = order.orderedItems.find(i => i.product.toString() === productId);
-    if (!item || item.status !== 'Confirmed') {
-      return res.status(400).send("Item not eligible for return");
+    if (!item) return res.status(404).send("Item not found");
+
+    if (item.status === 'Cancelled' || item.status === 'Returned') {
+      return res.status(400).send("This item cannot be returned");
     }
 
-    if (!reason) return res.status(400).send("Return reason is required");
-
-    item.status = 'Returned';
+   
     item.returnReason = reason;
-    order.status = 'Return Request';
+    item.returnStatus = 'Pending';
+    item.status = 'Returned';
 
-   await Product.updateOne(
-      { _id: item.product._id, "sizes.size": item.size },
-      { $inc: { "sizes.$.quantity": item.quantity } }
-    );
-
+    
 
     await order.save();
-    res.redirect(`/orders/${orderId}`);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
+
+    return res.redirect(`/orders/${orderId}?returnSuccess=true`);
+  } catch (err) {
+    console.error("Return item error:", err);
+    res.status(500).send("Server error");
   }
 };
 

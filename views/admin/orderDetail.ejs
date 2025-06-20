@@ -23,6 +23,8 @@
             case 'Out for Delivery': return 'bg-info text-dark';
             case 'Delivered': return 'bg-success';
             case 'Cancelled': return 'bg-danger';
+            case 'Returned': return 'bg-danger';
+            case 'Return Rejected': return 'bg-dark';
             default: return 'bg-light text-dark';
         }
         } %>
@@ -36,6 +38,12 @@
         <span class="badge <%= getBadgeClass(order.status) %> py-2 px-3">
         <%= order.status %>
         </span>
+        <% if (order.status === 'Returned' && order.returnStatus === 'Accepted' && order.isReturnRequested) { %>
+          <div class="alert alert-warning mt-2">
+            All items were returned individually and have been accepted.
+          </div>
+        <% } %>
+
       </div>
     </div>
 
@@ -83,6 +91,32 @@
                 <% if (item.returnReason) { %>
                   <div class="small text-muted">Reason: <%= item.returnReason %></div>
                 <% } %>
+
+                <% if (item.returnStatus === 'Pending') { %>
+                  <form action="/admin/orderList/handle-item-return" method="POST" class="d-flex gap-1 mt-2">
+                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                    <input type="hidden" name="productId" value="<%= item.product._id %>">
+
+                    <span class="me-2 fw-bold">Admin Action:</span>
+                    <button name="action" value="Accepted" class="btn btn-sm btn-success"
+                            onclick="return confirm('Accept this return request?')">
+                      Accept
+                    </button>
+                    <button name="action" value="Rejected" class="btn btn-sm btn-danger"
+                            onclick="return confirm('Reject this return request?')">
+                      Reject
+                    </button>
+                  </form>
+                <% } else if (item.returnStatus && item.returnStatus !== 'NotRequested') { %>
+                  <div class="mt-1 small">
+                    Status: 
+                    <span class="badge <%= item.returnStatus === 'Accepted' ? 'bg-success' : 'bg-danger' %>">
+                      <%= item.returnStatus %>
+                    </span>
+                  </div>
+                <% } %>  
+
+
               <% } %>
             </td>
             <td class="align-middle"><%= item.size %></td>
@@ -108,7 +142,7 @@
     <% } %> -->
 
 
-  <% if (order.status === 'Delivered'|| order.status === 'Return Request') { %>
+  <% if (order.status === 'Delivered'|| order.status === 'Return Request' || order.status === 'Returned'|| order.status === 'Return Rejected') { %>
     <% if (order.returnStatus === 'Pending') { %>
       <form action="/admin/orderList/handle-return" method="POST" class="d-flex gap-2 mt-3">
         <input type="hidden" name="orderId" value="<%= order._id %>">
@@ -141,14 +175,14 @@
       <div class="row align-items-end">
         <div class="col-md-6">
           <label for="status" class="form-label fw-bold">Change Order Status:</label>
-          <select name="newStatus" id="status" class="form-select" required <%= ['Cancelled', 'Delivered'].includes(order.status) ? 'disabled' : '' %>>
+          <select name="newStatus" id="status" class="form-select" required <%= ['Cancelled', 'Delivered','Return Request','Returned','Return Rejected'].includes(order.status) ? 'disabled' : '' %>>
             <% ['Pending', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'].forEach(s => { %>
               <option value="<%= s %>" <%= order.status === s ? 'selected' : '' %>><%= s %></option>
             <% }) %>
           </select>
         </div>
         <div class="col-md-3 mt-3 mt-md-0">
-          <button type="submit" class="btn btn-success w-100" <%= order.status === ('Cancelled'||'Delivered') ? 'disabled' : '' %>>
+          <button type="submit" class="btn btn-success w-100" <%= ['Cancelled', 'Delivered','Return Request','Returned','Return Rejected'].includes(order.status) ? 'disabled' : '' %>>
             Update Status
           </button>
 

@@ -635,7 +635,7 @@
 
                             <div class="mt-4">
                                 <% if (userAddresses && userAddresses.length > 0) { %>
-                                    <button type="button" class="place-order-btn" id="placeOrderBtn" data-bs-toggle="modal" data-bs-target="#codConfirmModal">
+                                    <button type="button" class="place-order-btn" id="placeOrderBtn">
                                         <i class="fas fa-check-circle"></i>
                                         Place Order
                                     </button>
@@ -788,6 +788,8 @@
             if (selectedRadio) {
                 formAddressId.value = selectedRadio.value;
                 console.log("Selected Address ID:", selectedRadio.value);
+                const confirmModal = new bootstrap.Modal(document.getElementById('codConfirmModal'));
+                confirmModal.show();
             } else {
                 e.preventDefault();
                 Swal.fire({

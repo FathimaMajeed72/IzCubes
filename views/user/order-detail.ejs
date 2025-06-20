@@ -464,7 +464,7 @@
         <div class="container">
             <div class="breadcrumb">
                 <a href="/" rel="nofollow">Home</a>
-                <span>></span><a href="/orders" rel="nofollow">Orders</a>
+                <span>></span><a href="/userProfile#orderSection" rel="nofollow">Orders</a>
                 <span>></span> Order Details
             </div>
         </div>
@@ -496,7 +496,7 @@
             </div>
 
             <% if (order.status === 'Return Request' || order.status === 'Returned') { %>
-                <div class="return-alert">
+                <div class="return-alert mb-3">
                     <strong>Return Reason:</strong> <%= order.returnReason %>
                 </div>
             <% } %>
@@ -557,7 +557,21 @@
                                         <% } else if (item.status === 'Cancelled') { %>
                                             <button type="button" class="cancel-item-btn" disabled>Item Cancelled</button>
                                         <% } %>
-                                        <% if (order.status === 'Delivered' && item.status !== 'Cancelled' && item.status !== 'Returned') { %>
+
+                                        <% if (item.status === 'Confirmed' && order.status === 'Delivered' && item.returnStatus === 'NotRequested') { %>
+                                            <button type="button" class="return-item-btn" data-bs-toggle="modal" data-bs-target="#returnItemModal"
+                                                data-order-id="<%= order.orderId %>" data-product-id="<%= item.product._id %>">
+                                                Return Item
+                                            </button>
+                                        <% } else if (item.status === 'Returned' && item.returnStatus === 'Pending') { %>
+                                        <button class="return-item-btn" disabled>Item Return Requested</button>
+                                        <% } else if (item.status === 'Returned' && item.returnStatus === 'Accepted') { %>
+                                        <button class="return-item-btn" disabled>Item Returned</button>
+                                        <% } else if (item.status === 'Confirmed' && item.returnStatus === 'Rejected') { %>
+                                        <button class="return-item-btn" disabled>Item Return Rejected</button>
+                                        <% } %>
+
+                                        <!-- <% if (order.status === 'Delivered' && item.status !== 'Cancelled' && item.status !== 'Returned') { %>
                                             <button type="button" class="return-item-btn" data-bs-toggle="modal" data-bs-target="#returnItemModal" data-order-id="<%= order.orderId %>" data-product-id="<%= item.product._id %>">
                                                 Return Item
                                             </button>
@@ -567,7 +581,7 @@
                                             <button class="return-item-btn" disabled>Item Returned</button>
                                             <% } else if (item.status === 'Returned' && order.status === 'Return Rejected') { %>
                                             <button class="return-item-btn" disabled>Item Return Rejected</button>
-                                            <% } %>
+                                            <% } %> -->
                                     <% } %>
                                 </div>
                             </div>
@@ -615,7 +629,7 @@
                         <span class="payment-label">Item discount</span>
                         <span class="payment-amount text-success">-₹<%= order.discount %></span>
                     </div>
-                    <% if (order.status !== 'Cancelled') { %>
+                    <% if (order.status !== 'Cancelled'  && order.status !== 'Returned') { %>
                         <div class="payment-row">
                             <span class="payment-label">Shipping</span>
                             <span class="payment-amount">₹<%= shipping %></span>

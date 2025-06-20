@@ -104,6 +104,7 @@ const handleReturnRequest = async (req, res) => {
       order.status="Returned"
 
       for (const item of order.orderedItems) {
+        item.status = 'Returned';
         const product = await Product.findById(item.product);
         if (product) {
           const sizeVariant = product.sizes.find(s => s.size === item.size);
@@ -111,6 +112,11 @@ const handleReturnRequest = async (req, res) => {
           await product.save();
         }
       }
+
+      order.totalPrice = 0;
+      order.discount = 0;
+      order.finalAmount = 0;
+
     }else{
       order.status="Return Rejected"
     }
@@ -124,11 +130,83 @@ const handleReturnRequest = async (req, res) => {
 };
 
 
+const handleItemReturnRequest = async (req, res) => {
+  try {
+      const { orderId, productId, action } = req.body;
+
+      const order = await Order.findById(orderId);
+      if (!order) return res.status(404).send("Order not found");
+
+      const item = order.orderedItems.find(i => i.product.toString() === productId);
+      if (!item) return res.status(404).send("Item not found");
+
+      item.returnStatus = action;
+      
+      if (action === 'Accepted') {
+        item.status = 'Returned';
+
+       
+        const product = await Product.findById(productId);
+        if (product) {
+          const sizeVariant = product.sizes.find(s => s.size === item.size);
+          if (sizeVariant) sizeVariant.quantity += item.quantity;
+          await product.save();
+        }
+
+        const activeItems = order.orderedItems.filter(i => i.status !== 'Cancelled' && i.status !== 'Returned');
+
+        let totalPrice = 0;
+        let totalDiscount = 0;
+
+
+        for (const item of activeItems) {
+          const product = await Product.findById(item.product);
+          if (product) {
+            const itemTotal = product.salePrice * item.quantity;
+            const itemRegularTotal = product.regularPrice * item.quantity;
+            const itemDiscount = itemRegularTotal - itemTotal;
+
+            totalPrice += itemTotal;
+            totalDiscount += itemDiscount;
+          }
+        }
+
+
+        order.totalPrice = totalPrice;
+        order.discount = totalDiscount; 
+        order.finalAmount = totalPrice - totalDiscount;
+
+
+        const allReturned = order.orderedItems.every(i => i.status === 'Returned' || i.status === 'Cancelled');
+        if (allReturned) {
+          order.status = 'Returned';
+          order.returnStatus = 'Accepted';
+          order.returnReason = 'All items returned individually and accepted';
+          order.isReturnRequested = true;
+        }
+
+
+
+      } else if (action === 'Rejected') {
+        item.status = 'Confirmed'; 
+      }
+
+
+      await order.save();
+
+      res.redirect(`/admin/orderList/${orderId}`);
+  } catch (error) {
+    console.error("Return decision error:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 
 
 module.exports = {
     listOrders,
     viewOrderDetails,
     updateOrderStatus,
-    handleReturnRequest
+    handleReturnRequest,
+    handleItemReturnRequest
 };
