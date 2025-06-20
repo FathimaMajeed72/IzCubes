@@ -803,19 +803,19 @@
     cancelItemModal.addEventListener('show.bs.modal', function (event) {
       const button = event.relatedTarget;
 
-      // Get values from button
+      
       const orderId = button.getAttribute('data-order-id');
       const productId = button.getAttribute('data-product-id');
 
-      // Set values to the form inputs
+      
       document.getElementById('cancelOrderIdInput').value = orderId;
       document.getElementById('cancelProductIdInput').value = productId;
 
-      // Optional: clear the reason input each time
+      
       document.getElementById('itemCancelReason').value = '';
     });
 
-    // Optional: Hide any currently open modal before opening a new one
+    // Hide any currently open modal before opening a new one
     document.addEventListener('show.bs.modal', function (event) {
       const openModals = document.querySelectorAll('.modal.show');
       openModals.forEach(modal => {
@@ -825,7 +825,7 @@
       });
     });
 
-    // === 1. Handle Return Item Modal Button Click ===
+    
     const returnButtons = document.querySelectorAll('.return-item-btn');
     const returnOrderIdInput = document.getElementById('returnOrderIdInput');
     const returnProductIdInput = document.getElementById('returnProductIdInput');

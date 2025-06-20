@@ -762,7 +762,7 @@
         const addressItems = document.querySelectorAll('.address-item');
         const paymentOptions = document.querySelectorAll('.payment-option');
 
-        // Handle address selection visual feedback
+        
         addressRadios.forEach((radio, index) => {
             radio.addEventListener('change', function() {
                 addressItems.forEach(item => item.classList.remove('selected'));
@@ -772,7 +772,7 @@
             });
         });
 
-        // Handle payment method visual feedback
+        
         document.querySelectorAll('input[name="paymentMethod"]').forEach((radio, index) => {
             radio.addEventListener('change', function() {
                 paymentOptions.forEach(option => option.classList.remove('selected'));
@@ -782,7 +782,7 @@
             });
         });
 
-        // Handle place order button
+        
         placeOrderBtn.addEventListener("click", (e) => {
             const selectedRadio = Array.from(addressRadios).find(r => r.checked);
             if (selectedRadio) {
@@ -803,7 +803,7 @@
         });
     });
 
-    // Confirm delete function
+    
     function confirmDelete() {
         return confirm('Are you sure you want to delete this address?');
     }

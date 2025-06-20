@@ -397,7 +397,7 @@
         display: inline-block;
     }
     .disabled-row {
-        opacity: 0.6;
+        opacity: 0.9;
         background-color: #f9f9f9;
     }
     .quantity-control .btn[disabled] {
@@ -523,17 +523,21 @@
                                                         <% const stockQty = item.product.sizes.find(s => s.size === item.size)?.quantity || 0; %>
                                                         <div class="quantity-control">
                                                             <button class="btn decrement-button"
-                                                                onclick="changeQuantity('<%= item.product._id %>','<%= item.size %>','<%= item.quantity %>', -1, '<%= item.product.salePrice %>', '<%= i %>','<%= stockQty %>')" <%= !item.inStock ? 'disabled' : '' %>>-</button>
+                                                                onclick="changeQuantity('<%= item.product._id %>','<%= item.size %>','<%= item.quantity %>', -1, '<%= item.product.salePrice %>', '<%= i %>','<%= stockQty %>')" <%= item.availableStock===0? 'disabled' : '' %>>-</button>
                                                             <input class="quantity-input"
                                                                 id="cartProductQuantity<%= i %>" value="<%= item.quantity %>"
                                                                 type="text" readonly>
                                                             <button class="btn increment-button"
                                                                 onclick="changeQuantity('<%= item.product._id %>','<%= item.size %>', '<%= item.quantity %>', 1, '<%= item.product.salePrice %>','<%= i %>', '<%= stockQty %>')" <%= !item.inStock ? 'disabled' : '' %>>+</button>
                                                         </div>
-                                                         <% if (!item.inStock) { %>
+                                                         <% if (item.availableStock===0) { %>
                                                             <p class="text-danger small">Out of stock</p>
+                                                         <% } else if (item.availableStock < item.quantity) { %>
+                                                            <p class="text-danger small fw-bold">
+                                                                Only <%= item.availableStock %> item<%= item.availableStock === 1 ? '' : 's' %> left. Please update your quantity to proceed the item to checkout.
+                                                            </p>
                                                         <% } else { %>
-                                                            <p class="text-muted small mt-1"><%= stockQty %> item<%= stockQty === 1 ? '' : 's' %> in stock</p>
+                                                            <p class="text-muted small mt-1"><%= item.availableStock %> item<%= item.availableStock === 1 ? '' : 's' %> in stock</p>
                                                         <% } %>
 
                                                     </div>

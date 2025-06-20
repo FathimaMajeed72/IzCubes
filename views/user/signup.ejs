@@ -347,172 +347,135 @@
   </div>
 
   <script>
-    const nameid = document.getElementById("name");
-    const emailid = document.getElementById("email");
-    const phoneid = document.getElementById("phone");
-    const passid = document.getElementById("password");
-    const cpassid = document.getElementById("confirm-password");
-    const error1 = document.getElementById("error1");
-    const error2 = document.getElementById("error2");
-    const error3 = document.getElementById("error3");
-    const error4 = document.getElementById("error4");
-    const error5 = document.getElementById("error5");
-    const signform = document.getElementById("signform");
-    const signupButton = document.getElementById("signupButton");
 
-    function nameValidation(e){
-      const nameval = nameid.value.trim();
-      const namepattern = /^[A-Za-z\s]+$/;
+const nameid = document.getElementById("name");
+const emailid = document.getElementById("email");
+const phoneid = document.getElementById("phone");
+const passid = document.getElementById("password");
+const cpassid = document.getElementById("confirm-password");
+const error1 = document.getElementById("error1");
+const error2 = document.getElementById("error2");
+const error3 = document.getElementById("error3");
+const error4 = document.getElementById("error4");
+const error5 = document.getElementById("error5");
+const signform = document.getElementById("signform");
 
-      if(nameval === ""){
-        error1.classList.add("show");
-        error1.innerHTML = "Please enter your full name";
-      } else if(!namepattern.test(nameval)){
-        error1.classList.add("show");
-        error1.innerHTML = "Name can only contain letters and spaces";
-      } else {
-        error1.classList.remove("show");
-        error1.innerHTML = "";
-      }
+
+function nameValidation(e){
+
+  const nameval = nameid.value;
+  const namepattern = /^[A-Za-z\s]+$/;
+
+  if(nameval.trim()===""){
+    error1.style.display="block";
+    error1.innerHTML = "Please enter a valid name"
+  }else if(!namepattern.test(nameval)){
+    error1.style.display="block";
+    error1.innerHTML= "Name can only contain alphabets and spaces"
+  }else{
+    error1.style.display="none";
+    error1.innerHTML=""
+  }
+
+}
+
+
+function emailValidation(e){
+  const emailval = emailid.value;
+  const emailpattern = /^([a-zA-Z0-9._-]+)@([a-zA-Z.-]+).([a-zA-Z]{2,4})$/
+
+  if(!emailpattern.test(emailval)){
+    error2.style.display="block";
+    error2.innerHTML="enter a valid e-mail id"
+  }else{
+    error2.style.display="none";
+    error2.innerHTML ="";
+  }
+
+}
+
+
+function phoneValidation(e){
+  const phoneval = phoneid.value;
+
+  if(phoneval.trim()===""){
+    error3.style.display="block";
+    error3.innerHTML = "Enter valid phone number"
+  }else if(phoneval.length<10||phoneval.length>10){
+    error3.style.display="block"
+    error3.innerHTML="Enter 10 digits"
+  }else{
+    error3.style.display="none";
+    error3.innerHTML=""
+  }
+
+}
+
+function passValidation(e){
+  const passval = passid.value;
+  const cpassval = cpassid.value;
+  const alpha = /[a-zA-Z]/;
+  const digit = /\d/;
+
+  if(passval.length<8){
+    error4.style.display="block";
+    error4.innerHTML="Should contain atleast 8 characters";
+  }else if(!alpha.test(passval) || !digit.test(passval)){
+    error4.style.display="block",
+    error4.innerHTML="Should contain numbers and alphabets"
+  }else{
+    error4.style.display="none";
+    error4.innerHTML="";
+  }
+
+  if(passval !== cpassval){
+    error5.style.display="block";
+    error5.innerHTML="Passwords do not match";
+  }else{
+    error5.style.display="none";
+    error5.innerHTML="";
+  }
+
+}
+
+
+document.addEventListener("DOMContentLoaded",function(){
+  signform.addEventListener("submit",function(e){
+    nameValidation();
+    emailValidation();
+    phoneValidation();
+    passValidation();
+
+    if(
+      !nameid ||
+      !emailid||
+      !phoneid||
+      !passid ||
+      !error1 ||
+      !error2 ||
+      !error3 ||
+      !error4 ||
+      !error5 ||
+      !signform
+    ){
+      console.log("One or more elements not found");
     }
 
-    function emailValidation(e){
-      const emailval = emailid.value.trim();
-      const emailpattern = /^[a-zA-Z0-9._-]+@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,4})$/;
-
-      if(emailval === ""){
-        error2.classList.add("show");
-        error2.innerHTML = "Email address is required";
-      } else if(!emailpattern.test(emailval)){
-        error2.classList.add("show");
-        error2.innerHTML = "Please enter a valid email address";
-      } else {
-        error2.classList.remove("show");
-        error2.innerHTML = "";
-      }
+    if(
+      error1.innerHTML ||
+      error2.innerHTML ||
+      error3.innerHTML ||
+      error4.innerHTML ||
+      error5.innerHTML
+    ){
+      e.preventDefault()
     }
 
-    function phoneValidation(e){
-      const phoneval = phoneid.value.trim();
+  })
+})
 
-      if(phoneval === ""){
-        error3.classList.add("show");
-        error3.innerHTML = "Phone number is required";
-      } else if(phoneval.length !== 10){
-        error3.classList.add("show");
-        error3.innerHTML = "Please enter a valid 10-digit phone number";
-      } else {
-        error3.classList.remove("show");
-        error3.innerHTML = "";
-      }
-    }
 
-    function passValidation(e){
-      const passval = passid.value;
-      const cpassval = cpassid.value;
-      const alpha = /[a-zA-Z]/;
-      const digit = /\d/;
 
-      if(passval.length < 8){
-        error4.classList.add("show");
-        error4.innerHTML = "Password must be at least 8 characters long";
-      } else if(!alpha.test(passval) || !digit.test(passval)){
-        error4.classList.add("show");
-        error4.innerHTML = "Password must contain both letters and numbers";
-      } else {
-        error4.classList.remove("show");
-        error4.innerHTML = "";
-      }
-
-      if(passval !== cpassval && cpassval !== ""){
-        error5.classList.add("show");
-        error5.innerHTML = "Passwords do not match";
-      } else {
-        error5.classList.remove("show");
-        error5.innerHTML = "";
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", function(){
-      signform.addEventListener("submit", function(e){
-        nameValidation();
-        emailValidation();
-        phoneValidation();
-        passValidation();
-
-        if(
-          !nameid ||
-          !emailid ||
-          !phoneid ||
-          !passid ||
-          !error1 ||
-          !error2 ||
-          !error3 ||
-          !error4 ||
-          !error5 ||
-          !signform
-        ){
-          console.log("One or more elements not found");
-        }
-
-        if(
-          error1.innerHTML ||
-          error2.innerHTML ||
-          error3.innerHTML ||
-          error4.innerHTML ||
-          error5.innerHTML
-        ){
-          e.preventDefault();
-        } else {
-          // Add loading state
-          signupButton.classList.add('loading');
-          signupButton.querySelector('span').textContent = 'Creating Account...';
-        }
-      });
-
-      // Real-time validation
-      nameid.addEventListener('blur', nameValidation);
-      emailid.addEventListener('blur', emailValidation);
-      phoneid.addEventListener('blur', phoneValidation);
-      passid.addEventListener('blur', passValidation);
-      cpassid.addEventListener('blur', passValidation);
-      
-      // Clear errors on input
-      nameid.addEventListener('input', function() {
-        if (error1.innerHTML) {
-          error1.classList.remove("show");
-          error1.innerHTML = "";
-        }
-      });
-      
-      emailid.addEventListener('input', function() {
-        if (error2.innerHTML) {
-          error2.classList.remove("show");
-          error2.innerHTML = "";
-        }
-      });
-      
-      phoneid.addEventListener('input', function() {
-        if (error3.innerHTML) {
-          error3.classList.remove("show");
-          error3.innerHTML = "";
-        }
-      });
-      
-      passid.addEventListener('input', function() {
-        if (error4.innerHTML) {
-          error4.classList.remove("show");
-          error4.innerHTML = "";
-        }
-      });
-      
-      cpassid.addEventListener('input', function() {
-        if (error5.innerHTML) {
-          error5.classList.remove("show");
-          error5.innerHTML = "";
-        }
-      });
-    });
-  </script>
+</script>
 </body>
 </html>

@@ -35,7 +35,7 @@ const placeCodOrder = async (req, res) => {
 
       if (sizeObj && sizeObj.quantity >= item.quantity) {
         const productOffer = product.productOffer || 0;
-        const offerAmount = Math.round((product.salePrice * productOffer) / 100);
+        const offerAmount = Math.round((product.regularPrice * productOffer) / 100);
         discount += offerAmount * item.quantity;
         subtotal += item.totalPrice;
         validItems.push(item);

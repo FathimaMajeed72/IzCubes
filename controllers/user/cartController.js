@@ -28,7 +28,8 @@ const getCartPage = async (req, res) => {
       const cartItems = cart.items.map(item => {
       const product = item.productId;
       const sizeInfo = product.sizes.find(s => s.size === item.size);
-      const isInStock = sizeInfo && sizeInfo.quantity >= item.quantity;
+      const stockQty = sizeInfo ? sizeInfo.quantity : 0;
+      const isInStock = stockQty >= item.quantity;
 
       const offer = product.productOffer || 0;
       const regularPrice = product.regularPrice;
@@ -44,7 +45,8 @@ const getCartPage = async (req, res) => {
         offer,
         discount,
         categoryName: product.category ? product.category.name : 'Unknown',
-        inStock: isInStock
+        inStock: isInStock,
+        availableStock: stockQty
       };
     });
 
@@ -105,8 +107,8 @@ const addToCart = async (req,res) => {
                 i.productId.toString() === productId && i.size === selectedSize
               );
               if (item) {
-                if (item.quantity >= 5) {
-                  return res.status(400).json({ message: "Max limit of 5 per item" });
+                if (item.quantity >= MAX_QUANTITY_LIMIT) {
+                  return res.status(400).json({ message: `Max limit of ${MAX_QUANTITY_LIMIT} per item` });
                 }
                 if (item.quantity + 1 > sizeStock.quantity) {
                   return res.status(400).json({ message: `Only ${sizeStock.quantity} items in stock` });

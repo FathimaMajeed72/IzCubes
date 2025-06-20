@@ -392,11 +392,7 @@
 
           if (error1.innerHTML || error2.innerHTML) {
             e.preventDefault();
-          } else {
-            // Add loading state
-            loginButton.classList.add('loading');
-            loginButton.querySelector('span').textContent = 'Signing in...';
-          }
+          } 
         });
 
         // Real-time validation

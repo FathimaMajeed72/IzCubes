@@ -53,6 +53,10 @@ const generateInvoice = async (req, res) => {
     doc.moveDown();
 
     let subtotal = 0;
+    let validItemCount = 0;
+
+    const isOrderReturned = order.status === 'Returned';
+
 
    
     order.orderedItems.forEach((item, i) => {
@@ -60,12 +64,18 @@ const generateInvoice = async (req, res) => {
       const itemTotal = price * quantity;
       const y = doc.y + 5;
 
-      if (status !== 'Cancelled') subtotal += itemTotal;
+      const isItemInvalid = status === 'Cancelled' || status === 'Returned';
+
+      if (!isOrderReturned && !isItemInvalid){
+        subtotal += itemTotal;
+        validItemCount++;
+      }
+      
 
       doc
         .font('Helvetica')
         .fontSize(11)
-        .fillColor(status === 'Cancelled' ? 'gray' : 'black')
+        .fillColor(isItemInvalid || isOrderReturned ? 'gray' : 'black')
         .text(`${i + 1}`, 50, y)
         .text(product.productName, 80, y)
         .text(quantity.toString(), 250, y)
@@ -78,15 +88,21 @@ const generateInvoice = async (req, res) => {
 
     
     doc.moveDown(1.5).fontSize(12).fillColor('black');
-    const shipping = 40;
-    const discount = order.discount || 0;
-    const finalTotal = subtotal - discount + shipping;
+    const discount = isOrderReturned ? 0 : order.discount || 0;
+    const shipping = isOrderReturned ? 0 : validItemCount > 0 ? 40 : 0;
+    const finalTotal = isOrderReturned ? 0 : subtotal - discount + shipping;
 
     doc.text(`Subtotal: ₹${subtotal}`, { align: 'right' });
     doc.text(`Discount: -₹${discount}`, { align: 'right' });
     doc.text(`Shipping: ₹${shipping}`, { align: 'right' });
     doc.moveDown(0.5);
     doc.font('Helvetica-Bold').text(`Total Payable: ₹${finalTotal}`, { align: 'right' });
+
+
+    if (isOrderReturned) {
+      doc.moveDown(1);
+      doc.fontSize(12).fillColor('red').text('Note: This order was fully returned.',50,doc.y, { align: 'center' });
+    }
 
     doc.end();
 
