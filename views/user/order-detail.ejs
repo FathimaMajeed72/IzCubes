@@ -567,6 +567,7 @@
                                         <button class="return-item-btn" disabled>Item Return Requested</button>
                                         <% } else if (item.status === 'Returned' && item.returnStatus === 'Accepted') { %>
                                         <button class="return-item-btn" disabled>Item Returned</button>
+                                        <p class="text-danger">Refunded ₹<%= totalItemPrice %> to your Wallet</p>
                                         <% } else if (item.status === 'Confirmed' && item.returnStatus === 'Rejected') { %>
                                         <button class="return-item-btn" disabled>Item Return Rejected</button>
                                         <% } %>

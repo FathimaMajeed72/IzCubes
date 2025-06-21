@@ -1256,7 +1256,7 @@ select.form-control:focus {
     <% } else { %>
       <!-- Empty State -->
       <div class="empty-state">
-        <% if (query || status) { %>
+        <% if (query) { %>
           <i class="fas fa-search"></i>
           <p class="lead">No orders found</p>
           <p>No orders match your current filters or search criteria.</p>
@@ -1268,7 +1268,6 @@ select.form-control:focus {
           <p class="lead">No orders yet</p>
           <p>Start shopping to see your orders here</p>
           <a href="/" class="action-btn">
-            <i class="fas fa-shopping-bag me-2"></i>
             Start Shopping
           </a>
         <% } %>
@@ -1280,10 +1279,27 @@ select.form-control:focus {
 
 
 
+<div class="content-container content-section" id="walletSection">
+        <div class="content-header">
+          <h4 class="content-title">My Wallet</h4>
+        </div>
 
-
+        <div class="content-body">
+          <div class="profile-detail-item">
+            <div class="profile-detail-icon">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="profile-detail-content">
+               <h6 class="content-title">Available Balance</h6>
+              <p class="profile-detail-value"><%=user.wallet%></p>
+            </div>
+          </div>
+          
+        </div>
 
     </div>
+
+
   </div>
  </div> 
 

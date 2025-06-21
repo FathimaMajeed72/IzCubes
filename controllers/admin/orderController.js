@@ -1,6 +1,8 @@
 
 const Order = require('../../models/orderSchema');
-const Product = require("../../models/productSchema")
+const Product = require("../../models/productSchema");
+const User = require("../../models/userSchema")
+const SHIPPING_FEE = 40;
 
 const listOrders = async (req, res) => {
   try {
@@ -113,9 +115,19 @@ const handleReturnRequest = async (req, res) => {
         }
       }
 
+      const refundedAmount = order.finalAmount-SHIPPING_FEE;
       order.totalPrice = 0;
       order.discount = 0;
       order.finalAmount = 0;
+
+      const user = await User.findById(order.user);
+      if (user) {
+        user.wallet = (user.wallet || 0) + refundedAmount;
+        await user.save();
+      }
+
+
+     
 
     }else{
       order.status="Return Rejected"
@@ -149,8 +161,20 @@ const handleItemReturnRequest = async (req, res) => {
         const product = await Product.findById(productId);
         if (product) {
           const sizeVariant = product.sizes.find(s => s.size === item.size);
-          if (sizeVariant) sizeVariant.quantity += item.quantity;
+          if (sizeVariant) {
+            sizeVariant.quantity += item.quantity;
+          }
           await product.save();
+
+          const refundedAmount = product.salePrice * item.quantity;
+
+          
+          const user = await User.findById(order.user);
+          if (user) {
+            user.wallet = (user.wallet || 0) + refundedAmount;
+            await user.save();
+          }
+
         }
 
         const activeItems = order.orderedItems.filter(i => i.status !== 'Cancelled' && i.status !== 'Returned');
