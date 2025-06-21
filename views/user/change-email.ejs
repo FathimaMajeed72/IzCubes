@@ -1,65 +1,328 @@
 <%- include("../../views/partials/user/header") %>
-<section class="content-main mt-80 mb-80">
-   <div class="card mx-auto card-login col-4">
-       <div class="card-body">
-           <h4 class="card-title mb-4">Enter Current Email</h4>
-           <form method="post" action="/change-email" onsubmit="return validateLoginForm()">
-               <div class="mb-3">
-                   <input class="form-control" name="currentEmail" placeholder="Current Email" type="text" id="current-email">
-                   <div class="error-message" id="current-email-error"></div>
-                   <input class="form-control" name="newEmail" placeholder="New Email" type="text" id="new-email">
-                   <div class="error-message" id="new-email-error"></div>
-               </div>
-               <div class="mb-4">
-                   <button type="submit" class="btn btn-primary w-100">Verify</button>
-               </div>
-           </form>
-         
-         
-       </div>
-   </div>
+
+<style>
+/* General styling matching login page */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #fafbfc 0%, #f0f2f5 100%);
+  color: #1a1d29;
+  line-height: 1.6;
+}
+
+.content-main {
+  background: linear-gradient(135deg, #fafbfc 0%, #f0f2f5 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.change-email-container {
+  background: white;
+  padding: 3rem 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative gradient background */
+.change-email-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.change-email-container h1 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #2d3748;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.subtitle {
+  color: #6c757d;
+  font-size: 15px;
+  margin-bottom: 2rem;
+}
+
+/* Form styling */
+.form-group {
+  text-align: left;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #2d3748;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 15px;
+  background: white;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  background: #f8f9ff;
+}
+
+.form-group input::placeholder {
+  color: #a0aec0;
+}
+
+/* Error message styling */
+.error-message {
+  color: #f56565;
+  font-size: 13px;
+  margin-top: 6px;
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Verify button */
+.verify-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  width: 100%;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.verify-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.verify-btn:active {
+  transform: translateY(0);
+}
+
+/* Back link */
+.back-link {
+  font-size: 15px;
+  color: #6c757d;
+}
+
+.back-link a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-link a:hover {
+  color: #4c63d2;
+  text-decoration: underline;
+}
+
+/* Alert styling */
+.alert {
+  border: none;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  padding: 12px 16px;
+  font-size: 14px;
+  background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+  color: #742a2a;
+  border-left: 4px solid #f56565;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .change-email-container {
+    margin: 20px;
+    padding: 2rem 1.5rem;
+    max-width: none;
+  }
+
+  .change-email-container h1 {
+    font-size: 24px;
+  }
+
+  .form-group input {
+    padding: 12px 14px;
+  }
+}
+
+/* Loading state */
+.verify-btn.loading {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.verify-btn.loading::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+
+<section class="content-main">
+  <div class="change-email-container">
+    <h1>Change Email</h1>
+    
+
+    <form id="changeEmailForm" method="post" action="/change-email">
+      <div class="form-group">
+        <label for="current-email">Current Email Address</label>
+        <input type="email" id="current-email" name="currentEmail" placeholder="Enter your current email address">
+        <div id="current-email-error" class="error-message"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="new-email">New Email Address</label>
+        <input type="email" id="new-email" name="newEmail" placeholder="Enter your new email address">
+        <div id="new-email-error" class="error-message"></div>
+      </div>
+
+      <button type="submit" class="verify-btn" id="verifyButton">
+        <i class="fas fa-envelope-check"></i>
+        <span>Verify New Email</span>
+      </button>
+    </form>
+
+    <div class="back-link">
+      <a href="/userProfile">
+        
+        Back to Profile
+      </a>
+    </div>
+  </div>
 </section>
+
 <script>
-   function validateLoginForm() {
-       const emailInputCurr = document.getElementById('current-email');
-       const emailErrorCurr = document.getElementById('current-email-error');
-       const emailValueCurr = emailInput.value.trim();
-       const emailInputNew = document.getElementById('current-email');
-       const emailErrorNew = document.getElementById('current-email-error');
-       const emailValueNew = emailInput.value.trim();
-       const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+const currentEmailInput = document.getElementById("current-email");
+const newEmailInput = document.getElementById("new-email");
+const currentEmailError = document.getElementById("current-email-error");
+const newEmailError = document.getElementById("new-email-error");
+const changeEmailForm = document.getElementById("changeEmailForm");
+const verifyButton = document.getElementById("verifyButton");
 
+function currentEmailValidation() {
+  const emailVal = currentEmailInput.value.trim();
+  const emailPattern = /^[a-zA-Z0-9._-]+@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,4})$/;
 
-       if (emailValueCurr === '') {
-           emailErrorCurr.textContent = 'Please enter your email.';
-           emailInputCurr.classList.add('is-invalid');
-           return false;
-       } else if (!emailValueCurr.match(emailPattern)) {
-           emailErrorCurr.textContent = 'Please enter a valid email address';
-           emailInputCurr.classList.add('is-invalid');
-           return false;
-       } else {
-           emailErrorCurr.textContent = '';
-           emailInputCurr.classList.remove('is-invalid');
-           return true;
-       }
+  if (emailVal === "") {
+    currentEmailError.style.display = "block";
+    currentEmailError.innerHTML = "Current email is required";
+  } else if (!emailPattern.test(emailVal)) {
+    currentEmailError.style.display = "block";
+    currentEmailError.innerHTML = "Please enter a valid email address";
+  } else {
+    currentEmailError.style.display = "none";
+    currentEmailError.innerHTML = "";
+  }
+}
 
-       if (emailValueNew === '') {
-           emailErrorNew.textContent = 'Please enter your email.';
-           emailInputNew.classList.add('is-invalid');
-           return false;
-       } else if (!emailValueNew.match(emailPattern)) {
-           emailErrorNew.textContent = 'Please enter a valid email address';
-           emailInputNew.classList.add('is-invalid');
-           return false;
-       } else {
-           emailErrorNew.textContent = '';
-           emailInputNew.classList.remove('is-invalid');
-           return true;
-       }
-   }
+function newEmailValidation() {
+  const emailVal = newEmailInput.value.trim();
+  const currentEmailVal = currentEmailInput.value.trim();
+  const emailPattern = /^[a-zA-Z0-9._-]+@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,4})$/;
+
+  if (emailVal === "") {
+    newEmailError.style.display = "block";
+    newEmailError.innerHTML = "New email is required";
+  } else if (!emailPattern.test(emailVal)) {
+    newEmailError.style.display = "block";
+    newEmailError.innerHTML = "Please enter a valid email address";
+  } else if (emailVal === currentEmailVal) {
+    newEmailError.style.display = "block";
+    newEmailError.innerHTML = "New email must be different from current email";
+  } else {
+    newEmailError.style.display = "none";
+    newEmailError.innerHTML = "";
+  }
+}
+
+function validateLoginForm() {
+  currentEmailValidation();
+  newEmailValidation();
+
+  if (!currentEmailInput || !newEmailInput || !currentEmailError || !newEmailError || !changeEmailForm) {
+    console.error("One or more elements not found");
+  }
+
+  if (currentEmailError.innerHTML || newEmailError.innerHTML) {
+    return false;
+  }
+  
+  return true;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  changeEmailForm.addEventListener("submit", function (e) {
+    const isValid = validateLoginForm();
+    
+    if (!isValid) {
+      e.preventDefault();
+    } 
+  });
+
+  
+  currentEmailInput.addEventListener('blur', currentEmailValidation);
+  newEmailInput.addEventListener('blur', newEmailValidation);
+  
+  
+  currentEmailInput.addEventListener('input', function() {
+    if (currentEmailError.innerHTML) {
+      currentEmailError.style.display = "none";
+      currentEmailError.innerHTML = "";
+    }
+  });
+  
+  newEmailInput.addEventListener('input', function() {
+    if (newEmailError.innerHTML) {
+      newEmailError.style.display = "none";
+      newEmailError.innerHTML = "";
+    }
+  });
+});
 </script>
+
 <%- include("../../views/partials/user/footer") %>
-
-
-

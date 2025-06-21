@@ -1,108 +1,325 @@
 <%- include("../../views/partials/user/header") %>
+
 <style>
- .otp-wrapper {
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   width: 100%;
-   padding-top: 100px;
- }
+/* General styling matching change-email page */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #fafbfc 0%, #f0f2f5 100%);
+  color: #1a1d29;
+  line-height: 1.6;
+}
 
+.content-main {
+  background: linear-gradient(135deg, #fafbfc 0%, #f0f2f5 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
 
- .otp-container {
-   max-width: 350px;
-   width: 100%;
-   padding: 40px;
-   background-color: #fff;
-   border-radius: 10px;
-   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-   text-align: center;
- }
+.otp-verification-container {
+  background: white;
+  padding: 3rem 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
 
+/* Decorative gradient background */
+.otp-verification-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
 
- .otp-container h3 {
-   font-size: 24px;
-   font-weight: bold;
-   color: #333;
-   margin-bottom: 20px;
- }
+.otp-verification-container h1 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #2d3748;
+  font-size: 28px;
+  font-weight: 700;
+}
 
+.subtitle {
+  color: #6c757d;
+  font-size: 15px;
+  margin-bottom: 2rem;
+}
 
- .form-group label {
-   display: block;
-   font-weight: 500;
-   color: #555;
-   margin-bottom: 8px;
- }
+.otp-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #e3e7ff 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem auto;
+  font-size: 32px;
+  color: #667eea;
+}
 
+/* Form styling */
+.form-group {
+  text-align: left;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
 
- .otp-input {
-   width: 100%;
-   padding: 10px;
-   font-size: 18px;
-   text-align: center;
-   border-radius: 4px;
-   border: 1px solid #ced4da;
-   transition: all 0.3s;
- }
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #2d3748;
+  font-weight: 600;
+  font-size: 14px;
+}
 
+.otp-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 18px;
+  background: white;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  text-align: center;
+  letter-spacing: 8px;
+  font-weight: 600;
+}
 
- .otp-input:focus {
-   border-color: #007bff;
-   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
- }
+.otp-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  background: #f8f9ff;
+}
 
+.otp-input::placeholder {
+  color: #a0aec0;
+  letter-spacing: 2px;
+}
 
- .btn-primary {
-   width: 100%;
-   font-weight: bold;
-   background-color: #007bff;
-   border-color: #007bff;
-   margin-top: 20px;
-   border-radius: 5px;
-   padding: 10px;
- }
+/* Verify button */
+.verify-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  width: 100%;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
 
+.verify-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
 
- .otp-timer, .resend-btn {
-   display: inline-block;
-   font-size: 14px;
-   color: #555;
-   margin-top: 15px;
- }
+.verify-btn:active {
+  transform: translateY(0);
+}
 
+/* Timer and resend styling */
+.otp-timer {
+  background: #f8f9ff;
+  border: 2px solid #e3e7ff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 1rem;
+  font-size: 14px;
+  font-weight: 600;
+  color: #667eea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
 
- .text-muted {
-   font-size: 14px;
-   color: #6c757d;
-   text-align: center;
-   margin-top: 20px;
- }
+.resend-btn {
+  background: transparent;
+  border: 2px solid #667eea;
+  color: #667eea;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.resend-btn:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.resend-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Alert styling */
+.alert {
+  border: none;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  padding: 12px 16px;
+  font-size: 14px;
+  background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+  color: #742a2a;
+  border-left: 4px solid #f56565;
+}
+
+/* Back link */
+.back-link {
+  font-size: 15px;
+  color: #6c757d;
+}
+
+.back-link a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-link a:hover {
+  color: #4c63d2;
+  text-decoration: underline;
+}
+
+/* Instructions */
+.instructions {
+  background: #f8f9ff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 1.5rem;
+  font-size: 14px;
+  color: #4a5568;
+  border-left: 4px solid #667eea;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .otp-verification-container {
+    margin: 20px;
+    padding: 2rem 1.5rem;
+    max-width: none;
+  }
+
+  .otp-verification-container h1 {
+    font-size: 24px;
+  }
+
+  .otp-input {
+    padding: 12px 14px;
+    font-size: 16px;
+    letter-spacing: 4px;
+  }
+}
+
+/* Loading state */
+.verify-btn.loading {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.verify-btn.loading::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Success animation for timer */
+.timer-icon {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
 </style>
 
-
-<div class="otp-wrapper">
-   <div class="otp-container">
-       <h3>Email Verification</h3>
-       <form action="/verify-email-otp" method="post">
-           <div class="form-group">
-               <label for="otp">Enter OTP:</label>
-               <input type="text" id="otp" name="otp" class="otp-input" required>
-           </div>
-           <button type="submit" class="btn btn-primary">Verify OTP</button>
-           <div class="otp-timer">
-               <span id="otpTimer">OTP Expires in: 1:00</span>
-           </div>
-           <button type="button" onclick="resendOTP()" class="resend-btn">Resend OTP</button>
-           <% if (locals.message && message.length > 0) { %>
-               <div class="alert alert-danger mt-3">
-                   <%= message %>
-               </div>
-           <% } %>
-       </form>
+<div class="content-main">
+  <div class="otp-verification-container">
     
-   </div>
+    <h1>New Email Verification</h1>
+    
+  
+
+    <form action="/verify-email-otp" method="post" id="otpForm">
+      <div class="form-group">
+        <label for="otp">Enter OTP</label>
+        <input type="text" 
+               id="otp" 
+               name="otp" 
+               class="otp-input" 
+               placeholder="000000"
+               maxlength="6"
+               required>
+      </div>
+
+      <button type="submit" class="verify-btn" id="verifyButton">
+        <span>Verify Code</span>
+      </button>
+    </form>
+
+    <div class="otp-timer">
+      <span id="otpTimer">OTP Expires in: 1:00</span>
+    </div>
+
+    <button type="button" onclick="resendOTP()" class="resend-btn" id="resendButton">
+      Resend Code
+    </button>
+
+    <% if (locals.message && message.length > 0) { %>
+      <div class="alert alert-danger">
+        <%= message %>
+      </div>
+    <% } %>
+
+    <div class="back-link">
+      <a href="/change-email">
+        Back to Change Email
+      </a>
+    </div>
+  </div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
  function startOTPTimer(durationInSeconds) {
@@ -112,9 +329,7 @@
      const minutes = Math.floor(timer / 60);
      const seconds = timer % 60;
 
-
-     timerElement.textContent = `OTP Expires in: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-
+     timerElement.textContent =`OTP Expires in: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
      if (--timer < 0) {
        clearInterval(countdown);
@@ -122,7 +337,6 @@
      }
    }, 1000);
  }
-
 
  function resendOTP() {
    $.ajax({
@@ -143,8 +357,4 @@
  startOTPTimer(60);
 </script>
 
-
 <%- include("../../views/partials/user/footer") %>
-
-
-
