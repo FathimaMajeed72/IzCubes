@@ -1,0 +1,390 @@
+<%- include("../../views/partials/user/header") %>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+    /* General Layout - Matching Cart Page */
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: #fafbfc;
+        color: #1a1d29;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+    }
+
+    .main-wrapper {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 40px 0;
+    }
+
+    /* Breadcrumb Styling - Matching Cart Page */
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px 0;
+        margin-bottom: 40px;
+    }
+
+    .breadcrumb {
+        color: white;
+        font-size: 14px;
+        margin: 0;
+        background: transparent;
+        padding: 0;
+    }
+
+    .breadcrumb a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .breadcrumb a:hover {
+        color: white;
+    }
+
+    .breadcrumb span {
+        color: white;
+        margin: 0 8px;
+    }
+
+    /* Failure Card Container - Matching Cart Page Style */
+    .failure-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .failure-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    }
+
+    /* Failure Header */
+    .failure-header {
+        background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+        padding: 40px 40px 20px;
+        text-align: center;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    /* Failure Icon */
+    .failure-icon {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        box-shadow: 0 8px 32px rgba(229, 62, 62, 0.3);
+        animation: failurePulse 2s ease-in-out infinite;
+        position: relative;
+    }
+
+    .failure-icon::before {
+        content: '';
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        border: 2px solid rgba(229, 62, 62, 0.3);
+        border-radius: 50%;
+    }
+
+    .failure-icon i {
+        font-size: 40px;
+        color: white;
+    }
+
+
+    /* Failure Content */
+    .failure-content {
+        padding: 40px;
+        text-align: center;
+    }
+
+    .failure-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 16px;
+        background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .failure-message {
+        font-size: 16px;
+        color: #6c757d;
+        margin-bottom: 24px;
+        line-height: 1.7;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .error-details {
+        background: #fff5f5;
+        border: 1px solid #fed7d7;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 40px;
+        text-align: left;
+    }
+
+    .error-details h4 {
+        color: #c53030;
+        margin-bottom: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .error-details p {
+        color: #6c757d;
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .error-code {
+        font-family: 'Courier New', monospace;
+        background: #f7fafc;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #2d3748;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-outline-custom {
+        background: transparent;
+        color: #667eea;
+        border: 2px solid #667eea;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 160px;
+        justify-content: center;
+    }
+
+    .btn-outline-custom:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        text-decoration: none;
+    }
+
+    .btn-retry {
+        background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 160px;
+        justify-content: center;
+    }
+
+    .btn-retry:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(229, 62, 62, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .support-info {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .support-info h4 {
+        color: #2d3748;
+        margin-bottom: 12px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .support-info p {
+        color: #6c757d;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .support-contact {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .support-contact:hover {
+        text-decoration: underline;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .failure-header,
+        .failure-content {
+            padding: 30px 20px;
+        }
+
+        .failure-title {
+            font-size: 24px;
+        }
+
+        .failure-icon {
+            width: 80px;
+            height: 80px;
+        }
+
+        .failure-icon i {
+            font-size: 32px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn-outline-custom,
+        .btn-retry {
+            width: 100%;
+            max-width: 280px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .main-wrapper {
+            padding: 20px 0;
+        }
+
+        .failure-container {
+            margin: 0 15px;
+        }
+
+        .failure-title {
+            font-size: 22px;
+        }
+
+        .failure-message {
+            font-size: 14px;
+        }
+
+        .btn-outline-custom,
+        .btn-retry {
+            padding: 12px 20px;
+            font-size: 14px;
+        }
+
+        .error-details {
+            padding: 16px;
+        }
+    }
+</style>
+
+<div class="main-wrapper">
+    <!-- Breadcrumb Section -->
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/" rel="nofollow">Home</a>
+                <span>></span><a href="/shop" rel="nofollow">Shop</a>
+                <span>></span><a href="/cart" rel="nofollow">Cart</a>
+                <span>></span> Order Failed
+            </div>
+        </div>
+    </div>
+
+    <!-- Failure Content -->
+    <div class="container">
+        <div class="failure-container">
+            <div class="failure-header">
+                <div class="failure-icon">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+
+            <div class="failure-content">
+                <h2 class="failure-title">Payment Failed</h2>
+                <p class="failure-message">We're sorry, but there was an issue processing your payment. Your order could not be completed at this time.</p>
+
+                <div class="error-details">
+                    <h4>
+                        <i class="fas fa-exclamation-triangle"></i>
+                        What happened?
+                    </h4>
+                    <p>
+                        The payment could not be processed due to insufficient funds, card declined, or a technical issue. 
+                        Please check your payment details and try again.
+                        <% if (typeof errorCode !== 'undefined' && errorCode) { %>
+                            <br><strong>Error Code:</strong> <span class="error-code"><%= errorCode %></span>
+                        <% } %>
+                    </p>
+                </div>
+
+                <div class="action-buttons">
+                    <a href="" class="btn-retry">
+                        <i class="fas fa-redo-alt"></i>
+                        Retry Payment
+                    </a>
+                    <a href="/userProfile#orderSection" class="btn-outline-custom">
+                        <i class="fas fa-list-alt"></i>
+                        View Order Details
+                    </a>
+                </div>
+
+                <div class="support-info">
+                    <h4>Need Help?</h4>
+                    <p>
+                        If you continue to experience issues, please contact our support team at 
+                        <a href="mailto:support@izcubes.com" class="support-contact">support@izcubes.com</a> 
+                        or call us at 
+                        <a href="tel:+1234567890" class="support-contact">+1 (234) 567-8900</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../../views/partials/user/footer') %>

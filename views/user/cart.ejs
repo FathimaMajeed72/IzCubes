@@ -646,7 +646,7 @@
             return;
         }
 
-        if (newQuantity > productStock) {
+        if (newQuantity > cartQuantity && newQuantity > productStock) {
             Swal.fire({ 
                 title: 'Out of Stock', 
                 text: `Only ${productStock} item${productStock === 1 ? '' : 's'} in stock.`, 

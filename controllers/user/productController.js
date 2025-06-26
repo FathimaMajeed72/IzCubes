@@ -21,9 +21,14 @@ const productDetails = async (req, res) => {
       }
   
       const findCategory = product.category;
+      const categoryOffer = findCategory?.categoryOffer || 0;
+      console.log("categoryOffer:",categoryOffer);
       
       const productOffer = product.productOffer || 0;
-      const totalOffer =  productOffer;
+      console.log("productOffer:",productOffer);
+      const totalOffer = categoryOffer + productOffer;
+      console.log("totalOffer:",totalOffer);
+   
   
       const similarProducts = await Product.find({
         category: product.category._id,

@@ -62,7 +62,7 @@ const orderSchema = new Schema({
         type : Number,
         required : true
     },
-   address: {
+    address: {
         addressType: String,
         name: String,
         houseName: String,
@@ -73,6 +73,16 @@ const orderSchema = new Schema({
         state: String,
         phone: String,
         altPhone: String
+    },
+    paymentMethod : {
+        type : String,
+        enum : ['COD','Online'],
+        required : true
+    },
+    paymentStatus: {
+        type: String,
+        enum: ["Pending", "Success", "Failed"],
+        default: "Pending",
     },
     invoiceDate : {
         type : Date,

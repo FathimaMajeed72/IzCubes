@@ -10,7 +10,7 @@ const pageerror = async (req,res) => {
 
 const loadLogin = (req,res)=>{
     
-    if(req.session.admin){
+    if(req.session.admin && req.session.admin._id){
         return res.redirect("/admin")
     }
     res.render("admin-login",{message:null})
@@ -24,7 +24,11 @@ const login = async (req,res) => {
     if(admin){
         const passwordMatch = await bcrypt.compare(password,admin.password)
         if(passwordMatch){
-            req.session.admin = true;
+            req.session.admin = {
+                _id: admin._id,
+                name: admin.name,
+                email: admin.email
+                };
             return res.redirect("/admin")
         }else{
             return res.render("admin-login",{message:"Incorrect Password"})

@@ -9,6 +9,7 @@ const cartController = require("../controllers/user/cartController");
 const orderController = require("../controllers/user/orderController")
 const checkoutController = require("../controllers/user/checkoutController")
 const invoiceController = require("../controllers/user/invoiceController")
+const paymentController = require("../controllers/user/paymentController")
 const {userAuth,adminAuth} = require("../middlewares/auth")
 const multer = require("multer")
 const storage = require("../helpers/multer")
@@ -89,6 +90,12 @@ router.post("/cancel-item",userAuth, orderController.cancelOrderItem);
 router.post("/return-order",userAuth, orderController.returnEntireOrder);
 router.post("/return-item",userAuth, orderController.returnOrderItem);
 router.get('/orders/search',userAuth, orderController.searchUserOrders);
+router.get("/order-failure",userAuth, orderController.orderFailure);
+
+
+
+router.post("/create-razorpay-order",userAuth,paymentController.createRazorpayOrder);
+//router.get('/retry-payment',userAuth, paymentController.getRetryPaymentPage)
 
 
 

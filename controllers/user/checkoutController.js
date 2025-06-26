@@ -69,7 +69,8 @@ const checkout = async (req, res) => {
       shipping: SHIPPING_FEE,
       total,
       selectedAddress,
-      removedItems
+      removedItems,
+      razorpayKeyId: process.env.RAZORPAY_KEY_ID,
     });
 
   } catch (err) {

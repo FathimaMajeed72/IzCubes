@@ -10,6 +10,7 @@ const placeCodOrder = async (req, res) => {
   try {
     const userId = req.session.user._id;
     const addressId = req.body.addressId;
+    const paymentMethod = req.body.paymentMethod;
     console.log(userId);
     
     console.log(addressId);
@@ -88,7 +89,7 @@ const placeCodOrder = async (req, res) => {
       address: selectedAddress,
       totalPrice,
       finalAmount,
-      paymentMethod: "COD",
+      paymentMethod,
       status: "Pending",
       createdOn: new Date()
     });
@@ -123,6 +124,18 @@ const orderSuccess = async (req,res) => {
     try {
 
         res.render("order-success")
+
+        
+    } catch (error) {
+        console.log("Error loading Order Succesfull Page");
+        res.redirect("/pageNotFound");
+    }
+}
+
+const orderFailure = async (req,res) => {
+    try {
+
+        res.render("order-failure")
 
         
     } catch (error) {
@@ -379,6 +392,7 @@ const searchUserOrders = async (req, res) => {
 module.exports = {
     placeCodOrder,
     orderSuccess,
+    orderFailure,
     getOrderDetail,
     cancelEntireOrder,
     cancelOrderItem,

@@ -28,6 +28,8 @@ router.get("/listCategory",adminAuth,categoryController.getListCategory)
 router.get("/unlistCategory",adminAuth,categoryController.getUnlistCategory)
 router.get("/editCategory",adminAuth,categoryController.getEditCategory)
 router.post("/editCategory/:id",adminAuth,categoryController.editCategory)
+router.post("/addCategoryOffer",adminAuth,categoryController.addCategoryOffer)
+router.post("/removeCategoryOffer",adminAuth,categoryController.removeCategoryOffer);
 
 router.get("/brands",adminAuth,brandController.getBrandPage)
 router.post("/addBrand",adminAuth,uploads.single("image"),brandController.addBrand)

@@ -623,15 +623,19 @@
                                     UPI / Google Pay / PhonePe
                                 </label>
                             </div> -->
-                            <div class="payment-option disabled">
-                                <input class="form-check-input" type="radio" name="paymentMethod" id="card" value="Card" disabled>
-                                <label class="form-check-label" for="card">
+                            <div class="payment-option ">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="online" value="Online" >
+                                <label class="form-check-label" for="online">
                                     <i class="fas fa-credit-card text-info me-2"></i>
                                     Online Payment
                                 </label>
                             </div>
 
                             <input type="hidden" name="addressId" id="formAddressId" value="">
+                            <input type="hidden" id="orderTotalAmount" value="<%= total %>">
+                            <input type="hidden" id="razorpayKey" value="<%= razorpayKeyId %>">
+
+
 
                             <div class="mt-4">
                                 <% if (userAddresses && userAddresses.length > 0) { %>
@@ -746,7 +750,7 @@
                                     <span class="text-brand">₹<%= total %></span>
                                 </div>
                             </div>
-                        </div>
+                        </div>  
                     </div>
                 </div>
             </div>
@@ -761,6 +765,15 @@
         const formAddressId = document.getElementById('formAddressId');
         const addressItems = document.querySelectorAll('.address-item');
         const paymentOptions = document.querySelectorAll('.payment-option');
+
+        const codConfirmModalEl = document.getElementById('codConfirmModal');
+        const codConfirmModal = new bootstrap.Modal(codConfirmModalEl);
+
+
+        document.querySelector('#codConfirmModal .btn-secondary').addEventListener('click', () => {
+            codConfirmModal.hide();
+        });
+
 
         
         addressRadios.forEach((radio, index) => {
@@ -783,16 +796,13 @@
         });
 
         
-        placeOrderBtn.addEventListener("click", (e) => {
+        placeOrderBtn.addEventListener("click", async (e) => {
             const selectedRadio = Array.from(addressRadios).find(r => r.checked);
-            if (selectedRadio) {
-                formAddressId.value = selectedRadio.value;
-                console.log("Selected Address ID:", selectedRadio.value);
-                const confirmModal = new bootstrap.Modal(document.getElementById('codConfirmModal'));
-                confirmModal.show();
-            } else {
+            const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+
+            if (!selectedRadio) {
                 e.preventDefault();
-                Swal.fire({
+                return Swal.fire({
                     icon: 'warning',
                     title: 'No Address Selected',
                     text: 'Please select or add a delivery address to proceed.',
@@ -800,7 +810,86 @@
                     confirmButtonText: 'OK'
                 });
             }
+
+            formAddressId.value = selectedRadio.value;
+            console.log("Selected Address ID:", selectedRadio.value);
+
+            if (selectedPayment === 'COD') {
+                codConfirmModal.show();
+            } else if (selectedPayment === 'Online') {
+                e.preventDefault();
+
+                try {
+                    const totalAmount = document.getElementById("orderTotalAmount").value;
+
+                    const response = await fetch("/create-razorpay-order", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ amount: parseInt(totalAmount) * 100 }) 
+                    });
+
+                    const data = await response.json();
+
+                    if (!data.success) {
+                        return Swal.fire("Error", "Failed to create Razorpay order", "error");
+                    }
+
+                    const razorpayKey = document.getElementById("razorpayKey").value;
+
+                    const options = {
+                        key: razorpayKey,
+                        amount: data.order.amount,
+                        currency: "INR",
+                        name: "IzCubes",
+                        description: "Purchase",
+                        order_id: data.order.id,
+                        handler: function (response) {
+                            
+                            const form = document.getElementById("checkoutForm");
+
+                            const payment_id = document.createElement("input");
+                            payment_id.type = "hidden";
+                            payment_id.name = "razorpay_payment_id";
+                            payment_id.value = response.razorpay_payment_id;
+
+                            const order_id = document.createElement("input");
+                            order_id.type = "hidden";
+                            order_id.name = "razorpay_order_id";
+                            order_id.value = response.razorpay_order_id;
+
+                            const signature = document.createElement("input");
+                            signature.type = "hidden";
+                            signature.name = "razorpay_signature";
+                            signature.value = response.razorpay_signature;
+
+                            form.appendChild(payment_id);
+                            form.appendChild(order_id);
+                            form.appendChild(signature);
+
+                            form.submit();
+                        },
+                        modal: {
+                            ondismiss: function () {
+                                window.location.href = "/order-failure";
+                            }
+                        },
+                        theme: {
+                            color: "#6777ef"
+                        }
+                    };
+
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire("Error", "Payment initialization failed", "error");
+                }
+            } else {
+                
+                document.getElementById("checkoutForm").submit();
+            }
         });
+
     });
 
     
@@ -812,6 +901,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 
 <%- include("../../views/partials/user/footer") %>

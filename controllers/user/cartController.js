@@ -177,9 +177,9 @@ const changeQuantity = async (req,res) => {
       return res.status(400).json({ error: 'Selected size not available' });
     }
 
-    if (quantity > inStock.quantity) {
-      return res.status(400).json({ error: `Only ${inStock.quantity} item(s) available for size ${size}` });
-    }
+    // if (quantity > inStock.quantity) {
+    //   return res.status(400).json({ error: `Only ${inStock.quantity} item(s) available for size ${size}` });
+    // }
 
   
     const cart = await Cart.findOne({ userId });
@@ -191,6 +191,13 @@ const changeQuantity = async (req,res) => {
       item.size === size);
 
     if (!item) return res.status(404).json({ error: 'Product not found in cart' });
+
+
+    if (quantity > item.quantity && quantity > inStock.quantity) {
+      return res.status(400).json({
+        error: `Only ${inStock.quantity} item(s) available for size ${size}`
+      });
+    }
 
     
     item.quantity = quantity;

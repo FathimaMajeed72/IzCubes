@@ -138,6 +138,66 @@ const editCategory = async (req,res) => {
 }
 
 
+const addCategoryOffer = async (req, res) => {
+  try {
+    const { categoryId, percentage } = req.body;
+    const category = await Category.findById(categoryId);
+
+    if (!category) {
+      return res.status(404).json({ status: false, message: "Category not found" });
+    }
+
+    category.categoryOffer = parseInt(percentage);
+    await category.save();
+
+    const products = await Product.find({ category: category._id });
+
+    for (const product of products) {
+      const maxOffer = Math.max(product.productOffer || 0, percentage);
+      product.salePrice = Math.floor(product.regularPrice - (product.regularPrice * maxOffer) / 100);
+      await product.save();
+    }
+
+    return res.json({ status: true });
+  } catch (error) {
+    console.error("addCategoryOffer error:", error);
+    res.status(500).json({ status: false, message: "Internal Server Error" });
+  }
+};
+
+
+const removeCategoryOffer = async (req, res) => {
+  try {
+    const { categoryId } = req.body;
+    const category = await Category.findById(categoryId);
+
+    if (!category) {
+      return res.status(404).json({ status: false, message: "Category not found" });
+    }
+
+    const products = await Product.find({ category: category._id });
+
+    for (const product of products) {
+      const offer = product.productOffer || 0;
+      product.salePrice = offer > 0
+        ? Math.floor(product.regularPrice - (product.regularPrice * offer) / 100)
+        : product.regularPrice;
+      await product.save();
+    }
+
+    category.categoryOffer = 0;
+    await category.save();
+
+    return res.json({ status: true });
+  } catch (error) {
+    console.error("removeCategoryOffer error:", error);
+    res.status(500).json({ status: false, message: "Internal Server Error" });
+  }
+};
+
+
+
+
 
 module.exports={
     categoryInfo,
@@ -146,4 +206,6 @@ module.exports={
     getUnlistCategory,
     getEditCategory,
     editCategory,
+    addCategoryOffer,
+    removeCategoryOffer
 }
