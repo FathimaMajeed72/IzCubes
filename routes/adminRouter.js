@@ -10,6 +10,8 @@ const uploads = multer({storage:storage});
 const brandController = require("../controllers/admin/brandController")
 const productController = require("../controllers/admin/productController")
 const orderController = require("../controllers/admin/orderController")
+const couponController = require("../controllers/admin/couponController")
+
 
 router.get("/pageerror",adminController.pageerror);
 
@@ -53,6 +55,12 @@ router.get("/orderList/:id", adminAuth, orderController.viewOrderDetails);
 router.post("/orderList/update-status", adminAuth, orderController.updateOrderStatus);
 router.post("/orderList/handle-return", adminAuth, orderController.handleReturnRequest);
 router.post("/orderList/handle-item-return", adminAuth, orderController.handleItemReturnRequest);
+
+router.get("/coupon",adminAuth,couponController.getCouponPage);
+router.post("/createCoupon",adminAuth,couponController.createCoupon);
+router.get("/editCoupon",adminAuth,couponController.editCoupon);
+router.post("/updateCoupon",adminAuth,couponController.updateCoupon);
+router.get("/deleteCoupon",adminAuth,couponController.deleteCoupon);
 
 
 

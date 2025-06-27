@@ -750,6 +750,18 @@
                                     <span class="text-brand">₹<%= total %></span>
                                 </div>
                             </div>
+
+
+                            <div class="coupon-section mt-3">
+                                <input type="text" id="couponCode" class="form-control mb-2" placeholder="Enter coupon code">
+                                <button class="btn btn-outline-primary btn-sm" id="applyCouponBtn">Apply Coupon</button>
+                                <button class="btn btn-outline-danger btn-sm d-none" id="removeCouponBtn">Remove Coupon</button>
+                                <div id="couponMessage" class="mt-2 text-success"></div>
+                            </div>
+
+
+
+
                         </div>  
                     </div>
                 </div>
@@ -768,6 +780,68 @@
 
         const codConfirmModalEl = document.getElementById('codConfirmModal');
         const codConfirmModal = new bootstrap.Modal(codConfirmModalEl);
+
+
+        const couponCodeInput = document.getElementById("couponCode");
+        const applyCouponBtn = document.getElementById("applyCouponBtn");
+        const removeCouponBtn = document.getElementById("removeCouponBtn");
+        const couponMessage = document.getElementById("couponMessage");
+        const totalAmountInput = document.getElementById("orderTotalAmount");
+        const totalDisplay = document.querySelector(".price-row span.text-brand");
+
+        let originalTotal = parseInt(totalAmountInput.value);
+        let appliedDiscount = 0;
+
+        applyCouponBtn?.addEventListener("click", async () => {
+            const couponCode = couponCodeInput.value.trim();
+            if (!couponCode) return;
+
+            try {
+                const response = await fetch("/apply-coupon", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ couponCode, subtotal: originalTotal })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    appliedDiscount = data.offerPrice;
+                    const newTotal = originalTotal - appliedDiscount;
+
+                    totalAmountInput.value = newTotal;
+                    totalDisplay.textContent = `₹${newTotal}`;
+                    couponMessage.textContent = data.message;
+                    couponMessage.className = "text-success";
+
+                    applyCouponBtn.classList.add("d-none");
+                    removeCouponBtn.classList.remove("d-none");
+                } else {
+                    couponMessage.textContent = data.message;
+                    couponMessage.className = "text-danger";
+                }
+            } catch (error) {
+                couponMessage.textContent = "Error applying coupon.";
+                couponMessage.className = "text-danger";
+            }
+        });
+
+
+        
+
+        removeCouponBtn?.addEventListener("click", () => {
+            totalAmountInput.value = originalTotal;
+            totalDisplay.textContent = `₹${originalTotal}`;
+            appliedDiscount = 0;
+
+            couponCodeInput.value = "";
+            couponMessage.textContent = "Coupon removed.";
+            couponMessage.className = "text-muted";
+
+            applyCouponBtn.classList.remove("d-none");
+            removeCouponBtn.classList.add("d-none");
+        });
+
 
 
         document.querySelector('#codConfirmModal .btn-secondary').addEventListener('click', () => {
