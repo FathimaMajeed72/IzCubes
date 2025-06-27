@@ -166,6 +166,7 @@ const getOrderDetail = async (req, res) => {
     const order = await Order.findOne({ orderId })
       .populate('user')
       .populate('orderedItems.product')
+      .populate('couponId')
       .populate({
         path: 'address',
         populate: {

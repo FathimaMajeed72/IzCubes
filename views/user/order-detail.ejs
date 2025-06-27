@@ -479,6 +479,12 @@
             </h2>
             <% const activeItemsCount = order.orderedItems.filter(item => item.status !== 'Cancelled').length; %>
             <p class="order-info">Placed on <%= order.createdOn.toDateString() %> • ₹<%= order.finalAmount %> for <%= activeItemsCount %> items</p>
+            <% if (order.couponId) { %>
+                <p class="order-info text-success">
+                    <i class="fas fa-tag"></i>
+                    Coupon Applied: <strong><%= order.couponId.name %></strong>
+                </p>
+            <% } %>
 
             <div class="order-status">
                 <% 
