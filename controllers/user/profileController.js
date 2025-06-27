@@ -1,6 +1,7 @@
 const User=require('../../models/userSchema');
 const Address = require('../../models/addressSchema');
-const Order = require('../../models/orderSchema')
+const Order = require('../../models/orderSchema');
+const Coupon = require('../../models/couponSchema')
 const nodemailer=require('nodemailer');
 const bcrypt=require('bcrypt');
 const env=require('dotenv').config();
@@ -206,6 +207,22 @@ const postNewPassword = async (req,res)=>{
       console.log("userAddresses array:", userAddresses);
 
 
+
+      const coupons = await Coupon.find({
+        isList: true,
+        expireOn: { $gte: new Date() }
+      });
+
+      const userCoupons = coupons.map(coupon => ({
+        _id: coupon._id,
+        name: coupon.name,
+        offerPrice: coupon.offerPrice,
+        minimumPrice: coupon.minimumPrice,
+        expireOn: coupon.expireOn.toLocaleDateString(),
+        used: coupon.usedBy.includes(userId)
+      }));
+
+
       res.render("profile",{
         user : userData,
         userAddresses,
@@ -213,7 +230,8 @@ const postNewPassword = async (req,res)=>{
         tab,
         query: query,
         totalPages,
-        currentPage: page
+        currentPage: page,
+        coupons: userCoupons
       })
       
     } catch (error) {

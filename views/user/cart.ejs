@@ -516,7 +516,7 @@
                                                 </td>
                                                 <td class="price" data-title="Price">
                                                     ₹<span id="subTotal<%= i %>"><%= item.totalPrice %></span>
-                                                    <small class="text-muted">₹<%= item.product.salePrice %> / per item</small>
+                                                    <small class="text-muted">UNIT PRICE: <s>₹<%= item.product.regularPrice %></s> ₹<%= item.product.salePrice %></small>
                                                 </td>
                                                 <td class="text-center" data-title="Stock">
                                                     <div class="detail-qty radius m-auto">
@@ -578,10 +578,10 @@
                                     <td class="cart_total_label">Subtotal</td>
                                     <td class="cart_total_amount">₹<%= subtotal %></td>
                                 </tr>
-                                <tr>
+                                <!-- <tr>
                                     <td class="cart_total_label">Discount</td>
-                                    <td class="cart_total_amount">-₹<%= discount %></td>
-                                </tr>
+                                    <td class="cart_total_amount">-₹ discount %></td>
+                                </tr> -->
                                 <tr>
                                     <td class="cart_total_label">Shipping</td>
                                     <td class="cart_total_amount">₹<%= shipping %></td>

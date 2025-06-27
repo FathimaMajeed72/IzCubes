@@ -33,7 +33,7 @@ const getCartPage = async (req, res) => {
 
       const offer = product.productOffer || 0;
       const regularPrice = product.regularPrice;
-      const discount = (regularPrice * offer / 100) * item.quantity;
+      // const discount = (regularPrice * offer / 100) * item.quantity;
 
       return {
         _id: item._id,
@@ -43,7 +43,7 @@ const getCartPage = async (req, res) => {
         totalPrice: item.totalPrice,
         regularPrice,
         offer,
-        discount,
+        // discount,
         categoryName: product.category ? product.category.name : 'Unknown',
         inStock: isInStock,
         availableStock: stockQty
@@ -53,13 +53,14 @@ const getCartPage = async (req, res) => {
     const validItems = cartItems.filter(item => item.inStock);
 
     const subtotal = validItems.reduce((sum, item) => sum + item.totalPrice, 0);
-    const discount = validItems.reduce((sum, item) => sum + item.discount, 0);
-    const total = subtotal-discount+SHIPPING_FEE;
+    // const discount = validItems.reduce((sum, item) => sum + item.discount, 0);
+    // const total = subtotal-discount+SHIPPING_FEE;
+    const total = subtotal+SHIPPING_FEE;
 
     res.render('cart', {
       cartItems,
       subtotal,
-      discount,
+      // discount,
       shipping:SHIPPING_FEE,
       total
     });

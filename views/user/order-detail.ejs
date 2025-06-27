@@ -627,8 +627,8 @@
                         <span class="payment-amount">₹<%= order.totalPrice %></span>
                     </div>
                     <div class="payment-row">
-                        <span class="payment-label">Item discount</span>
-                        <span class="payment-amount text-success">-₹<%= order.discount %></span>
+                        <span class="payment-label">Coupon discount</span>
+                        <span class="payment-amount text-success">-₹<%= order.couponDiscount %></span>
                     </div>
                     <% if (order.status !== 'Cancelled'  && order.status !== 'Returned') { %>
                         <div class="payment-row">
@@ -648,9 +648,15 @@
                         <i class="fas fa-credit-card"></i>
                         Payment Mode
                     </h6>
-                    <p class="mb-1">Cash On Delivery</p>
-                    <p class="mb-0">₹<%= order.finalAmount %> due</p>
+                    <p class="mb-1"><%= order.paymentMethod === 'COD' ? 'Cash On Delivery' : 'Online Payment' %></p>
+
+                    <% if (order.paymentMethod === 'COD') { %>
+                        <p class="mb-0 text-danger fw-semibold">₹<%= order.finalAmount %> due on delivery</p>
+                    <% } else { %>
+                        <p class="mb-0 text-success fw-semibold">₹<%= order.finalAmount %> Paid Online</p>
+                    <% } %>
                 </div>
+
 
                 <!-- Return Button -->
                 <% if (order.status === 'Delivered') { %>

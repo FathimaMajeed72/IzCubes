@@ -53,7 +53,7 @@ const orderSchema = new Schema({
     totalPrice : {
         type : Number,
         required : true
-    },
+    }, 
     discount : {
         type : Number,
         default : 0
@@ -61,6 +61,15 @@ const orderSchema = new Schema({
     finalAmount : {
         type : Number,
         required : true
+    },
+    couponId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Coupon',
+        default: null
+    },
+    couponDiscount: {
+        type: Number,
+        default: 0
     },
     address: {
         addressType: String,

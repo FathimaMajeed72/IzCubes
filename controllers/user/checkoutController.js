@@ -24,7 +24,7 @@ const checkout = async (req, res) => {
     }
 
     let subtotal = 0;
-    let discount = 0;
+   // let discount = 0;
     //const TAX_PERCENT = 5;
     const SHIPPING_FEE = 40;
 
@@ -46,9 +46,9 @@ const checkout = async (req, res) => {
       }
       subtotal += item.totalPrice;
 
-      const productOffer = product.productOffer || 0;
-      const offerAmount = Math.round((product.regularPrice * productOffer) / 100);
-      discount += offerAmount * item.quantity;
+      // const productOffer = product.productOffer || 0;
+      // const offerAmount = Math.round((product.regularPrice * productOffer) / 100);
+      // discount += offerAmount * item.quantity;
 
       validItems.push(item);
     }
@@ -58,14 +58,14 @@ const checkout = async (req, res) => {
     }
 
     //const tax = Math.round((subtotal * TAX_PERCENT) / 100);
-    const total = subtotal - discount + SHIPPING_FEE;
-
+    // const total = subtotal - discount + SHIPPING_FEE;
+    const total = subtotal + SHIPPING_FEE;
     
     res.render("checkout", { 
       userAddresses,
       cart:  { items: validItems },
       subtotal,
-      discount,
+      //discount,
       shipping: SHIPPING_FEE,
       total,
       selectedAddress,

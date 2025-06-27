@@ -2,6 +2,7 @@ const Order = require("../../models/orderSchema");
 const Cart = require("../../models/cartSchema");
 const Product = require("../../models/productSchema");
 const Address = require("../../models/addressSchema");
+const Coupon = require("../../models/couponSchema")
 const TAX_PERCENT = 5;
 const SHIPPING_FEE = 40;
 
@@ -11,6 +12,10 @@ const placeCodOrder = async (req, res) => {
     const userId = req.session.user._id;
     const addressId = req.body.addressId;
     const paymentMethod = req.body.paymentMethod;
+
+    const couponId = req.body.couponId;
+    const offerPrice = parseInt(req.body.offerPrice) || 0;
+
     console.log(userId);
     
     console.log(addressId);
@@ -28,16 +33,16 @@ const placeCodOrder = async (req, res) => {
     let validItems = [];
     let removedItems = [];
     let subtotal = 0;
-    let discount = 0;
+    let discount = offerPrice;
 
     for (const item of cart.items) {
       const product = item.productId;
       const sizeObj = product.sizes.find(s => s.size == item.size);
 
       if (sizeObj && sizeObj.quantity >= item.quantity) {
-        const productOffer = product.productOffer || 0;
-        const offerAmount = Math.round((product.regularPrice * productOffer) / 100);
-        discount += offerAmount * item.quantity;
+        //const productOffer = product.productOffer || 0;
+        //const offerAmount = Math.round((product.regularPrice * productOffer) / 100);
+        //discount += offerAmount * item.quantity;
         subtotal += item.totalPrice;
         validItems.push(item);
       } else {
@@ -61,6 +66,13 @@ const placeCodOrder = async (req, res) => {
 
     const totalPrice = subtotal;
     const finalAmount = subtotal - discount + SHIPPING_FEE;
+
+    if (couponId) {
+      await Coupon.updateOne(
+        { _id: couponId },
+        { $addToSet: { usedBy: userId } }
+      );
+    }
 
     if (isNaN(finalAmount)) {
       throw new Error("Final amount is not a number");
@@ -89,6 +101,8 @@ const placeCodOrder = async (req, res) => {
       address: selectedAddress,
       totalPrice,
       finalAmount,
+      couponId: couponId || null,
+      couponDiscount: offerPrice,
       paymentMethod,
       status: "Pending",
       createdOn: new Date()

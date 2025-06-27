@@ -634,6 +634,8 @@
                             <input type="hidden" name="addressId" id="formAddressId" value="">
                             <input type="hidden" id="orderTotalAmount" value="<%= total %>">
                             <input type="hidden" id="razorpayKey" value="<%= razorpayKeyId %>">
+                            <input type="hidden" name="couponId" id="couponId">
+                            <input type="hidden" name="offerPrice" id="offerPrice">
 
 
 
@@ -703,7 +705,7 @@
                                         <div class="item-details">
                                             <h6><%= item.productId.productName %></h6>
                                             <p class="text-muted">
-                                                Qty: <%= item.quantity %> × ₹<%= item.price %>
+                                                Qty: <%= item.quantity %> <br> Price: <s>₹<%= item.productId.regularPrice %></s> ₹<%= item.price %> 
                                                 <% if (item.productId.productOffer) { %>
                                                     <span class="offer-badge"><%= item.productId.productOffer %>% OFF</span>
                                                 <% } %>
@@ -739,7 +741,8 @@
                                 </div>
                                 <div class="price-row">
                                     <span>Discount</span>
-                                    <span class="text-success">- ₹<%= discount %></span>
+                                    <!-- <span class="text-success">- ₹ discount %></span> -->
+                                    <span class="text-success" id="discountDisplay">- ₹0</span>
                                 </div>
                                 <div class="price-row">
                                     <span>Shipping</span>
@@ -747,7 +750,7 @@
                                 </div>
                                 <div class="price-row">
                                     <span>Total Amount</span>
-                                    <span class="text-brand">₹<%= total %></span>
+                                    <span id="totalDisplay" class="text-brand">₹<%= total %></span>
                                 </div>
                             </div>
 
@@ -787,7 +790,9 @@
         const removeCouponBtn = document.getElementById("removeCouponBtn");
         const couponMessage = document.getElementById("couponMessage");
         const totalAmountInput = document.getElementById("orderTotalAmount");
-        const totalDisplay = document.querySelector(".price-row span.text-brand");
+        const totalDisplay = document.getElementById("totalDisplay");
+        const discountDisplay = document.getElementById("discountDisplay");
+
 
         let originalTotal = parseInt(totalAmountInput.value);
         let appliedDiscount = 0;
@@ -811,8 +816,12 @@
 
                     totalAmountInput.value = newTotal;
                     totalDisplay.textContent = `₹${newTotal}`;
+                    discountDisplay.textContent = `- ₹${data.offerPrice}`;
                     couponMessage.textContent = data.message;
                     couponMessage.className = "text-success";
+
+                    document.getElementById("couponId").value = data.couponId;
+                    document.getElementById("offerPrice").value = data.offerPrice;
 
                     applyCouponBtn.classList.add("d-none");
                     removeCouponBtn.classList.remove("d-none");
@@ -827,11 +836,16 @@
         });
 
 
+
+
+
         
 
         removeCouponBtn?.addEventListener("click", () => {
             totalAmountInput.value = originalTotal;
             totalDisplay.textContent = `₹${originalTotal}`;
+            discountDisplay.textContent = `- ₹0`;
+
             appliedDiscount = 0;
 
             couponCodeInput.value = "";

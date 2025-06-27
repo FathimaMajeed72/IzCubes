@@ -694,6 +694,20 @@
     margin-bottom: 30px;
   }
 
+  .coupon-card {
+  background-color: #f1f5ff;
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  border-left: 5px solid #667eea;
+}
+
+.coupon-card.used {
+  opacity: 0.6;
+  border-left-color: #ccc;
+}
+
+
   /* Responsive Design - MODIFIED for single line order headers */
   @media (max-width: 576px) {
     .order-header {
@@ -1394,6 +1408,30 @@
     <% } %>
   </div>
 </div>
+
+
+
+<!-- Coupon Section -->
+<div class="content-container content-section" id="couponSection">
+  <div class="content-header">
+    <h4 class="content-title">My Coupons</h4>
+  </div>
+  <div class="content-body">
+    <% if (coupons.length > 0) { %>
+      <% coupons.forEach(coupon => { %>
+        <div class="coupon-card <%= coupon.used ? 'used' : '' %>">
+          <h5 class="text-success"><b><%= coupon.name %></b></h5>
+          <p>₹<%= coupon.offerPrice %> off on orders above ₹<%= coupon.minimumPrice %></p>
+          <p>Expires on: <%= coupon.expireOn %></p>
+          <p>Status: <strong><%= coupon.used ? "Used" : "Available" %></strong></p>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <p>No coupons available at the moment.</p>
+    <% } %>
+  </div>
+</div>
+
 
 
 
