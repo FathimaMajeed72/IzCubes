@@ -1,10 +1,128 @@
 <%- include("../../views/partials/admin/header") %>
-<section class="content-main">
-    <div class="content-header">
-        <div>
-            <h2 class="content-title card-title">Dashboard </h2>
-        </div>
-       
+
+
+<div class="container-fluid mt-4">
+  <h2 class="mb-4">📈 Sales Report</h2>
+
+  <!-- Filter Form -->
+  <form class="row g-3 mb-4" method="GET" action="/admin">
+    <div class="col-md-3">
+      <label for="rangeType" class="form-label">Select Range</label>
+      <select id="rangeType" name="rangeType" class="form-select" onchange="this.form.submit()">
+        <option value="">Range</option>
+        <option value="daily" <%= filters.rangeType === 'daily' ? 'selected' : '' %>>Today</option>
+        <option value="weekly" <%= filters.rangeType === 'weekly' ? 'selected' : '' %>>This Week</option>
+        <option value="monthly" <%= filters.rangeType === 'monthly' ? 'selected' : '' %>>This Month</option>
+        <option value="custom" <%= filters.rangeType === 'custom' ? 'selected' : '' %>>Custom Range</option>
+      </select>
     </div>
-</section>
+
+    <% if (filters.rangeType === 'custom') { %>
+      <div class="col-md-3">
+        <label class="form-label">Start Date</label>
+        <input type="date" name="startDate" class="form-control" value="<%= filters.startDate %>" required>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">End Date</label>
+        <input type="date" name="endDate" class="form-control" value="<%= filters.endDate %>" required>
+      </div>
+      <div class="col-md-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Apply</button>
+      </div>
+    <% } %>
+  </form>
+
+  <!-- Summary Cards -->
+  <div class="row text-white mb-4">
+    <div class="col-md-3">
+      <div class="card bg-primary shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Total Orders</h5>
+          <p class="card-text fs-4"><%= report.totalOrders %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-success shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Total Sales</h5>
+          <p class="card-text fs-4">₹<%= report.totalSales %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-warning text-dark shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Offer Discount</h5>
+          <p class="card-text fs-4">₹<%= report.totalOfferDiscount %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-danger shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Coupon Discount</h5>
+          <p class="card-text fs-4">₹<%= report.totalCouponDiscount %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="mb-4">
+    <a href="/admin/sales-report/download/pdf?<%= new URLSearchParams(filters).toString() %>" class="btn btn-danger me-2">
+      Download PDF
+    </a>
+    <a href="/admin/sales-report/download/excel?<%= new URLSearchParams(filters).toString() %>" class="btn btn-success">
+      Download Excel
+    </a>
+  </div>
+
+  <!-- Orders Table -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead class="table-dark">
+        <tr class="text-center">
+          <th>Date</th>
+          <th>Order ID</th>
+          <th>User</th>
+          <th>Offer Discount</th>
+          <th>Total Price</th>
+          <th>Coupon</th>
+          <th>Coupon Discount</th>
+          <th>Shipping</th>
+          <th>Final Amount</th>
+          <th>Payment Method</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (orders.length === 0) { %>
+          <tr>
+            <td colspan="11" class="text-center">No orders found for the selected range.</td>
+          </tr>
+        <% } else { %>
+          <% orders.forEach(order => { %>
+            <tr class="text-center">
+              <td><%= order.createdOn.toLocaleDateString() %></td>
+              <td><%= order.orderId.toString().slice(-10).toUpperCase()%></td>
+              <td><%= order.user?.name || 'Guest' %></td>
+              <td>₹<%= order.discount %></td>
+              <td>₹<%= order.totalPrice %></td>          
+              <td><%= order.couponId?.name || 'None' %></td>
+              <td>₹<%= order.couponDiscount %></td>
+              <td>₹40</td>
+              <td>₹<%= order.finalAmount %></td>
+              <td><%= order.paymentMethod %></td>
+              <td><span class="badge bg-info text-dark"><%= order.status %></span></td>
+            </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
 <%- include("../../views/partials/admin/footer") %>

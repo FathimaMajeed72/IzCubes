@@ -49,9 +49,29 @@ const userSchema = new Schema({
         ref : "Wishlist",
         default: []
     }],
-    wallet : {
-        type : Number,
-        default : 0,
+    wallet: {
+        balance: {
+            type: Number,
+            default: 0
+        },
+        transactions: [
+            {
+            type: { type: String },
+            amount: Number,
+            date: { type: Date, default: Date.now },
+            reason: String,
+            orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' }
+            }
+        ]
+    },
+    referralCode: {
+        type: String,
+        unique: true,
+        default: () => Math.random().toString(36).substring(2, 8).toUpperCase()
+    },
+    referredBy: {
+        type: String,
+        default: null
     },
     orderHistory : [{
         type : Schema.Types.ObjectId,

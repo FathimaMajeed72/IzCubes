@@ -573,7 +573,8 @@
                                         <button class="return-item-btn" disabled>Item Return Requested</button>
                                         <% } else if (item.status === 'Returned' && item.returnStatus === 'Accepted') { %>
                                         <button class="return-item-btn" disabled>Item Returned</button>
-                                        <p class="text-danger">Refunded ₹<%= totalItemPrice %> to your Wallet</p>
+                                        <% const refundedAmount = Math.round((totalItemPrice/order.totalPrice)*(order.totalPrice - order.couponDiscount)); %>
+                                        <p class="text-danger">Refunded ₹<%= refundedAmount %> to your Wallet</p>
                                         <% } else if (item.status === 'Confirmed' && item.returnStatus === 'Rejected') { %>
                                         <button class="return-item-btn" disabled>Item Return Rejected</button>
                                         <% } %>
@@ -656,11 +657,16 @@
                     </h6>
                     <p class="mb-1"><%= order.paymentMethod === 'COD' ? 'Cash On Delivery' : 'Online Payment' %></p>
 
-                    <% if (order.paymentMethod === 'COD') { %>
-                        <p class="mb-0 text-danger fw-semibold">₹<%= order.finalAmount %> due on delivery</p>
-                    <% } else { %>
-                        <p class="mb-0 text-success fw-semibold">₹<%= order.finalAmount %> Paid Online</p>
+                    <% if (order.status === 'Returned') { %>
+                        <p class="text-danger">Refunded the amount to your Wallet</p>
+                    <% }else{ %>
+                        <% if (order.paymentMethod === 'COD') { %>
+                            <p class="mb-0 text-danger fw-semibold">₹<%= order.finalAmount %> due on delivery</p>
+                        <% } else { %>
+                            <p class="mb-0 text-success fw-semibold">₹<%= order.finalAmount %> Paid Online</p>
+                        <% } %>
                     <% } %>
+                     
                 </div>
 
 

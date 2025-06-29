@@ -93,6 +93,12 @@ const orderSchema = new Schema({
         enum: ["Pending", "Success", "Failed"],
         default: "Pending",
     },
+    razorpayOrderId: {
+        type:String,
+    },
+    paymentId: {
+        type:String,
+    },
     invoiceDate : {
         type : Date,
         default: Date.now
@@ -100,7 +106,7 @@ const orderSchema = new Schema({
     status : {
         type : String,
         required :true,
-        enum : ['Pending','Processing','Shipped','Delivered','Cancelled','Return Request','Returned','Return Rejected']
+        enum : ['Pending','Processing','Shipped','Delivered','Cancelled','Return Request','Returned','Return Rejected',"Payment Failed"]
     },
     cancellationReason: {
         type: String,

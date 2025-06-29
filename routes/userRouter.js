@@ -83,7 +83,7 @@ router.get("/deleteItem", userAuth, cartController.deleteProduct)
 router.get("/checkout", userAuth, checkoutController.checkout)
 
 
-router.post("/orders",userAuth, orderController.placeCodOrder);
+router.post("/orders",userAuth, orderController.placeOrder);
 router.get("/order-success",userAuth,orderController.orderSuccess)
 router.get("/orders/:orderId",userAuth,orderController.getOrderDetail);
 router.post("/cancel-order",userAuth, orderController.cancelEntireOrder);
@@ -97,6 +97,8 @@ router.get("/order-failure",userAuth, orderController.orderFailure);
 
 
 router.post("/create-razorpay-order",userAuth,paymentController.createRazorpayOrder);
+router.post("/razorpay-payment-failed", userAuth, paymentController.saveFailedOrder);
+
 //router.get('/retry-payment',userAuth, paymentController.getRetryPaymentPage)
 
 

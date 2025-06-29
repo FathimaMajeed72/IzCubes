@@ -2,12 +2,17 @@ const User = require("../../models/userSchema");
 const Product = require("../../models/productSchema");
 const Cart = require("../../models/cartSchema");
 const Address = require('../../models/addressSchema');
+const Order = require("../../models/orderSchema");
 
 
 
 const checkout = async (req, res) => {
   try {
     const userId = req.session.user._id;
+
+    const retryOrderId = req.query.retryOrderId;
+
+
 
     const userData = await User.findById(userId);
     const addressData = await Address.findOne({userId:userData._id})
@@ -22,6 +27,7 @@ const checkout = async (req, res) => {
     if (!cart || !cart.items.length) {
       return res.redirect("/cart");
     }
+
 
     let subtotal = 0;
    // let discount = 0;
@@ -60,6 +66,23 @@ const checkout = async (req, res) => {
     //const tax = Math.round((subtotal * TAX_PERCENT) / 100);
     // const total = subtotal - discount + SHIPPING_FEE;
     const total = subtotal + SHIPPING_FEE;
+
+
+    let retryOrder = null;
+    let existingRazorpayOrderId = null;
+
+    if (retryOrderId) {
+      retryOrder = await Order.findById(retryOrderId);
+
+      if (!retryOrder || retryOrder.user.toString() !== userId.toString() || retryOrder.paymentStatus !== "Failed") {
+        return res.redirect("/cart"); // Invalid retry
+      }
+
+      existingRazorpayOrderId = retryOrder.razorpayOrderId;
+    }
+
+
+
     
     res.render("checkout", { 
       userAddresses,
@@ -71,6 +94,8 @@ const checkout = async (req, res) => {
       selectedAddress,
       removedItems,
       razorpayKeyId: process.env.RAZORPAY_KEY_ID,
+      retryOrderId: retryOrder ? retryOrder._id : null,
+      existingRazorpayOrderId: existingRazorpayOrderId || null 
     });
 
   } catch (err) {

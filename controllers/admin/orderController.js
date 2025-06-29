@@ -9,7 +9,9 @@ const listOrders = async (req, res) => {
 
     const { search = "", sort = "desc", status, page = 1, limit = 4 } = req.query;
 
-    const query = {};
+    const query = {
+      status: { $ne: "Payment Failed" }
+    };
 
    
     if (status && status !== "All") {
@@ -62,6 +64,7 @@ const viewOrderDetails = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
       .populate('user')
+      .populate('couponId')
       .populate('orderedItems.product');
 
     res.render('orderDetail', { order,req });
@@ -115,14 +118,22 @@ const handleReturnRequest = async (req, res) => {
         }
       }
 
-      const refundedAmount = order.finalAmount-SHIPPING_FEE;
+      const refundedAmount = order.finalAmount;
       order.totalPrice = 0;
-      order.discount = 0;
+      // order.discount = 0;
+      order.couponDiscount = 0;
       order.finalAmount = 0;
 
       const user = await User.findById(order.user);
       if (user) {
-        user.wallet = (user.wallet || 0) + refundedAmount;
+        user.wallet.balance += refundedAmount;
+        user.wallet.transactions.push({
+          type: 'credit',
+          amount: refundedAmount,
+          reason: 'Return approved',
+          orderId: order._id
+        });
+
         await user.save();
       }
 
@@ -158,6 +169,7 @@ const handleItemReturnRequest = async (req, res) => {
         item.status = 'Returned';
 
        
+        let refundedAmount = 0;
         const product = await Product.findById(productId);
         if (product) {
           const sizeVariant = product.sizes.find(s => s.size === item.size);
@@ -166,12 +178,24 @@ const handleItemReturnRequest = async (req, res) => {
           }
           await product.save();
 
-          const refundedAmount = product.salePrice * item.quantity;
+          const itemTotal = item.price * item.quantity;
+          const orderPayableAmount = order.totalPrice - order.couponDiscount;
+
+          refundedAmount = Math.round((itemTotal / order.totalPrice) * orderPayableAmount);
+
+
 
           
           const user = await User.findById(order.user);
           if (user) {
-            user.wallet = (user.wallet || 0) + refundedAmount;
+            user.wallet.balance += refundedAmount;
+            user.wallet.transactions.push({
+              type: 'credit',
+              amount: refundedAmount,
+              reason: `Return approved for item ${product.productName}`,
+              orderId: order._id
+            });
+
             await user.save();
           }
 
@@ -180,25 +204,26 @@ const handleItemReturnRequest = async (req, res) => {
         const activeItems = order.orderedItems.filter(i => i.status !== 'Cancelled' && i.status !== 'Returned');
 
         let totalPrice = 0;
-        let totalDiscount = 0;
+        // let totalDiscount = 0;
 
 
         for (const item of activeItems) {
           const product = await Product.findById(item.product);
           if (product) {
             const itemTotal = product.salePrice * item.quantity;
-            const itemRegularTotal = product.regularPrice * item.quantity;
-            const itemDiscount = itemRegularTotal - itemTotal;
+            // const itemRegularTotal = product.regularPrice * item.quantity;
+            // const itemDiscount = itemRegularTotal - itemTotal;
 
             totalPrice += itemTotal;
-            totalDiscount += itemDiscount;
+            // totalDiscount += itemDiscount;
           }
         }
 
-
+        let newPayableAmount = order.finalAmount-refundedAmount
         order.totalPrice = totalPrice;
-        order.discount = totalDiscount; 
-        order.finalAmount = totalPrice - totalDiscount;
+        //order.discount = totalDiscount; 
+        order.finalAmount = newPayableAmount;
+        order.couponDiscount = order.finalAmount - order.totalPrice - SHIPPING_FEE;
 
 
         const allReturned = order.orderedItems.every(i => i.status === 'Returned' || i.status === 'Cancelled');

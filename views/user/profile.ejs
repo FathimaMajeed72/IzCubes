@@ -565,6 +565,26 @@
     padding-top: 15px;
     border-top: 1px solid #e9ecef;
   }
+  .retry-btn{
+
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+  }
+
+  .retry-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    color: white;
+  }
 
   .view-order-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1302,6 +1322,7 @@
                     <% if (order.status === 'Delivered') statusClass = 'success'; %>
                     <% if (order.status === 'Cancelled') statusClass = 'danger'; %>
                     <% if (order.status === 'Returned') statusClass = 'warning'; %>
+                    <% if (order.status === 'Payment Failed') statusClass = 'danger'; %>
                     
                     <span class="status-badge bg-<%= statusClass %> text-white">
                       <%= order.status %>
@@ -1361,6 +1382,11 @@
 
             <!-- Order Actions -->
             <div class="order-actions">
+              <% if (order.status === 'Payment Failed'){ %>
+              <a href="/checkout?retryOrderId=<%= order._id %>" class="btn btn-danger retry-btn me-5">
+                <i class="fas fa-redo-alt"></i> Retry Payment
+              </a>
+              <%}%>
               <a href="/orders/<%= order.orderId %>" class="view-order-btn">
                 <i class="fas fa-eye me-2"></i> View Details
               </a>
@@ -1448,9 +1474,39 @@
             </div>
             <div class="profile-detail-content">
                <h6 class="content-title">Available Balance</h6>
-              <p class="profile-detail-value">₹ <%=user.wallet%></p>
+              <p class="profile-detail-value">₹ <%=user.wallet.balance%></p>
             </div>
           </div>
+
+          <% if (user.wallet.transactions.length > 0) { %>
+            <div class="wallet-transactions mt-4">
+              <h6 class="content-title">Transaction History</h6>
+              <table class="table table-bordered mt-3">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Reason</th>
+                    <th>Order ID</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% user.wallet.transactions.forEach(txn => { %>
+                    <tr>
+                      <td><%= txn.type %></td>
+                      <td>₹ <%= txn.amount %></td>
+                      <td><%= txn.date.toLocaleDateString('en-IN') %></td>
+                      <td><%= txn.reason || '-' %></td>
+                      <td><%= txn.orderId ? txn.orderId.toString().slice(-6).toUpperCase() : '-' %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <p class="text-muted mt-3">No transactions yet.</p>
+          <% } %>
           
         </div>
 

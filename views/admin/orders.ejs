@@ -71,7 +71,7 @@
         <% } %>
         <% orders.forEach(order => { %>
           <tr>
-            <td><%= order.orderId %></td>
+            <td><%= order.orderId.toString().slice(-10).toUpperCase() %></td>
             <td><%= new Date(order.createdOn).toLocaleString('en-IN') %></td>
             <td>
               <%= order.user?.name || 'Unknown' %> <br>

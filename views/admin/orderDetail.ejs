@@ -59,6 +59,25 @@
       </div>
     </div>
 
+    <div class="mb-3">
+      <label class="form-label fw-bold">Coupon Applied:</label>
+      <div>
+        <% if (order.couponId) { %>
+          <span class="badge bg-info text-dark px-3 py-2">
+            <%= order.couponId.name %> (₹<%= order.couponDiscount %> off)
+          </span>
+        <% } else { %>
+          <span class="text-muted">No coupon applied</span>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Amount Payable:</label>
+      <div>₹<%= order.finalAmount %></div>
+    </div>
+
+
     <h5 class="mt-4">Ordered Items</h5>
     <table class="table table-bordered">
       <thead>

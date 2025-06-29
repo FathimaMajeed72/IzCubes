@@ -17,8 +17,8 @@ router.get("/pageerror",adminController.pageerror);
 
 router.get("/login",adminController.loadLogin);
 router.post("/login",adminController.login)
-router.get("/",adminAuth,adminController.loadDashboard)
 router.get("/logout",adminController.logout)
+router.get("/",adminAuth,adminController.loadDashboard)
 
 router.get("/users",adminAuth,customerController.customerInfo)
 router.get("/blockCustomer",adminAuth,customerController.customerBlocked);
@@ -61,6 +61,11 @@ router.post("/createCoupon",adminAuth,couponController.createCoupon);
 router.get("/editCoupon",adminAuth,couponController.editCoupon);
 router.post("/updateCoupon",adminAuth,couponController.updateCoupon);
 router.get("/deleteCoupon",adminAuth,couponController.deleteCoupon);
+
+
+router.get('/sales-report/download/pdf', adminAuth, adminController.downloadSalesReportPDF);
+router.get('/sales-report/download/excel', adminAuth, adminController.downloadSalesReportExcel);
+
 
 
 
