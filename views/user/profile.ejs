@@ -1045,6 +1045,25 @@
               Change Password
             </a>
           </div>
+
+          <!-- Referral Section -->
+          <div class="profile-detail-item mt-4">
+            <div class="profile-detail-icon">
+              <i class="fas fa-gift"></i>
+            </div>
+            <div class="profile-detail-content">
+              <div class="profile-detail-label fw-bold">Refer & Earn</div>
+              <div class="d-flex align-items-center">
+                <p class="profile-detail-value mb-0">
+                  Referral Code: 
+                  <code class="bg-white px-2 py-1 rounded border text-uppercase fw-semibold"><%= user.referralCode %></code>
+                  <i class="fas fa-copy text-primary ms-2" style="cursor: pointer;" onclick="copyReferralCode()" title="Copy to clipboard"></i>
+                </p>
+              </div>
+              <small class="text-muted mt-1 d-block">Share this code with your friends and earn a coupon worth ₹100 when they sign up!</small>
+            </div>
+          </div>
+
         </div>
 
 
@@ -1450,6 +1469,11 @@
           <p>₹<%= coupon.offerPrice %> off on orders above ₹<%= coupon.minimumPrice %></p>
           <p>Expires on: <%= coupon.expireOn %></p>
           <p>Status: <strong><%= coupon.used ? "Used" : "Available" %></strong></p>
+          <% if (coupon.type === 'referral') { %>
+            <span class="badge bg-info mt-2">Referral Coupon</span>
+          <% } else if (coupon.type === 'seasonal') { %>
+            <span class="badge bg-success mt-2">Seasonal Coupon</span>
+          <% } %>
         </div>
       <% }) %>
     <% } else { %>
@@ -1648,7 +1672,14 @@
   })
 </script>
 
-
+<script>
+  function copyReferralCode() {
+    const code = "<%= user.referralCode %>";
+    navigator.clipboard.writeText(code).then(() => {
+      alert("Referral code copied to clipboard!");
+    });
+  }
+</script>
 
 
 

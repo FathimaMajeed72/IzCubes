@@ -31,7 +31,17 @@ const couponSchema = new mongoose.Schema({
     usedBy : [{
         type : mongoose.Schema.Types.ObjectId,
         ref : "User"
-    }]
+    }],
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null
+    },
+    type: {
+        type: String,
+        enum: ['referral', 'seasonal'],
+        default: 'seasonal'
+    }
 })
 
 

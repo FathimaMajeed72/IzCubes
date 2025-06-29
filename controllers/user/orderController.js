@@ -298,17 +298,18 @@ const cancelEntireOrder = async (req, res) => {
     }
 
 
-
-    const user = await User.findById(order.user);
-    if (user && order.finalAmount > 0) {
-      user.wallet.balance += order.finalAmount;
-      user.wallet.transactions.push({
-        type: 'credit',
-        amount: order.finalAmount,
-        reason: 'Refund for full order cancellation',
-        orderId: order._id
-      });
-      await user.save();
+   if (order.paymentMethod === 'Online') {
+      const user = await User.findById(order.user);
+      if (user && order.finalAmount > 0) {
+        user.wallet.balance += order.finalAmount;
+        user.wallet.transactions.push({
+          type: 'credit',
+          amount: order.finalAmount,
+          reason: 'Refund for full order cancellation',
+          orderId: order._id
+        });
+        await user.save();
+      }
     }
 
 
@@ -362,6 +363,29 @@ const cancelOrderItem = async (req, res) => {
     );
 
 
+    let refundAmount = 0;
+    if (order.paymentMethod === 'Online') {
+      const itemTotal = item.price * item.quantity;
+      const orderPayableAmount = order.totalPrice - order.couponDiscount;
+      const refundAmount = Math.round((itemTotal / order.totalPrice) * orderPayableAmount);
+
+    
+      const user = await User.findById(order.user);
+      if (user && refundAmount > 0) {
+        user.wallet.balance += refundAmount;
+        user.wallet.transactions.push({
+          type: 'credit',
+          amount: refundAmount,
+          reason: `Refund for cancelled item: ${item.product.name}`,
+          orderId: order._id
+        });
+        await user.save();
+      }
+    }
+
+
+
+
     let totalPrice = 0;
     let discount = 0;
 
@@ -375,9 +399,12 @@ const cancelOrderItem = async (req, res) => {
       }
     });
 
+    let newPayableAmount = order.finalAmount-refundAmount
     order.totalPrice = totalPrice;
     order.discount = discount;
-    order.finalAmount = totalPrice - discount + SHIPPING_FEE;
+    order.finalAmount = newPayableAmount;
+    order.couponDiscount = Math.max(0, order.finalAmount - order.totalPrice - SHIPPING_FEE);;
+    
 
 
     const allCancelled = order.orderedItems.every(i => i.status === 'Cancelled');

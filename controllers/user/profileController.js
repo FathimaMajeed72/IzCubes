@@ -209,8 +209,10 @@ const postNewPassword = async (req,res)=>{
 
 
       const coupons = await Coupon.find({
-        isList: true,
-        expireOn: { $gte: new Date() }
+        $or: [
+          { type: 'seasonal', expireOn: { $gte: new Date() } },                         
+          { type: 'referral', user: userId, expireOn: { $gte: new Date() } }            
+        ]
       });
 
       const userCoupons = coupons.map(coupon => ({
@@ -219,7 +221,8 @@ const postNewPassword = async (req,res)=>{
         offerPrice: coupon.offerPrice,
         minimumPrice: coupon.minimumPrice,
         expireOn: coupon.expireOn.toLocaleDateString(),
-        used: coupon.usedBy.includes(userId)
+        used: coupon.usedBy.includes(userId),
+        type : coupon.type
       }));
 
 

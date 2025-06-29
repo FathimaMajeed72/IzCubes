@@ -118,7 +118,7 @@ const handleReturnRequest = async (req, res) => {
         }
       }
 
-      const refundedAmount = order.finalAmount;
+      const refundedAmount = order.finalAmount-SHIPPING_FEE;
       order.totalPrice = 0;
       // order.discount = 0;
       order.couponDiscount = 0;
