@@ -367,7 +367,7 @@ const cancelOrderItem = async (req, res) => {
     if (order.paymentMethod === 'Online') {
       const itemTotal = item.price * item.quantity;
       const orderPayableAmount = order.totalPrice - order.couponDiscount;
-      const refundAmount = Math.round((itemTotal / order.totalPrice) * orderPayableAmount);
+      refundAmount = Math.round((itemTotal / order.totalPrice) * orderPayableAmount);
 
     
       const user = await User.findById(order.user);
@@ -376,7 +376,7 @@ const cancelOrderItem = async (req, res) => {
         user.wallet.transactions.push({
           type: 'credit',
           amount: refundAmount,
-          reason: `Refund for cancelled item: ${item.product.name}`,
+          reason: `Refund for cancelled item: ${item.product.productName}`,
           orderId: order._id
         });
         await user.save();

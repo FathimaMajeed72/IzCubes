@@ -506,7 +506,7 @@
                     <strong>Return Reason:</strong> <%= order.returnReason %>
                 </div>
             <% } %>
-            <% if (order.status === 'Delivered' || order.status === 'Returned') { %>
+            <% if ((order.paymentMethod === 'Online') ||  (order.paymentMethod === 'COD' && (order.status === 'Delivered' || order.status === 'Returned')) ){ %>
             <a href="/invoice/<%= order._id %>" class="invoice-btn" target="_blank">
                 <i class="bi bi-download"></i> Download Invoice
             </a>
@@ -574,7 +574,7 @@
                                         <% } else if (item.status === 'Returned' && item.returnStatus === 'Accepted') { %>
                                         <button class="return-item-btn" disabled>Item Returned</button>
                                         <% const refundedAmount = Math.round((totalItemPrice/order.totalPrice)*(order.totalPrice - order.couponDiscount)); %>
-                                        <p class="text-danger">Refunded ₹<%= refundedAmount %> to your Wallet</p>
+                                        <p class="text-danger">Refunded to your Wallet</p>
                                         <% } else if (item.status === 'Confirmed' && item.returnStatus === 'Rejected') { %>
                                         <button class="return-item-btn" disabled>Item Return Rejected</button>
                                         <% } %>
