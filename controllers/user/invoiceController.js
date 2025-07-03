@@ -88,7 +88,8 @@ const generateInvoice = async (req, res) => {
 
     
     doc.moveDown(1.5).fontSize(12).fillColor('black');
-    const discount = isOrderReturned ? 0 : order.discount || 0;
+    // const discount = isOrderReturned ? 0 : order.discount || 0;
+    // const couponDiscount = isOrderReturned ? 0 : order.couponDiscount || 0;
     const couponDiscount = isOrderReturned ? 0 : order.couponDiscount || 0;
     const shipping = isOrderReturned ? 0 : validItemCount > 0 ? 40 : 0;
     const finalTotal = isOrderReturned ? 0 : subtotal - couponDiscount + shipping;

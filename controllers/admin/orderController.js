@@ -219,11 +219,17 @@ const handleItemReturnRequest = async (req, res) => {
           }
         }
 
-        let newPayableAmount = order.finalAmount-refundedAmount
+       
         order.totalPrice = totalPrice;
         //order.discount = totalDiscount; 
-        order.finalAmount = newPayableAmount;
-        order.couponDiscount = order.finalAmount - order.totalPrice - SHIPPING_FEE;
+        
+        if (order.couponDiscount > 0 && totalPrice > 0) {
+          const originalTotal = order.orderedItems.reduce((acc, i) => acc + (i.price * i.quantity), 0);
+          const proportion = totalPrice / originalTotal;
+          order.couponDiscount = Math.round(order.couponDiscount * proportion);
+        }
+
+      order.finalAmount = order.totalPrice - order.couponDiscount + SHIPPING_FEE;
 
 
         const allReturned = order.orderedItems.every(i => i.status === 'Returned' || i.status === 'Cancelled');

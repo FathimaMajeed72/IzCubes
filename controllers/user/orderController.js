@@ -399,11 +399,16 @@ const cancelOrderItem = async (req, res) => {
       }
     });
 
-    let newPayableAmount = order.finalAmount-refundAmount
     order.totalPrice = totalPrice;
     order.discount = discount;
-    order.finalAmount = newPayableAmount;
-    order.couponDiscount = Math.max(0, order.finalAmount - order.totalPrice - SHIPPING_FEE);;
+
+    if (order.couponDiscount > 0 && totalPrice > 0) {
+      const originalTotal = order.orderedItems.reduce((acc, i) => acc + (i.price * i.quantity), 0);
+      const proportion = totalPrice / originalTotal;
+      order.couponDiscount = Math.round(order.couponDiscount * proportion);
+    }
+
+    order.finalAmount = totalPrice - order.couponDiscount + SHIPPING_FEE;
     
 
 
