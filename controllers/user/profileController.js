@@ -175,6 +175,8 @@ const postNewPassword = async (req,res)=>{
       const tab = req.query.tab || 'profile';
 
       const userData = await User.findById(userId);
+
+      const userDataObject = userData.toObject();
        
       const addressData = await Address.findOne({userId:userData._id})
 
@@ -226,15 +228,40 @@ const postNewPassword = async (req,res)=>{
       }));
 
 
+      const walletPage = parseInt(req.query.walletPage) || 1;
+      const walletPerPage = 5;
+
+      const walletTransactions = userData.wallet.transactions
+        .slice() 
+        .reverse();
+
+      const totalWalletTransactions = walletTransactions.length;
+      const totalWalletPages = Math.ceil(totalWalletTransactions / walletPerPage);
+
+      const paginatedWalletTransactions = walletTransactions.slice(
+        (walletPage - 1) * walletPerPage,
+        walletPage * walletPerPage
+      );
+
+
+
       res.render("profile",{
-        user : userData,
+        user: {
+          ...userDataObject,
+          wallet: {
+            ...userDataObject.wallet,
+            transactions: paginatedWalletTransactions
+          }
+        },
         userAddresses,
         orders: paginatedOrders,
         tab,
         query: query,
         totalPages,
         currentPage: page,
-        coupons: userCoupons
+        coupons: userCoupons,
+        walletCurrentPage: walletPage,
+        walletTotalPages: totalWalletPages
       })
       
     } catch (error) {
@@ -251,6 +278,9 @@ const postNewPassword = async (req,res)=>{
     const userId = req.query.id;
     const { name, phone, removeImage } = req.body;
 
+    console.log("Remove image:",removeImage);
+
+
     const updateData = {
       name,
       phone
@@ -260,8 +290,12 @@ const postNewPassword = async (req,res)=>{
    
     const user = await User.findById(userId);
 
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
     
-    if (removeImage === "true" && user.profileImage) {
+    if (removeImage === "true" && user.profileImage && user.profileImage !== "/img/defaultProfileImage.jpg") {
       const existingImagePath = path.join('public', user.profileImage);
       if (fs.existsSync(existingImagePath)) {
         fs.unlinkSync(existingImagePath);
@@ -274,8 +308,11 @@ const postNewPassword = async (req,res)=>{
       const newImagePath = `/uploads/re-image/${req.file.filename}`;
 
       
-      if (user.profileImage && fs.existsSync(path.join('public', user.profileImage))) {
-        fs.unlinkSync(path.join('public', user.profileImage));
+      if (user.profileImage && user.profileImage !== "/img/defaultProfileImage.jpg") {
+        const oldImagePath = path.join('public', user.profileImage);
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
       }
 
       updateData.profileImage = newImagePath;

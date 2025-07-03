@@ -26,8 +26,8 @@ const productDetails = async (req, res) => {
       
       const productOffer = product.productOffer || 0;
       console.log("productOffer:",productOffer);
-      const totalOffer = categoryOffer + productOffer;
-      console.log("totalOffer:",totalOffer);
+      const offer = categoryOffer > productOffer?categoryOffer:productOffer;
+      console.log("Offer:",offer);
    
   
       const similarProducts = await Product.find({
@@ -44,7 +44,7 @@ const productDetails = async (req, res) => {
         product: product,
         quantity: product.quantity,
         totalStock,
-        totalOffer: totalOffer,
+        offer: offer,
         category: findCategory,
         similarProducts: similarProducts,
         from,

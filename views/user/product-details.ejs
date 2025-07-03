@@ -633,8 +633,8 @@
                             <div class="current-price">₹<%= product.salePrice %></div>
                             <div class="price-details">
                                 <span class="original-price">₹<%= product.regularPrice %></span>
-                                <% if (totalOffer) { %>
-                                    <span class="discount-badge"><%= totalOffer %>% Off</span>
+                                <% if (offer) { %>
+                                    <span class="discount-badge"><%= offer %>% Off</span>
                                 <% } else { %>
                                     <span class="discount-badge">No Offers</span>
                                 <% } %>

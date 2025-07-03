@@ -241,7 +241,7 @@ const downloadSalesReportPDF = async (req, res) => {
 
 
 
-    // Table rows
+    
     addTableHeader();
     let y = doc.y;
 
@@ -313,18 +313,35 @@ const downloadSalesReportExcel = async (req, res) => {
 
     const orders = await Order.find(query).populate('user couponId');
 
+
+    let totalSales = 0, totalOrders = 0, totalCoupons = 0, totalDiscounts = 0;
+    orders.forEach(order => {
+      totalOrders += 1;
+      totalSales += order.finalAmount || 0;
+      totalCoupons += order.couponDiscount || 0;
+      totalDiscounts += order.discount || 0;
+    });
+
     
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Sales Report');
 
-    // Add Header Row
+    worksheet.addRow(["Sales Report Summary Of IzCubes Kid's"]).font = { bold: true };
+    worksheet.addRow([`Total Orders`, totalOrders]);
+    worksheet.addRow([`Total Sales (INR)`, totalSales]);
+    worksheet.addRow([`Total Offer Discount (INR)`, totalDiscounts]);
+    worksheet.addRow([`Total Coupon Discount (INR)`, totalCoupons]);
+
+     worksheet.addRow([]);
+
+    
     worksheet.addRow([
       'Date', 'Order ID', 'User', 'Offer Discount (INR)',
       'Total Sales Price (INR)', 'Coupon', 'Coupon Discount (INR)',
       'Shipping (INR)', 'Final Amount (INR)'
     ]);
 
-    // Add Data Rows
+    
     orders.forEach(order => {
       worksheet.addRow([
         order.createdOn.toLocaleDateString('en-IN'),

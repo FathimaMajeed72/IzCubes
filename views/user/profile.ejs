@@ -1081,7 +1081,7 @@
                     <img id="previewImage" src="<%= user.profileImage && user.profileImage !== '' ? user.profileImage : defaultProfileImage %>" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;" alt="Profile Image">
                   </div>
                   <div class="text-end">
-                    <a href="" class="removeProfileImage text-danger text-decoration-none">Remove Profile Image</a>
+                    <a href="#"  id="removeProfileImage" class="text-danger text-decoration-none">Remove Profile Image</a>
                   </div>
                   <input type="hidden" name="removeImage" id="removeImageInput" value="false">
                   <div class="mb-3">
@@ -1527,6 +1527,20 @@
                   <% }) %>
                 </tbody>
               </table>
+
+              <% if (walletTotalPages > 1) { %>
+                <nav class="mt-3">
+                  <ul class="pagination justify-content-center">
+                    <% for (let i = 1; i <= walletTotalPages; i++) { %>
+                      <li class="page-item <%= i === walletCurrentPage ? 'active' : '' %>">
+                        <a class="page-link" href="?tab=wallet&page=<%= currentPage %>&walletPage=<%= i %>#walletSection"><%= i %></a>
+                      </li>
+                    <% } %>
+                  </ul>
+                </nav>
+              <% } %>
+
+
             </div>
           <% } else { %>
             <p class="text-muted mt-3">No transactions yet.</p>
@@ -1612,11 +1626,11 @@
 <script>
   const defaultProfileImage = "/img/defaultProfileImage.jpg";
 
-  // Preview the uploaded profile image
+  document.addEventListener("DOMContentLoaded", () => {
   const imageInput = document.getElementById("editProfileImage");
   const previewImage = document.getElementById("previewImage");
   const removeImageInput = document.getElementById("removeImageInput");
-  const removeButton = document.getElementById("removeImageBtn");
+  const removeImageLink = document.getElementById("removeProfileImage");
 
   imageInput?.addEventListener("change", function (event) {
     const file = event.target.files[0];
@@ -1627,12 +1641,14 @@
   });
 
   // Reset image to default on "Remove" button click
-  removeButton?.addEventListener("click", function (event) {
-    event.preventDefault(); // Prevent default anchor behavior if it's an <a>
+  removeImageLink?.addEventListener("click", function (event) {
+    event.preventDefault(); 
     previewImage.src = defaultProfileImage;
-    imageInput.value = ""; // Clear the file input
-    removeImageInput.value = "true"; // Mark for removal
+    imageInput.value = ""; 
+    removeImageInput.value = "true"; 
+    console.log("Remove image flag set:", removeImageInput.value);
   });
+});
 </script>
 
 <script>

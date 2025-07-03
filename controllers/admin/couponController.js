@@ -67,7 +67,7 @@ const editCoupon = async (req,res)=>{
 const updateCoupon = async (req,res) => {
     try {
         
-        couponId = req.body.couponId;
+        const couponId = req.body.couponId;
         const oid = new mongoose.Types.ObjectId(couponId);
         const selectedCoupon = await Coupon.findOne({_id: oid});
         if(selectedCoupon){
@@ -83,12 +83,12 @@ const updateCoupon = async (req,res) => {
                         offerPrice : parseInt(req.body.offerPrice),
                         minimumPrice:parseInt(req.body.minimumPrice),
                     }
-                }, {new : true}
+                },
             );
             if(updateCoupon!= null){
                 res.send("Coupon updated successfully")
             }else{
-                res.ststus(500).send("Coupon update failed")
+                res.status(500).send("Coupon update failed")
             }
         }
 

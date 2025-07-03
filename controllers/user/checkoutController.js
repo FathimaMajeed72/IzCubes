@@ -3,6 +3,8 @@ const Product = require("../../models/productSchema");
 const Cart = require("../../models/cartSchema");
 const Address = require('../../models/addressSchema');
 const Order = require("../../models/orderSchema");
+const Coupon = require("../../models/couponSchema")
+const SHIPPING_FEE = 40;
 
 
 
@@ -31,8 +33,7 @@ const checkout = async (req, res) => {
 
     let subtotal = 0;
    // let discount = 0;
-    //const TAX_PERCENT = 5;
-    const SHIPPING_FEE = 40;
+    
 
     const validItems = [];
     const removedItems = [];
@@ -63,7 +64,7 @@ const checkout = async (req, res) => {
       return res.redirect("/cart?error=All selected items are out of stock.");
     }
 
-    //const tax = Math.round((subtotal * TAX_PERCENT) / 100);
+ 
     // const total = subtotal - discount + SHIPPING_FEE;
     const total = subtotal + SHIPPING_FEE;
 
@@ -75,11 +76,22 @@ const checkout = async (req, res) => {
       retryOrder = await Order.findById(retryOrderId);
 
       if (!retryOrder || retryOrder.user.toString() !== userId.toString() || retryOrder.paymentStatus !== "Failed") {
-        return res.redirect("/cart"); // Invalid retry
+        return res.redirect("/cart"); 
       }
 
       existingRazorpayOrderId = retryOrder.razorpayOrderId;
     }
+
+
+    const availableCoupons = await Coupon.find({
+      isList: true,
+      expireOn: { $gte: new Date() },
+      usedBy: { $ne: userId },
+      $or: [
+        { user: null },          
+        { user: userId }          
+      ]
+    });
 
 
 
@@ -95,7 +107,10 @@ const checkout = async (req, res) => {
       removedItems,
       razorpayKeyId: process.env.RAZORPAY_KEY_ID,
       retryOrderId: retryOrder ? retryOrder._id : null,
-      existingRazorpayOrderId: existingRazorpayOrderId || null 
+      existingRazorpayOrderId: existingRazorpayOrderId || null ,
+      appliedCoupon: retryOrder?.couponId || '',
+      couponDiscount: retryOrder?.couponDiscount || 0,
+      coupons: availableCoupons
     });
 
   } catch (err) {
