@@ -106,16 +106,19 @@ const handleReturnRequest = async (req, res) => {
     order.returnStatus = action;
     if (action === 'Accepted') {
 
-      order.status="Returned"
+      order.status="Returned";
+      order.isReturnRequested = true;
 
       for (const item of order.orderedItems) {
         item.status = 'Returned';
-        const product = await Product.findById(item.product);
-        if (product) {
-          const sizeVariant = product.sizes.find(s => s.size === item.size);
-          if (sizeVariant) sizeVariant.quantity += item.quantity;
-          await product.save();
-        }
+        // const product = await Product.findById(item.product);
+        // if (product) {
+        //   const sizeVariant = product.sizes.find(s => s.size === item.size);
+        //   if (sizeVariant) sizeVariant.quantity += item.quantity;
+        //   await product.save();
+        // }
+        item.returnStatus = 'Accepted';
+        item.stockUpdated = false;
       }
 
       const refundedAmount = order.finalAmount-SHIPPING_FEE;
@@ -136,9 +139,6 @@ const handleReturnRequest = async (req, res) => {
 
         await user.save();
       }
-
-
-     
 
     }else{
       order.status="Return Rejected"
@@ -167,16 +167,17 @@ const handleItemReturnRequest = async (req, res) => {
       
       if (action === 'Accepted') {
         item.status = 'Returned';
+        item.stockUpdated = false;
 
        
         let refundedAmount = 0;
         const product = await Product.findById(productId);
         if (product) {
-          const sizeVariant = product.sizes.find(s => s.size === item.size);
-          if (sizeVariant) {
-            sizeVariant.quantity += item.quantity;
-          }
-          await product.save();
+          // const sizeVariant = product.sizes.find(s => s.size === item.size);
+          // if (sizeVariant) {
+          //   sizeVariant.quantity += item.quantity;
+          // }
+          // await product.save();
 
           const itemTotal = item.price * item.quantity;
           const orderPayableAmount = order.totalPrice - order.couponDiscount;
@@ -258,10 +259,47 @@ const handleItemReturnRequest = async (req, res) => {
 
 
 
+const addReturnedItemToStock = async (req, res) => {
+  try {
+    const { orderId, productId } = req.body;
+
+    const order = await Order.findById(orderId);
+    if (!order) return res.status(404).send("Order not found");
+
+    const item = order.orderedItems.find(i => i.product.toString() === productId);
+    if (!item) return res.status(404).send("Item not found");
+
+   
+    if (item.stockUpdated) {
+      return res.redirect(`/admin/orderList/${orderId}`);
+    }
+
+    const product = await Product.findById(productId);
+    if (product) {
+      const sizeVariant = product.sizes.find(s => s.size === item.size);
+      if (sizeVariant) sizeVariant.quantity += item.quantity;
+      await product.save();
+    }
+
+    item.stockUpdated = true;
+    await order.save();
+
+    res.redirect(`/admin/orderList/${orderId}?updated=true`);
+  } catch (err) {
+    console.error("Add to stock error:", err);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+
+
+
+
 module.exports = {
     listOrders,
     viewOrderDetails,
     updateOrderStatus,
     handleReturnRequest,
-    handleItemReturnRequest
+    handleItemReturnRequest,
+    addReturnedItemToStock
 };

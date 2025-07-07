@@ -55,6 +55,8 @@ router.get("/orderList/:id", adminAuth, orderController.viewOrderDetails);
 router.post("/orderList/update-status", adminAuth, orderController.updateOrderStatus);
 router.post("/orderList/handle-return", adminAuth, orderController.handleReturnRequest);
 router.post("/orderList/handle-item-return", adminAuth, orderController.handleItemReturnRequest);
+router.post("/orderList/add-to-stock", adminAuth, orderController.addReturnedItemToStock);
+
 
 router.get("/coupon",adminAuth,couponController.getCouponPage);
 router.post("/createCoupon",adminAuth,couponController.createCoupon);

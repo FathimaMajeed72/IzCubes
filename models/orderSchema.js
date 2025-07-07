@@ -45,10 +45,14 @@ const orderSchema = new Schema({
             default: ""
         },
         returnStatus: {
-        type: String,
-        enum: ['NotRequested', 'Pending', 'Accepted', 'Rejected'],
-        default: 'NotRequested'
-    }
+            type: String,
+            enum: ['NotRequested', 'Pending', 'Accepted', 'Rejected'],
+            default: 'NotRequested'
+        },
+        stockUpdated: {
+            type: Boolean,
+            default: false 
+        }
     }],
     totalPrice : {
         type : Number,
