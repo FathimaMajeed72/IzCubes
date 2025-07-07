@@ -98,6 +98,12 @@ const placeOrder = async (req, res) => {
     }));
 
 
+    if (paymentMethod === "COD" && finalAmount > 1000) {
+      return res.status(400).send("Cash on Delivery is only available for orders up to ₹1000.");
+    }
+
+
+
     let paymentStatus = "Pending";
     let paymentId = null;
     let razorpayOrderId = null;

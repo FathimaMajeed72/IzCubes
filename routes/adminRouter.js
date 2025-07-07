@@ -65,7 +65,7 @@ router.get("/deleteCoupon",adminAuth,couponController.deleteCoupon);
 
 router.get('/sales-report/download/pdf', adminAuth, adminController.downloadSalesReportPDF);
 router.get('/sales-report/download/excel', adminAuth, adminController.downloadSalesReportExcel);
-
+router.get('/ledger',adminAuth,adminController.generateLedger )
 
 
 

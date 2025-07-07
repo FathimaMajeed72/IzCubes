@@ -56,7 +56,37 @@ app.use(express.static(path.join(__dirname,"public")));
 
 
 app.use("/",userRouter);
-app.use("/admin",adminRouter)
+app.use("/admin",adminRouter);
+
+
+
+
+app.use((req, res, next) => {
+  if (req.originalUrl.startsWith("/admin")) {
+    return res.status(404).render("admin-error", { message: "Page not found" });
+  }
+  res.status(404).render("page-404", { message: "Page not found" });
+});
+
+app.use((err, req, res, next) => {
+  console.error("Internal Server Error:", err.stack);
+
+  if (req.originalUrl.startsWith("/api") || req.xhr || req.headers.accept?.includes("json")) {
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+
+  if (req.originalUrl.startsWith("/admin")) {
+    return res.status(500).render("admin-error", {
+      message: "Something went wrong on the admin panel."
+    });
+  }
+
+  res.status(500).render("page-500", {
+    message: "Something went wrong on the user side."
+  });
+});
+
+
 
 app.listen(process.env.PORT||3000,()=>{
     console.log("Server Started");

@@ -1,127 +1,362 @@
 <%- include("../../views/partials/admin/header") %>
 
 
-<div class="container-fluid mt-4">
-  <h2 class="mb-4">📈 Sales Report</h2>
-
-  <!-- Filter Form -->
-  <form class="row g-3 mb-4" method="GET" action="/admin">
-    <div class="col-md-3">
-      <label for="rangeType" class="form-label">Select Range</label>
-      <select id="rangeType" name="rangeType" class="form-select" onchange="this.form.submit()">
-        <option value="">Range</option>
-        <option value="daily" <%= filters.rangeType === 'daily' ? 'selected' : '' %>>Today</option>
-        <option value="weekly" <%= filters.rangeType === 'weekly' ? 'selected' : '' %>>This Week</option>
-        <option value="monthly" <%= filters.rangeType === 'monthly' ? 'selected' : '' %>>This Month</option>
-        <option value="custom" <%= filters.rangeType === 'custom' ? 'selected' : '' %>>Custom Range</option>
-      </select>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Dashboard </h2>
+        </div>
+       
     </div>
-
-    <% if (filters.rangeType === 'custom') { %>
+    <div class="container-fluid mt-4">
+        <!-- Filter Form -->
+    <form id="filterForm" class="row g-3 mb-4" method="GET" action="/admin">
       <div class="col-md-3">
-        <label class="form-label">Start Date</label>
-        <input type="date" name="startDate" class="form-control" value="<%= filters.startDate %>" required>
+        <label for="rangeType" class="form-label">Select Range</label>
+        <select id="rangeType" name="rangeType" class="form-select" onchange="this.form.submit()">
+          <option value="">Range</option>
+          <option value="daily" <%= filters.rangeType === 'daily' ? 'selected' : '' %>>Today</option>
+          <option value="weekly" <%= filters.rangeType === 'weekly' ? 'selected' : '' %>>This Week</option>
+          <option value="monthly" <%= filters.rangeType === 'monthly' ? 'selected' : '' %>>This Month</option>
+          <option value="yearly" <%= filters.rangeType === 'yearly' ? 'selected' : '' %>>This Year</option>
+          <option value="custom" <%= filters.rangeType === 'custom' ? 'selected' : '' %>>Custom Range</option>
+        </select>
+      </div>
+
+      <% if (filters.rangeType === 'custom') { %>
+        <div class="col-md-3">
+          <label class="form-label">Start Date</label>
+          <input type="date" id="startDate" name="startDate" class="form-control" value="<%= filters.startDate %>" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">End Date</label>
+          <input type="date" id="endDate" name="endDate" class="form-control" value="<%= filters.endDate %>" required>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary w-100">Apply</button>
+        </div>
+      <% } %>
+    </form>
+
+    <!-- Summary Cards -->
+    <div class="row text-white mb-4">
+      <div class="col-md-3">
+        <div class="card bg-primary shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">Total Orders</h5>
+            <p class="card-text fs-4"><%= report.totalOrders %></p>
+          </div>
+        </div>
       </div>
       <div class="col-md-3">
-        <label class="form-label">End Date</label>
-        <input type="date" name="endDate" class="form-control" value="<%= filters.endDate %>" required>
+        <div class="card bg-success shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">Total Sales</h5>
+            <p class="card-text fs-4">₹<%= report.totalSales %></p>
+          </div>
+        </div>
       </div>
-      <div class="col-md-3 d-flex align-items-end">
-        <button type="submit" class="btn btn-primary w-100">Apply</button>
+      <div class="col-md-3">
+        <div class="card bg-warning text-dark shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">Offer Discount</h5>
+            <p class="card-text fs-4">₹<%= report.totalOfferDiscount %></p>
+          </div>
+        </div>
       </div>
-    <% } %>
-  </form>
-
-  <!-- Summary Cards -->
-  <div class="row text-white mb-4">
-    <div class="col-md-3">
-      <div class="card bg-primary shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Total Orders</h5>
-          <p class="card-text fs-4"><%= report.totalOrders %></p>
+      <div class="col-md-3">
+        <div class="card bg-danger shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">Coupon Discount</h5>
+            <p class="card-text fs-4">₹<%= report.totalCouponDiscount %></p>
+          </div>
         </div>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card bg-success shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Total Sales</h5>
-          <p class="card-text fs-4">₹<%= report.totalSales %></p>
+
+
+
+    <div class="card mb-5">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">📊 Sales Trend</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="salesChart" height="100"></canvas>
+      </div>
+    </div>
+
+
+    <div class="card mb-5">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">📈 Sales Report</h5>
+        <div class="mb-1 ms-auto">
+          <a href="/admin/sales-report/download/pdf?<%= new URLSearchParams(filters).toString() %>" class="btn btn-danger me-2">
+            Download PDF
+          </a>
+          <a href="/admin/sales-report/download/excel?<%= new URLSearchParams(filters).toString() %>" class="btn btn-success">
+            Download Excel
+          </a>
+        </div>
+      </div>
+      <div class="card-body">
+        <!-- Orders Table -->
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+              <tr class="text-center">
+                <th>Date</th>
+                <th>Order ID</th>
+                <th>User</th>
+                <th>Offer Discount</th>
+                <th>Total Price</th>
+                <th>Coupon</th>
+                <th>Coupon Discount</th>
+                <th>Shipping</th>
+                <th>Final Amount</th>
+                <th>Payment Method</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (orders.length === 0) { %>
+                <tr>
+                  <td colspan="11" class="text-center">No orders found for the selected range.</td>
+                </tr>
+              <% } else { %>
+                <% orders.forEach(order => { %>
+                  <tr class="text-center">
+                    <td><%= order.createdOn.toLocaleDateString() %></td>
+                    <td><%= order.orderId.toString().slice(-10).toUpperCase()%></td>
+                    <td><%= order.user?.name || 'Guest' %></td>
+                    <td>₹<%= order.discount %></td>
+                    <td>₹<%= order.totalPrice %></td>          
+                    <td><%= order.couponId?.name || 'None' %></td>
+                    <td>₹<%= order.couponDiscount %></td>
+                    <td>₹40</td>
+                    <td>₹<%= order.finalAmount %></td>
+                    <td><%= order.paymentMethod %></td>
+                    <td><span class="badge bg-info text-dark"><%= order.status %></span></td>
+                  </tr>
+                <% }) %>
+              <% } %>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card bg-warning text-dark shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Offer Discount</h5>
-          <p class="card-text fs-4">₹<%= report.totalOfferDiscount %></p>
+
+    <div class="row mb-5">
+      <!-- Top 10 Products -->
+      <div class="col-lg-4">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">🏆 Top Selling Products</h5>
+          </div>
+          <div class="card-body table-responsive">
+            <% if (topProducts.length === 0) { %>
+              <p class="text-muted">No products sold in this period.</p>
+            <% } else { %>
+              <table class="table table-sm table-bordered text-center align-middle">
+                <thead class="table-secondary">
+                  <tr>
+                    <th>#</th>
+                    <th>Product</th>
+                    <th>Sold</th>
+                    <th>Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% topProducts.forEach((item, index) => { %>
+                    <tr>
+                      <td><%= index + 1 %></td>
+                      <td><%= item.name %></td>
+                      <td><%= item.totalSold %></td>
+                      <td>₹<%= item.totalRevenue || (item.totalSold * item.unitPrice || 0) %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top 10 Categories -->
+      <div class="col-lg-4">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">📚 Top Selling Categories</h5>
+          </div>
+          <div class="card-body table-responsive">
+            <% if (topCategories.length === 0) { %>
+              <p class="text-muted">No category data available.</p>
+            <% } else { %>
+              <table class="table table-sm table-bordered text-center align-middle">
+                <thead class="table-secondary">
+                  <tr>
+                    <th>#</th>
+                    <th>Category</th>
+                    <th>Sold</th>
+                    <th>Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% topCategories.forEach((item, index) => { %>
+                    <tr>
+                      <td><%= index + 1 %></td>
+                      <td><%= item.name %></td>
+                      <td><%= item.totalSold %></td>
+                      <td>₹<%= item.totalRevenue || 0 %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top 10 Brands -->
+      <div class="col-lg-4">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">🏷️ Top Selling Brands</h5>
+          </div>
+          <div class="card-body table-responsive">
+            <% if (topBrands.length === 0) { %>
+              <p class="text-muted">No brand data available.</p>
+            <% } else { %>
+              <table class="table table-sm table-bordered text-center align-middle">
+                <thead class="table-secondary">
+                  <tr>
+                    <th>#</th>
+                    <th>Brand</th>
+                    <th>Sold</th>
+                    <th>Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% topBrands.forEach((item, index) => { %>
+                    <tr>
+                      <td><%= index + 1 %></td>
+                      <td><%= item.name %></td>
+                      <td><%= item.totalSold %></td>
+                      <td>₹<%= item.totalRevenue || 0 %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            <% } %>
+          </div>
         </div>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card bg-danger shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Coupon Discount</h5>
-          <p class="card-text fs-4">₹<%= report.totalCouponDiscount %></p>
-        </div>
-      </div>
-    </div>
-  </div>
 
 
-  <div class="mb-4">
-    <a href="/admin/sales-report/download/pdf?<%= new URLSearchParams(filters).toString() %>" class="btn btn-danger me-2">
-      Download PDF
-    </a>
-    <a href="/admin/sales-report/download/excel?<%= new URLSearchParams(filters).toString() %>" class="btn btn-success">
-      Download Excel
-    </a>
-  </div>
-
-  <!-- Orders Table -->
-  <div class="table-responsive">
-    <table class="table table-bordered table-hover">
-      <thead class="table-dark">
-        <tr class="text-center">
-          <th>Date</th>
-          <th>Order ID</th>
-          <th>User</th>
-          <th>Offer Discount</th>
-          <th>Total Price</th>
-          <th>Coupon</th>
-          <th>Coupon Discount</th>
-          <th>Shipping</th>
-          <th>Final Amount</th>
-          <th>Payment Method</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if (orders.length === 0) { %>
-          <tr>
-            <td colspan="11" class="text-center">No orders found for the selected range.</td>
-          </tr>
-        <% } else { %>
-          <% orders.forEach(order => { %>
-            <tr class="text-center">
-              <td><%= order.createdOn.toLocaleDateString() %></td>
-              <td><%= order.orderId.toString().slice(-10).toUpperCase()%></td>
-              <td><%= order.user?.name || 'Guest' %></td>
-              <td>₹<%= order.discount %></td>
-              <td>₹<%= order.totalPrice %></td>          
-              <td><%= order.couponId?.name || 'None' %></td>
-              <td>₹<%= order.couponDiscount %></td>
-              <td>₹40</td>
-              <td>₹<%= order.finalAmount %></td>
-              <td><%= order.paymentMethod %></td>
-              <td><span class="badge bg-info text-dark"><%= order.status %></span></td>
-            </tr>
-          <% }) %>
-        <% } %>
-      </tbody>
-    </table>
-  </div>
+<div class="text-end mb-5">
+  <a href="/admin/ledger" class="btn btn-outline-primary">
+    📘 View Ledger Book
+  </a>
 </div>
+
+
+
+
+  </div>
+
+
+
+
+
+
+  </section>
+
+
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const chartRaw = JSON.parse(decodeURIComponent('<%- encodeURIComponent(JSON.stringify(chartData)) %>'));
+    console.log(chartRaw);
+
+    const rangeType = '<%= filters.rangeType || "monthly" %>';
+
+    const labels = chartRaw.map(data => data.label);
+
+    const values = chartRaw.map(data => data.totalSales);
+
+    const ctx = document.getElementById('salesChart').getContext('2d');
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+        label: 'Total Sales (₹)',
+        data: values, 
+        backgroundColor: 'rgba(78, 115, 223, 0.2)',
+        borderColor: '#4e73df', 
+        tension: 0.3, 
+        fill: true, 
+        pointRadius: 4,
+        pointBackgroundColor: '#4e73df',
+        pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Sales Trend'
+          },
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: value => `₹${value}`
+            }
+          }
+        }
+      }
+    });
+  </script>
+
+<script>
+  const form = document.getElementById('filterForm');
+
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      const rangeType = document.getElementById('rangeType').value;
+      if (rangeType === 'custom') {
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+        const todayDate = new Date();
+
+        if (!startDateInput.value || !endDateInput.value) {
+          alert("Please fill in both Start Date and End Date.");
+          e.preventDefault();
+        } else if (startDate > endDate) {
+          alert("Start Date cannot be after End Date.");
+          e.preventDefault();
+        }
+        if(startDate>todayDate||endDate>todayDate){
+          alert("Start or End Date cannot be Future Date");
+          e.preventDefault();
+        }
+      }
+    });
+  }
+</script>
+
 
 
 

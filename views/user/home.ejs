@@ -176,7 +176,7 @@
         font-size: 16px;
     }
 
-    .product-content-wrap a {
+    .product-content-wrap .add-to-cart-btn{
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
@@ -197,12 +197,41 @@
         gap: 8px;
     }
 
-    .product-content-wrap a:hover {
+    .product-content-wrap .add-to-cart-btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         text-decoration: none;
         color: white;
     }
+
+    .add-to-cart-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.add-to-cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
 
 
     /* No Products Message */
@@ -231,6 +260,141 @@
         color: #6c757d;
         font-size: 16px;
     }
+
+        
+
+        /* Backdrop (optional) */
+    .modal-backdrop {
+    background-color: rgba(26, 29, 41, 0.75);
+    backdrop-filter: blur(6px);
+    }
+
+    /* Modal Dialog */
+    #sizeModal .modal-dialog {
+    max-width: 480px;
+    margin: 3rem auto;
+    }
+
+    /* Modal Content */
+    #sizeModal .modal-content {
+    border: none;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    }
+
+    /* Modal Header */
+    #sizeModal .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 20px 24px;
+    border-bottom: none;
+    }
+
+    #sizeModal .modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    }
+
+    #sizeModal .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+    }
+
+    #sizeModal .btn-close:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    }
+
+    /* Modal Body */
+    #sizeModal .modal-body {
+    padding: 24px;
+    background-color: #f9fafb;
+    }
+
+    /* Size Options */
+    #sizeModal #sizeOptions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    }
+
+    #sizeModal #sizeOptions label {
+    position: relative;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4a5568;
+    min-width: 100px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    #sizeModal #sizeOptions label:hover {
+    border-color: #667eea;
+    background-color: #eef2ff;
+    transform: translateY(-2px);
+    }
+
+    #sizeModal #sizeOptions input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    }
+
+    /* When a radio is checked (fallback for JS-controlled highlight) */
+    #sizeModal #sizeOptions input[type="radio"]:checked + label,
+    #sizeModal #sizeOptions label:has(input[type="radio"]:checked) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Modal Footer */
+    #sizeModal .modal-footer {
+    padding: 16px 24px;
+    background-color: #fff;
+    border-top: 1px solid #e2e8f0;
+    }
+
+    #sizeModal .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 10px 24px;
+    font-weight: 600;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+    }
+
+    #sizeModal .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+    #sizeModal .modal-dialog {
+        margin: 1rem;
+        max-width: 100%;
+    }
+
+    #sizeModal #sizeOptions label {
+        min-width: 80px;
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+    }
+
 
     /* Responsive Design */
     @media (max-width: 1200px) {
@@ -330,7 +494,7 @@
                           <h6>Summer Collection</h6>
                           <h2>Fall - Winter Collections 2030</h2>
                           <p>A specialist label creating luxury essentials.</p>
-                          <a href="#" class="primary-btn">Shop now <span class="arrow_right"></span></a>
+                          <a href="/shop" class="primary-btn">Shop now <span class="arrow_right"></span></a>
                       </div>
                   </div>
               </div>
@@ -348,7 +512,7 @@
                   </div>
                   <div class="banner__item__text">
                       <h2>New Born Collections 2025</h2>
-                      <a href="#">Shop now</a>
+                      <a href="/shop">Shop now</a>
                   </div>
               </div>
           </div>
@@ -359,7 +523,7 @@
                   </div>
                   <div class="banner__item__text">
                       <h2>Boy's Wardrobe 2025</h2>
-                      <a href="#">Shop now</a>
+                      <a href="/shop">Shop now</a>
                   </div>
               </div>
           </div>
@@ -370,7 +534,7 @@
                   </div>
                   <div class="banner__item__text">
                       <h2>Girl's Wardrobe 2025</h2>
-                      <a href="#">Shop now</a>
+                      <a href="/shop">Shop now</a>
                   </div>
               </div>
           </div>
@@ -419,10 +583,17 @@
                                
                                 <h6 ><%=products[i].productName%></h6>
                                 <h5><%=products[i].salePrice.toLocaleString('en-IN')%></h5>
-                                <a href="#" onclick="addToCart('<%=products[i]._id%>')">
+                                <button 
+                                    type="button"
+                                    class="add-to-cart-btn" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#sizeModal" 
+                                    data-product-id="<%= products[i]._id %>" 
+                                    data-sizes='<%- JSON.stringify(products[i].sizes) %>'>
                                     <i class="fas fa-shopping-cart"></i>
                                     Add to cart
-                                </a>
+                                </button>
+
                             </div>
                         </div>
                     <% } %>
@@ -433,9 +604,33 @@
                         <p>We're currently updating our inventory. Please check back soon for amazing deals!</p>
                     </div>
                 <% } %>
-            </div>
+            </div>          
         </div>
     </section>
+
+     <!-- Size Selection Modal -->
+            <div class="modal fade" id="sizeModal" tabindex="-1" aria-labelledby="sizeModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form id="addToCartForm" method="POST" action="/addToCart">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="sizeModalLabel">Select Size</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                        <input type="hidden" name="productId" id="modalProductId">
+                        <div id="sizeOptions" class="d-flex flex-wrap gap-2 justify-content-center"></div>
+                        </div>
+
+                        <div class="modal-footer justify-content-center">
+                        <button type="submit" class="btn btn-primary">Add to Cart</button>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+            </div>
+
 
 
 
@@ -478,6 +673,34 @@
   </div>
 </section> -->
 <%- include("../../views/partials/user/footer") %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const sizeModal = document.getElementById('sizeModal');
+
+  sizeModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget; // Button that triggered the modal
+    const productId = button.getAttribute('data-product-id');
+    const sizes = JSON.parse(button.getAttribute('data-sizes'));
+
+    document.getElementById("modalProductId").value = productId;
+
+    const sizeOptions = document.getElementById("sizeOptions");
+    sizeOptions.innerHTML = "";
+
+    sizes.forEach(sizeObj => {
+      const label = document.createElement("label");
+      label.className = "btn btn-outline-secondary";
+      label.innerHTML = `
+        <input type="radio" name="selectedSize" value="${sizeObj.size}" required />
+        ${sizeObj.size} (${sizeObj.quantity} left)
+      `;
+      sizeOptions.appendChild(label);
+    });
+  });
+</script>
+
+
 
 
 

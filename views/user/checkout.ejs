@@ -621,13 +621,24 @@
                     </div>
                     <div class="card-body">
                         <form method="POST" action="/orders" id="checkoutForm">
-                            <div class="payment-option selected">
-                                <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD" checked>
-                                <label class="form-check-label" for="cod">
-                                    <i class="fas fa-money-bill-wave text-success me-2"></i>
-                                    Cash on Delivery (COD)
-                                </label>
-                            </div>
+                            <% if (total <= 1000) { %>
+                                <div class="payment-option selected">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD" checked>
+                                    <label class="form-check-label" for="cod">
+                                        <i class="fas fa-money-bill-wave text-success me-2"></i>
+                                        Cash on Delivery (COD)
+                                    </label>
+                                </div>
+                            <% } else { %>
+                                <div class="payment-option disabled" title="COD is only available for orders up to ₹1000">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD" disabled>
+                                    <label class="form-check-label text-muted" for="cod">
+                                        <i class="fas fa-money-bill-wave text-secondary me-2"></i>
+                                        Cash on Delivery (Not Available for orders above ₹1000)
+                                    </label>
+                                </div>
+                            <% } %>
+
                             <!-- <div class="payment-option disabled">
                                 <input class="form-check-input" type="radio" name="paymentMethod" id="upi" value="UPI" disabled>
                                 <label class="form-check-label" for="upi">
@@ -876,6 +887,21 @@
 
                     applyCouponBtn.classList.add("d-none");
                     removeCouponBtn.classList.remove("d-none");
+
+                    const codInput = document.getElementById("cod");
+                    const codLabel = document.querySelector("label[for='cod']");
+                    if (newTotal > 1000) {
+                        codInput.disabled = true;
+                        codInput.checked = false;
+                        codLabel.innerHTML = `<i class="fas fa-money-bill-wave text-secondary me-2"></i> COD (Not Available above ₹1000)`;
+                        codLabel.classList.add("text-muted");
+                    } else {
+                        codInput.disabled = false;
+                        codLabel.innerHTML = `<i class="fas fa-money-bill-wave text-success me-2"></i> Cash on Delivery (COD)`;
+                        codLabel.classList.remove("text-muted");
+                    }
+
+
                 } else {
                     couponMessage.textContent = data.message;
                     couponMessage.className = "text-danger";
@@ -905,6 +931,22 @@
 
             applyCouponBtn.classList.remove("d-none");
             removeCouponBtn.classList.add("d-none");
+
+            
+            const codInput = document.getElementById("cod");
+            const codLabel = document.querySelector("label[for='cod']");
+            if (originalTotal > 1000) {
+                codInput.disabled = true;
+                codInput.checked = false;
+                codLabel.innerHTML = `<i class="fas fa-money-bill-wave text-secondary me-2"></i> COD (Not Available above ₹1000)`;
+                codLabel.classList.add("text-muted");
+            } else {
+                codInput.disabled = false;
+                codLabel.innerHTML = `<i class="fas fa-money-bill-wave text-success me-2"></i> Cash on Delivery (COD)`;
+                codLabel.classList.remove("text-muted");
+            }
+
+
         });
 
 
@@ -952,6 +994,22 @@
 
             formAddressId.value = selectedRadio.value;
             console.log("Selected Address ID:", selectedRadio.value);
+
+
+
+            const orderTotal = parseInt(document.getElementById("orderTotalAmount").value || 0);
+            if (selectedPayment === 'COD' && orderTotal > 1000) {
+                e.preventDefault();
+                return Swal.fire({
+                    icon: 'error',
+                    title: 'COD Not Allowed',
+                    text: 'Cash on Delivery is only available for orders up to ₹1000. Please choose Online Payment.',
+                    confirmButtonColor: '#6777ef'
+                });
+            }
+
+
+
 
             if (selectedPayment === 'COD') {
                 codConfirmModal.show();
@@ -1079,7 +1137,7 @@
 </script>
 
 <script>
-  // Toggle coupon list
+  
   document.getElementById('toggleCoupons').addEventListener('click', function (e) {
     e.preventDefault();
     const couponSection = document.getElementById('availableCoupons');
@@ -1087,7 +1145,7 @@
     this.textContent = couponSection.classList.contains('d-none') ? 'View Available Coupons' : 'Hide Coupons';
   });
 
-  // Click on a coupon card to apply it
+  
   document.querySelectorAll('.coupon-card').forEach(card => {
     card.addEventListener('click', function () {
       const code = this.getAttribute('data-code');
