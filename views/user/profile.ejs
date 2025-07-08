@@ -1416,20 +1416,58 @@
 
       <!-- Pagination -->
       <% if (totalPages > 1) { %>
-        <nav class="mt-4">
-          <ul class="pagination justify-content-center">
-            <% for (let i = 1; i <= totalPages; i++) { %>
+      <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+          
+          <!-- Previous Button -->
+          <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+            <a class="page-link" 
+              href="/userProfile?page=<%= currentPage - 1 %><%= query ? `&query=${query}` : '' %>#orderSection" 
+              tabindex="-1" 
+              aria-disabled="<%= currentPage === 1 %>">
+              &laquo; Prev
+            </a>
+          </li>
+
+          <% const windowSize = 1; %>
+          <% for (let i = 1; i <= totalPages; i++) { %>
+            <% if (
+                  i === 1 || 
+                  i === totalPages || 
+                  (i >= currentPage - windowSize && i <= currentPage + windowSize)
+                ) { %>
+
+              <% if (i === currentPage - windowSize && i !== 2) { %>
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+              <% } %>
+
               <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                <a 
-                  class="page-link" 
+                <a class="page-link" 
                   href="/userProfile?page=<%= i %><%= query ? `&query=${query}` : '' %>#orderSection">
                   <%= i %>
                 </a>
               </li>
+
+              <% if (i === currentPage + windowSize && i !== totalPages - 1) { %>
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+              <% } %>
+
             <% } %>
-          </ul>
-        </nav>
-      <% } %>
+          <% } %>
+
+      <!-- Next Button -->
+      <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+        <a class="page-link" 
+           href="/userProfile?page=<%= currentPage + 1 %><%= query ? `&query=${query}` : '' %>#orderSection" 
+           aria-disabled="<%= currentPage === totalPages %>">
+          Next &raquo;
+        </a>
+      </li>
+
+    </ul>
+  </nav>
+<% } %>
+
 
     <% } else { %>
       <!-- Empty State -->
@@ -1466,7 +1504,11 @@
       <% coupons.forEach(coupon => { %>
         <div class="coupon-card <%= coupon.used ? 'used' : '' %>">
           <h5 class="text-success"><b><%= coupon.name %></b></h5>
-          <p>₹<%= coupon.offerPrice %> off on orders above ₹<%= coupon.minimumPrice %></p>
+          <% if(coupon.discountType === "percentage"){%>
+          <p><%= coupon.offerPrice %>&#37; off on orders above ₹<%= coupon.minimumPrice %></p>
+          <% }else{%>
+          <p>₹<%= coupon.offerPrice %> off on orders above ₹<%= coupon.minimumPrice %></p> 
+          <%}%>
           <p>Expires on: <%= coupon.expireOn %></p>
           <p>Status: <strong><%= coupon.used ? "Used" : "Available" %></strong></p>
           <% if (coupon.type === 'referral') { %>

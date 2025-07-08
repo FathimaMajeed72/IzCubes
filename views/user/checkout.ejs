@@ -805,7 +805,11 @@
                                     <div class="card shadow-sm border rounded p-2 coupon-card h-100" style="cursor: pointer;" data-code="<%= coupon.name %>">
                                         <div class="card-body p-2">
                                         <h6 class="mb-1 text-dark"><%= coupon.name %> <small class="text-muted">(<%= coupon.type %>)</small></h6>
-                                        <p class="mb-1 small text-success">Save ₹<%= coupon.offerPrice %> on orders above ₹<%= coupon.minimumPrice %></p>
+                                        <% if(coupon.discountType==="percentage"){%>
+                                        <p class="mb-1 small text-success">Save <%= coupon.offerPrice %>% on orders above ₹<%= coupon.minimumPrice %></p>
+                                        <%}else{%>
+                                        <p class="mb-1 small text-success">Save ₹<%= coupon.offerPrice %> on orders above ₹<%= coupon.minimumPrice %></p>   
+                                        <%}%>
                                         <p class="small text-muted">Expires on <%= new Date(coupon.expireOn).toLocaleDateString() %></p>
                                         </div>
                                     </div>
@@ -878,8 +882,8 @@
 
                     totalAmountInput.value = newTotal;
                     totalDisplay.textContent = `₹${newTotal}`;
-                    discountDisplay.textContent = `- ₹${data.offerPrice}`;
-                    couponMessage.textContent = data.message;
+                    discountDisplay.textContent = `- ₹${appliedDiscount}`;
+                    couponMessage.textContent = data.message+ (data.discountType === 'percentage' ? " (Percentage Based)" : " (Flat Discount)");
                     couponMessage.className = "text-success";
 
                     document.getElementById("couponId").value = data.couponId;

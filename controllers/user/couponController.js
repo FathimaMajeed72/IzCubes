@@ -27,11 +27,23 @@ const applyCoupon = async (req, res) => {
       return res.status(400).json({ success: false, message: "Coupon already used" });
     }
 
+    let offerPrice = 0;
+
+    if (coupon.discountType === "percentage") {
+      offerPrice = Math.round((subtotal * coupon.offerPrice) / 100);
+      if (coupon.maxDiscountAmount) {
+        offerPrice = Math.min(offerPrice, coupon.maxDiscountAmount);
+      }
+    } else {
+      offerPrice = coupon.offerPrice;
+    }
+
     return res.status(200).json({
       success: true,
-      offerPrice: coupon.offerPrice,
+      offerPrice: offerPrice,
       couponId: coupon._id,
       message: "Coupon applied successfully",
+      discountType: coupon.discountType,
     });
   } catch (err) {
     console.error("Coupon apply error:", err);

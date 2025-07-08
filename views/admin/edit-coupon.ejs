@@ -119,6 +119,28 @@
              <div id="error-offer-price" class="error-message"></div>
            </div>
 
+          <div>
+            <label for="discount-type" class="form-label">Discount Type</label>
+            <select id="discount-type" name="discountType" class="form-control" onchange="toggleMaxDiscount()">
+              <option value="fixed" <%= findCoupon.discountType === 'fixed' ? 'selected' : '' %>>Flat</option>
+              <option value="percentage" <%= findCoupon.discountType === 'percentage' ? 'selected' : '' %>>Percentage</option>
+            </select>
+          </div>
+
+          <div id="max-discount-container" style ="<%= findCoupon.discountType === 'percentage' ? 'display: block;' : 'display: none;' %>">
+            <label for="max-discount" class="form-label">Max Discount Amount</label>
+            <input
+              type="text"
+              id="max-discount"
+              name="maxDiscount"
+              placeholder="Type here"
+              class="form-control"
+              value="<%= findCoupon.maxDiscountAmount || '' %>"
+            />
+            <div id="error-max-discount" class="error-message"></div>
+          </div>
+
+
 
            <div>
              <label for="minimum-price" class="form-label">Minimum Price</label>
@@ -143,6 +165,10 @@
  </div>
 </section>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", toggleMaxDiscount);
+</script>
+
 <script>
  
 
@@ -194,37 +220,33 @@
 
    const offerPrice =offerPriceInput.value.trim() !== ""? parseInt(offerPriceInput.value): NaN;
    const minimumPrice =minimumPriceInput.value.trim() !== ""? parseInt(minimumPriceInput.value): NaN;
+   const discountType = document.getElementById("discount-type").value;
+   const maxDiscountInput = document.getElementById("max-discount");
+   const maxDiscount = maxDiscountInput && maxDiscountInput.value.trim() !== "" ? parseInt(maxDiscountInput.value) : null;
 
+   if (isNaN(offerPrice) || offerPrice <= 0) {
+      document.getElementById("error-offer-price").innerHTML = "Enter valid offer price";
+      return false;
+    }
 
-   if (isNaN(offerPrice)) {
-     document.getElementById("error-offer-price").innerHTML =
-       "Please enter a valid numeric value for Offer Price";
-     return false;
-   }
+    if (isNaN(minimumPrice) || minimumPrice <= 0) {
+      document.getElementById("error-minimum-price").innerHTML = "Enter valid minimum price";
+      return false;
+    }
 
-
-   if (isNaN(minimumPrice)) {
-     document.getElementById("error-minimum-price").innerHTML ="Please enter a valid numeric value for Minimum Price";
-     return false;
-   }
-
-
-   if (offerPrice < 0) {
-     document.getElementById("error-offer-price").innerHTML ="Offer Price must be a positive number";
-     return false;
-   }
-
-
-   if (minimumPrice < 0) {
-     document.getElementById("error-minimum-price").innerHTML ="Minimum Price must be a positive number";
-     return false;
-   }
-
-
-   if (offerPrice >= minimumPrice) {
-     document.getElementById("error-offer-price").innerHTML ="Offer Price must be less than Minimum Price";
-     return false;
-   }
+    if (discountType === "percentage") {
+      if (offerPrice > 100) {
+        document.getElementById("error-offer-price").innerHTML = "Percentage cannot exceed 100";
+        return false;
+      }
+      if (maxDiscount === null || isNaN(maxDiscount) || maxDiscount <= 0) {
+        document.getElementById("error-max-discount").innerHTML = "Enter valid max discount";
+        return false;
+      }
+    } else if (discountType === "fixed" && offerPrice >= minimumPrice) {
+      document.getElementById("error-offer-price").innerHTML = "Flat offer must be less than minimum price";
+      return false;
+    }
 
 
    return true;
@@ -242,6 +264,8 @@
      endDate: document.getElementById("expiringDate").value,
      offerPrice: document.getElementById("offer-price").value,
      minimumPrice: document.getElementById("minimum-price").value,
+     discountType: document.getElementById("discount-type").value,
+     maxDiscount: document.getElementById("max-discount").value,
    },
    success: function(response) {
      Swal.fire({
@@ -264,6 +288,17 @@
    },
  });
 }
+
+function toggleMaxDiscount() {
+  const type = document.getElementById("discount-type").value;
+  const maxDiscountField = document.getElementById("max-discount-container");
+  if (type === "percentage") {
+    maxDiscountField.style.display = "block";
+  } else {
+    maxDiscountField.style.display = "none";
+  }
+}
+
 </script>
 <%- include("../../views/partials/admin/footer") %>
 

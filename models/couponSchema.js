@@ -16,9 +16,18 @@ const couponSchema = new mongoose.Schema({
         type : Date,
         required : true
     },
+    discountType: {
+        type: String,
+        enum: ['fixed', 'percentage'],
+        default: 'fixed'
+    },
     offerPrice : {
         type : Number,
         required : true
+    },
+    maxDiscountAmount: {
+        type: Number,       
+        default: null
     },
     minimumPrice : {
         type : Number,

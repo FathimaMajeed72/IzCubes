@@ -111,12 +111,7 @@ const handleReturnRequest = async (req, res) => {
 
       for (const item of order.orderedItems) {
         item.status = 'Returned';
-        // const product = await Product.findById(item.product);
-        // if (product) {
-        //   const sizeVariant = product.sizes.find(s => s.size === item.size);
-        //   if (sizeVariant) sizeVariant.quantity += item.quantity;
-        //   await product.save();
-        // }
+        
         item.returnStatus = 'Accepted';
         item.stockUpdated = false;
       }
@@ -173,11 +168,7 @@ const handleItemReturnRequest = async (req, res) => {
         let refundedAmount = 0;
         const product = await Product.findById(productId);
         if (product) {
-          // const sizeVariant = product.sizes.find(s => s.size === item.size);
-          // if (sizeVariant) {
-          //   sizeVariant.quantity += item.quantity;
-          // }
-          // await product.save();
+         
 
           const itemTotal = item.price * item.quantity;
           const orderPayableAmount = order.totalPrice - order.couponDiscount;

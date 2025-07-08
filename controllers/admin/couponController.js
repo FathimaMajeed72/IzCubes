@@ -26,7 +26,9 @@ const createCoupon = async(req,res)=>{
             startDate : new Date(req.body.startDate + "T00:00:00"),
             endDate : new Date(req.body.endDate + "T00:00:00"),
             offerPrice : parseInt(req.body.offerPrice),
-            minimumPrice : parseInt(req.body.minimumPrice)
+            minimumPrice : parseInt(req.body.minimumPrice),
+            discountType: req.body.discountType || "fixed",
+            maxDiscountAmount: req.body.discountType === "percentage" ? parseInt(req.body.maxDiscount) : null
         }
 
         const newCoupon = new Coupon({
@@ -34,8 +36,11 @@ const createCoupon = async(req,res)=>{
             createdOn : data.startDate,
             expireOn : data.endDate,
             offerPrice : data.offerPrice,
-            minimumPrice : data.minimumPrice
-        })
+            minimumPrice : data.minimumPrice,
+            discountType: data.discountType, 
+            maxDiscountAmount: data.discountType === "percentage" ? data.maxDiscountAmount : undefined 
+        });
+       
         await newCoupon.save();
         return res.redirect("/admin/coupon")
         
@@ -73,19 +78,30 @@ const updateCoupon = async (req,res) => {
         if(selectedCoupon){
             const startDate = new Date(req.body.startDate);
             const endDate = new Date(req.body.endDate);
+
+            const updatedFields = {
+                name: req.body.couponName,
+                createdOn: startDate,
+                expireOn: endDate,
+                offerPrice: parseInt(req.body.offerPrice),
+                minimumPrice: parseInt(req.body.minimumPrice),
+                discountType: req.body.discountType || "fixed",
+            };
+
+            if (req.body.discountType === "percentage") {
+                updatedFields.maxDiscountAmount = parseInt(req.body.maxDiscount);
+            } else {
+                updatedFields.maxDiscountAmount = undefined;
+            }
+
             const updateCoupon = await Coupon.updateOne(
-                {_id:oid},
-                {
-                    $set: {
-                        name : req.body.couponName,
-                        createdOn : startDate,
-                        expireOn : endDate,
-                        offerPrice : parseInt(req.body.offerPrice),
-                        minimumPrice:parseInt(req.body.minimumPrice),
-                    }
-                },
+                { _id: oid },
+                { $set: updatedFields }
             );
-            if(updateCoupon!= null){
+
+
+           
+            if(updateCoupon.modifiedCount > 0){
                 res.send("Coupon updated successfully")
             }else{
                 res.status(500).send("Coupon update failed")

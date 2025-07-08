@@ -95,14 +95,59 @@
 
   <!-- Pagination -->
   <nav aria-label="Page navigation" class="mt-4">
-    <ul class="pagination justify-content-center">
-      <% for (let i = 1; i <= totalPages; i++) { %>
-        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-          <a class="page-link" href="?search=<%= search %>&status=<%= status %>&sort=<%= sort %>&page=<%= i %>"><%= i %></a>
+    <% if (totalPages > 1) { %>
+      <ul class="pagination justify-content-center">
+
+        <!-- PREVIOUS BUTTON -->
+        <% if (currentPage > 1) { %>
+          <li class="page-item">
+            <a class="page-link" href="?search=<%= search %>&status=<%= status %>&sort=<%= sort %>&page=<%= currentPage - 1 %>">&laquo;</a>
+          </li>
+        <% } %>
+
+        <!-- FIRST PAGE -->
+        <li class="page-item <%= currentPage === 1 ? 'active' : '' %>">
+          <a class="page-link" href="?search=<%= search %>&status=<%= status %>&sort=<%= sort %>&page=1">1</a>
         </li>
-      <% } %>
-    </ul>
+
+        <!-- ELLIPSIS BEFORE -->
+        <% if (currentPage > 4) { %>
+          <li class="page-item disabled"><span class="page-link">...</span></li>
+        <% } %>
+
+        <!-- MIDDLE PAGE NUMBERS -->
+        <% 
+          const startPage = Math.max(2, currentPage - 1);
+          const endPage = Math.min(totalPages - 1, currentPage + 1);
+          for (let i = startPage; i <= endPage; i++) {
+        %>
+          <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+            <a class="page-link" href="?search=<%= search %>&status=<%= status %>&sort=<%= sort %>&page=<%= i %>"><%= i %></a>
+          </li>
+        <% } %>
+
+        <!-- ELLIPSIS AFTER -->
+        <% if (currentPage < totalPages - 3) { %>
+          <li class="page-item disabled"><span class="page-link">...</span></li>
+        <% } %>
+
+        <!-- LAST PAGE -->
+        <% if (totalPages > 1) { %>
+          <li class="page-item <%= currentPage === totalPages ? 'active' : '' %>">
+            <a class="page-link" href="?search=<%= search %>&status=<%= status %>&sort=<%= sort %>&page=<%= totalPages %>"><%= totalPages %></a>
+          </li>
+        <% } %>
+
+        <!-- NEXT BUTTON -->
+        <% if (currentPage < totalPages) { %>
+          <li class="page-item">
+            <a class="page-link" href="?search=<%= search %>&status=<%= status %>&sort=<%= sort %>&page=<%= currentPage + 1 %>">&raquo;</a>
+          </li>
+        <% } %>
+
+      </ul>
+    <% } %>
   </nav>
-</div>
+
 
 <%- include("../../views/partials/admin/footer") %>

@@ -224,7 +224,8 @@ const postNewPassword = async (req,res)=>{
         minimumPrice: coupon.minimumPrice,
         expireOn: coupon.expireOn.toLocaleDateString(),
         used: coupon.usedBy.includes(userId),
-        type : coupon.type
+        type : coupon.type,
+        discountType: coupon.discountType
       }));
 
 

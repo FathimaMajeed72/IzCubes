@@ -101,7 +101,17 @@
 
 
              <div>
-               <label for="offer-price" class="form-label">Offer Price</label>
+              <label for="discount-type" class="form-label">Discount Type</label>
+              <select name="discountType" id="discount-type" class="form-control" required>
+                <option value="fixed">Flat (₹)</option>
+                <option value="percentage">Percentage (%)</option>
+              </select>
+              <div id="error-discount-type" class="error-message"></div>
+            </div>
+
+
+             <div>
+               <label for="offer-price" class="form-label" id="offer-price-label">Offer Price</label>
                <input
                  type="text"
                  name="offerPrice"
@@ -111,6 +121,21 @@
                />
                <div id="error-offer-price" class="error-message"></div>
              </div>
+
+
+             <div id="max-discount-container" style="display: none;">
+              <label for="max-discount" class="form-label">Maximum Discount (₹)</label>
+              <input
+                type="text"
+                name="maxDiscount"
+                placeholder="Applicable only for % coupons"
+                class="form-control"
+                id="max-discount"
+              />
+              <div id="error-max-discount" class="error-message"></div>
+            </div>
+
+
 
 
              <div>
@@ -212,7 +237,7 @@ document.addEventListener("DOMContentLoaded", setDefaultStartDate);
 
 
    let name = document.getElementsByName("couponName")[0].value;
-   const nameRegex = /^[A-Za-z0-9]{1,50}$/;
+   const nameRegex = /^[A-Za-z0-9_-]{3,50}$/;
 
 
    if (!nameRegex.test(name)) {
@@ -222,32 +247,63 @@ document.addEventListener("DOMContentLoaded", setDefaultStartDate);
    }
 
 
+   const discountType = document.getElementById("discount-type").value;
+
    const offerPriceInput = document.getElementsByName("offerPrice")[0];
    const minimumPriceInput = document.getElementsByName("minimumPrice")[0];
+   const maxDiscountInput = document.getElementById("max-discount");
+
 
 
    const offerPrice = offerPriceInput.value.trim() !== ""? parseInt(offerPriceInput.value): NaN;
    const minimumPrice = minimumPriceInput.value.trim() !== ""? parseInt(minimumPriceInput.value): NaN;
+   const maxDiscount = maxDiscountInput && maxDiscountInput.value.trim() !== ""
+    ? parseInt(maxDiscountInput.value.trim())
+    : null;
 
 
-   if (isNaN(offerPrice) || isNaN(minimumPrice) || offerPrice >= minimumPrice) {
-     document.getElementById("error-offer-price").innerHTML = "Offer Price must be greater than Minimum Price";
-     return false;
-   }
 
 
-   if (isNaN(offerPrice) || isNaN(minimumPrice)) {
-     document.getElementById("error-offer-price").innerHTML ="Please enter numeric values for Offer Price and Minimum Price";
-     return false;
-   }
+   if (isNaN(offerPrice) || offerPrice <= 0) {
+    document.getElementById("error-offer-price").innerHTML = "Enter a valid offer/discount amount";
+    return false;
+  }
+
+  if (isNaN(minimumPrice) || minimumPrice <= 0) {
+    document.getElementById("error-minimum-price").innerHTML = "Enter a valid minimum price";
+    return false;
+  }
+
+
+
+    if (discountType === "percentage") {
+      if (offerPrice > 100) {
+        document.getElementById("error-offer-price").innerHTML = "Percentage cannot exceed 100%";
+        return false;
+      }
+
+     if (maxDiscount === null || isNaN(maxDiscount) || maxDiscount <= 0) {
+      document.getElementById("error-max-discount").innerHTML = "Enter a valid maximum discount amount";
+      return false;
+    }
+
+    } else if (discountType === "fixed") {
+      if (offerPrice >= minimumPrice) {
+        document.getElementById("error-offer-price").innerHTML = "Flat offer Price must be less than Minimum Price";
+        return false;
+      }
+    }
+
 
 
        const formData = {
        couponName: name,
        startDate: sDateObj,
        endDate: eDateObj,
+       discountType,
        offerPrice: offerPrice,
-       minimumPrice: minimumPrice
+       minimumPrice: minimumPrice,
+       maxDiscount,
    };
    return true;
  }
@@ -302,6 +358,20 @@ function confirmDelete(couponId) {
      },
    });
  }
+</script>
+<script>
+  document.getElementById("discount-type").addEventListener("change", function () {
+  const label = document.getElementById("offer-price-label");
+  const maxDiscountDiv = document.getElementById("max-discount-container");
+
+  if (this.value === "percentage") {
+    label.innerText = "Discount (%)";
+    maxDiscountDiv.style.display = "block";
+  } else {
+    label.innerText = "Offer Price (₹)";
+    maxDiscountDiv.style.display = "none";
+  }
+});
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
