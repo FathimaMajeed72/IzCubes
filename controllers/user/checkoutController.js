@@ -44,13 +44,13 @@ const checkout = async (req, res) => {
       const sizeStock = product.sizes.find(s => s.size === item.size);
       
 
-      if (!sizeStock || sizeStock.quantity < item.quantity) {
-        removedItems.push({
-          productName: product.productName,
-          size: item.size
-        });
-        continue;
-      }
+      // if (!sizeStock || sizeStock.quantity < item.quantity) {
+      //   removedItems.push({
+      //     productName: product.productName,
+      //     size: item.size
+      //   });
+      //   continue;
+      // }
       subtotal += item.totalPrice;
 
       // const productOffer = product.productOffer || 0;
@@ -104,7 +104,7 @@ const checkout = async (req, res) => {
       shipping: SHIPPING_FEE,
       total,
       selectedAddress,
-      removedItems,
+      //removedItems,
       razorpayKeyId: process.env.RAZORPAY_KEY_ID,
       retryOrderId: retryOrder ? retryOrder._id : null,
       existingRazorpayOrderId: existingRazorpayOrderId || null ,
@@ -120,6 +120,40 @@ const checkout = async (req, res) => {
 };
 
 
+const validateCartQuantity = async (req, res) => {
+  try {
+    const userId = req.session.user._id;
+    const cart = await Cart.findOne({ userId }).populate('items.productId');
+
+    let removedItems = [];
+
+    for (const item of cart.items) {
+      const product = item.productId;
+      const sizeObj = product.sizes.find(s => s.size === item.size);
+
+      if (!sizeObj || sizeObj.quantity < item.quantity) {
+        removedItems.push({
+          name: product.productName,
+          size: item.size
+        });
+      }
+    }
+
+    if (removedItems.length > 0) {
+      return res.json({ valid: false, removedItems });
+    }
+
+    res.json({ valid: true });
+  } catch (error) {
+    console.error("Quantity validation error:", error);
+    res.status(500).json({ valid: false, error: "Server error" });
+  }
+};
+
+
+
+
 module.exports = {
     checkout,
+    validateCartQuantity
 }

@@ -81,6 +81,7 @@ router.get("/deleteItem", userAuth, cartController.deleteProduct)
 
 
 router.get("/checkout", userAuth, checkoutController.checkout)
+router.post("/validate-quantity", userAuth, checkoutController.validateCartQuantity);
 
 
 router.post("/orders",userAuth, orderController.placeOrder);

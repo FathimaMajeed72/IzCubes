@@ -742,18 +742,7 @@
                                 <% }) %>
                             </div>
 
-                            <div>
-                                <% if (removedItems && removedItems.length) { %>
-                                    <div class="alert alert-warning">
-                                        The following items were removed from checkout due to being out of stock:
-                                        <ul>
-                                        <% removedItems.forEach(item => { %>
-                                            <li><%= item.productName %> - Size <%= item.size %></li>
-                                        <% }); %>
-                                        </ul>
-                                    </div>
-                                    <% } %>
-                            </div>
+                           
 
                             <!-- Price Summary -->
                             <div class="price-summary">
@@ -998,6 +987,52 @@
 
             formAddressId.value = selectedRadio.value;
             console.log("Selected Address ID:", selectedRadio.value);
+
+
+
+
+                        // Validate cart quantities before placing the order
+            try {
+                const validateRes = await fetch("/validate-quantity", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                const validateData = await validateRes.json();
+
+                if (!validateData.valid) {
+                    e.preventDefault();
+
+                    let outOfStockMsg = "Some items are out of stock(Please Remove from cart):\n";
+                    validateData.removedItems.forEach(item => {
+                        outOfStockMsg += `- ${item.name} (Size: ${item.size})\n`;
+                    });
+
+                    await Swal.fire({
+                        icon: "error",
+                        title: "Out of Stock",
+                        html: `<pre style="text-align: left">${outOfStockMsg}</pre>`,
+                        confirmButtonColor: "#6777ef",
+                        confirmButtonText: "Go to Cart"
+                    });
+
+                    window.location.href = "/cart";
+                    return;
+                }
+            } catch (err) {
+                e.preventDefault();
+                console.error("Stock validation failed", err);
+                return Swal.fire({
+                    icon: "error",
+                    title: "Validation Error",
+                    text: "Unable to validate cart items. Please try again later.",
+                    confirmButtonColor: "#6777ef"
+                });
+            }
+
+
 
 
 
