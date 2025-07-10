@@ -31,16 +31,53 @@ const placeOrder = async (req, res) => {
     }
 
 
-    const cart = await Cart.findOne({ userId }).populate('items.productId');
-    if (!cart || cart.items.length === 0) {
-      return res.redirect("/cart");
-    }
-
     let validItems = [];
     let removedItems = [];
     let subtotal = 0;
     let discount = offerPrice;
     let productDiscount = 0;
+
+
+
+    if (retryOrderId) {
+      const retryOrder = await Order.findById(retryOrderId);
+      if (!retryOrder || retryOrder.paymentStatus !== "Failed") {
+        return res.redirect("/cart");
+      }
+
+      for (const item of retryOrder.orderedItems) {
+        const product = await Product.findById(item.product);
+        if (product) {
+          const sizeStock = product.sizes.find(s => s.size === item.size);
+          if (sizeStock && sizeStock.quantity >= item.quantity) {
+            const offerAmount = product.regularPrice - product.salePrice;
+            productDiscount += offerAmount * item.quantity;
+            subtotal += product.salePrice * item.quantity;
+
+            validItems.push({
+              productId: product._id,
+              size: item.size,
+              quantity: item.quantity,
+              price: product.salePrice,
+              totalPrice: product.salePrice * item.quantity
+            });
+          } else {
+            removedItems.push({ name: product.productName, size: item.size });
+          }
+        } else {
+          removedItems.push({ name: "Deleted Product", size: item.size });
+        }
+      }
+    } else {
+
+
+
+    const cart = await Cart.findOne({ userId }).populate('items.productId');
+    if (!cart || cart.items.length === 0) {
+      return res.redirect("/cart");
+    }
+
+
 
     for (const item of cart.items) {
       const product = item.productId;
@@ -60,6 +97,7 @@ const placeOrder = async (req, res) => {
         });
       }
     }
+  }
 
      if (validItems.length === 0) {
       return res.render("cart", {
@@ -70,6 +108,9 @@ const placeOrder = async (req, res) => {
         shipping: 0,
         error: "All items in your cart are out of stock."
       });
+    }else if (removedItems.length > 0) {
+     
+      req.session.partialRetryNotice = removedItems.map(r => `${r.name} (${r.size})`).join(", ");
     }
 
     const totalPrice = subtotal;
@@ -91,10 +132,10 @@ const placeOrder = async (req, res) => {
     }
 
     const orderedItems = validItems.map(item => ({
-      product: item.productId._id,
+      product: item.productId._id || item.productId,
       size: item.size,
       quantity: item.quantity,
-      price: item.productId.salePrice
+      price: item.price || item.productId?.salePrice
     }));
 
 
@@ -130,6 +171,7 @@ const placeOrder = async (req, res) => {
       razorpayOrderId = razorpay_order_id;
     } else if (paymentMethod === "COD") {
       paymentStatus = "Pending"; 
+      
     } else {
       return res.status(400).send("Unsupported payment method");
     }
@@ -198,8 +240,9 @@ const placeOrder = async (req, res) => {
       );
     }
 
-   
+   if (!retryOrderId) {
     await Cart.findOneAndUpdate({ userId }, { $set: { items: [] } });
+   }
 
     res.redirect(`/order-success?orderId=${newOrder._id}`);
 
@@ -217,7 +260,20 @@ const placeOrder = async (req, res) => {
 const orderSuccess = async (req,res) => {
     try {
 
-        res.render("order-success")
+      const orderId = req.query.orderId;
+      const order = await Order.findById(orderId);
+
+      if (!order) {
+        return res.redirect("/pageNotFound");
+      }
+
+      const partialNotice = req.session.partialRetryNotice;
+      delete req.session.partialRetryNotice;
+
+      res.render("order-success", {
+        order,
+        partialNotice
+      })
 
         
     } catch (error) {

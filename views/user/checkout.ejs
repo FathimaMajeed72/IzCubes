@@ -360,6 +360,40 @@
         box-shadow: none;
     }
 
+    .order-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .order-item.unavailable {
+        background-color: #f9f9f9;
+        opacity: 0.6;
+        border-left: 4px solid #ccc;
+    }
+
+    .order-item .item-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        margin-right: 15px;
+        border-radius: 6px;
+    }
+
+    .order-item .item-details {
+        flex: 1;
+    }
+
+    .item-price {
+        font-weight: bold;
+    }
+
+    .order-item.unavailable .item-price {
+        text-decoration: line-through;
+    }
+
     /* Modal Enhancements */
     .modal-content {
         border-radius: 16px;
@@ -732,15 +766,45 @@
                                             <h6><%= item.productId.productName %></h6>
                                             <p class="text-muted">
                                                 Qty: <%= item.quantity %> <br> Price: <s>₹<%= item.productId.regularPrice %></s> ₹<%= item.price %> 
-                                                <% if (item.productId.productOffer) { %>
-                                                    <span class="offer-badge"><%= item.productId.productOffer %>% OFF</span>
+                                                <%
+                                                    const productOffer = item.productId.productOffer || 0;
+                                                    const categoryOffer = item.productId.category?.categoryOffer || 0;
+                                                    const bestOffer = Math.max(productOffer, categoryOffer);
+                                                %>
+
+                                                <% if (bestOffer > 0) { %>
+                                                    <span class="offer-badge"><%= bestOffer %>% OFF</span>
                                                 <% } %>
+
                                             </p>
                                         </div>
                                         <div class="item-price">₹<%= item.totalPrice %></div>
                                     </div>
                                 <% }) %>
                             </div>
+
+                            <% if (removedItems && removedItems.length > 0) { %>
+                            <hr>
+                            <div class="text-danger fw-semibold mb-2">
+                                Unavailable Items (Not Included in Total):
+                            </div>
+                            <% removedItems.forEach(item => { %>
+                                <div class="order-item unavailable">
+                                <img src="/uploads/re-image/<%= item.productId?.productImage[0] %>" 
+                                    alt="<%= item.productId?.productName %>" class="item-image">
+                                <div class="item-details">
+                                    <h6 class="text-muted"><%= item.productId?.productName || 'Product Unavailable' %></h6>
+                                    <p class="text-muted">
+                                    Qty: <%= item.quantity %> <br> 
+                                    Price: ₹<%= item.totalPrice %> <br>
+                                    <span class="badge bg-secondary">Out of Stock</span>
+                                    </p>
+                                </div>
+                                <div class="item-price text-muted">₹<%= item.totalPrice %></div>
+                                </div>
+                            <% }) %>
+                            <% } %>
+
 
                            
 

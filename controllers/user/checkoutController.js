@@ -24,64 +24,100 @@ const checkout = async (req, res) => {
     const selectedAddress = userAddresses.find(addr => addr.isDefault) || null
 
 
-    const cart = await Cart.findOne({ userId }).populate('items.productId');
-
-    if (!cart || !cart.items.length) {
-      return res.redirect("/cart");
-    }
-
-
+    let validItems = [];
     let subtotal = 0;
-   // let discount = 0;
-    
-
-    const validItems = [];
-    const removedItems = [];
-   
-
-    for (const item of cart.items) {
-      const product = item.productId;
-      const sizeStock = product.sizes.find(s => s.size === item.size);
-      
-
-      // if (!sizeStock || sizeStock.quantity < item.quantity) {
-      //   removedItems.push({
-      //     productName: product.productName,
-      //     size: item.size
-      //   });
-      //   continue;
-      // }
-      subtotal += item.totalPrice;
-
-      // const productOffer = product.productOffer || 0;
-      // const offerAmount = Math.round((product.regularPrice * productOffer) / 100);
-      // discount += offerAmount * item.quantity;
-
-      validItems.push(item);
-    }
-
-    if (!validItems.length) {
-      return res.redirect("/cart?error=All selected items are out of stock.");
-    }
-
- 
-    // const total = subtotal - discount + SHIPPING_FEE;
-    const total = subtotal + SHIPPING_FEE;
-
-
     let retryOrder = null;
     let existingRazorpayOrderId = null;
+    const removedItems = [];
 
+    
     if (retryOrderId) {
-      retryOrder = await Order.findById(retryOrderId);
+      retryOrder = await Order.findById(retryOrderId).populate({
+        path: "orderedItems.product",
+        populate: { path: "category" } 
+      });
 
       if (!retryOrder || retryOrder.user.toString() !== userId.toString() || retryOrder.paymentStatus !== "Failed") {
-        return res.redirect("/cart"); 
+        return res.redirect("/cart");
       }
 
+      for (const item of retryOrder.orderedItems) {
+        const product = await Product.findById(item.product);
+        if (product) {
+          const sizeStock = product?.sizes.find(s => s.size === item.size);
+
+          if (sizeStock && sizeStock.quantity >= item.quantity) {
+            validItems.push({
+              productId: product,
+              size: item.size,
+              quantity: item.quantity,
+              totalPrice: item.price * item.quantity,
+              price: item.price
+            });
+
+            subtotal += item.price * item.quantity;
+          } else {
+            removedItems.push({
+              productId: product,
+              size: item.size,
+              quantity: item.quantity,
+              totalPrice: item.price * item.quantity
+            });
+          }
+        } else {
+          removedItems.push({
+            productId: null, 
+            size: item.size,
+            quantity: item.quantity,
+            totalPrice: item.price * item.quantity
+          });
+        }
+      }
+
+
       existingRazorpayOrderId = retryOrder.razorpayOrderId;
+
+    } else {
+
+
+      const cart = await Cart.findOne({ userId }).populate({
+        path : 'items.productId',
+        populate: { path: "category" }
+      });
+
+      if (!cart || !cart.items.length) {
+        return res.redirect("/cart");
+      }
+
+
+      for (const item of cart.items) {
+        const product = item.productId;
+        const sizeStock = product.sizes.find(s => s.size === item.size);
+        
+        if (product && sizeStock && sizeStock.quantity >= item.quantity) {
+          validItems.push({
+            productId: product,
+            size: item.size,
+            quantity: item.quantity,
+            totalPrice: item.totalPrice,
+            price: product.salePrice
+          });
+          subtotal += item.totalPrice;
+        } else {
+          removedItems.push({
+            productId: product,
+            size: item.size,
+            quantity: item.quantity,
+            totalPrice: item.totalPrice
+          });
+        }      
+      }
     }
 
+
+     if (!validItems.length) {
+        return res.redirect("/cart?error=All selected items are out of stock.");
+      }
 
     const availableCoupons = await Coupon.find({
       isList: true,
@@ -94,23 +130,22 @@ const checkout = async (req, res) => {
     });
 
 
-
+     const total = subtotal + SHIPPING_FEE;
     
     res.render("checkout", { 
       userAddresses,
       cart:  { items: validItems },
       subtotal,
-      //discount,
       shipping: SHIPPING_FEE,
       total,
       selectedAddress,
-      //removedItems,
       razorpayKeyId: process.env.RAZORPAY_KEY_ID,
       retryOrderId: retryOrder ? retryOrder._id : null,
       existingRazorpayOrderId: existingRazorpayOrderId || null ,
       appliedCoupon: retryOrder?.couponId || '',
       couponDiscount: retryOrder?.couponDiscount || 0,
-      coupons: availableCoupons
+      coupons: availableCoupons,
+      removedItems
     });
 
   } catch (err) {

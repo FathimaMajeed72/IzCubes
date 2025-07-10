@@ -100,7 +100,7 @@ router.get("/order-failure",userAuth, orderController.orderFailure);
 router.post("/create-razorpay-order",userAuth,paymentController.createRazorpayOrder);
 router.post("/razorpay-payment-failed", userAuth, paymentController.saveFailedOrder);
 
-//router.get('/retry-payment',userAuth, paymentController.getRetryPaymentPage)
+
 
 
 router.post('/apply-coupon',userAuth, couponController.applyCoupon);

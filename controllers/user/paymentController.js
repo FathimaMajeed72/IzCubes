@@ -118,33 +118,9 @@ const saveFailedOrder = async (req, res) => {
 
 
 
-// const getRetryPaymentPage = async (req, res) => {
-//   try {
-//     const orderId = req.query.orderId;
-
-//     const order = await Order.findOne({ orderId }).populate("user");
-
-//     if (!order || order.paymentStatus !== "Failed" || order.paymentMethod !== "Online") {
-//       return res.redirect("/cart");
-//     }
-
-//     res.render("user/retry-payment", {
-//       order,
-//       razorpayKeyId: process.env.RAZORPAY_KEY_ID,
-//     });
-//   } catch (err) {
-//     console.error("Retry Payment Load Error:", err);
-//     res.redirect("/cart");
-//   }
-// };
-
-
-
-
-
 
 module.exports = {
   createRazorpayOrder,
   saveFailedOrder,
- // getRetryPaymentPage
+ 
 };

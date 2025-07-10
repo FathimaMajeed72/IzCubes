@@ -284,6 +284,14 @@
                 </div>
             </div>
 
+            <% if (partialNotice) { %>
+                <div class="alert alert-warning">
+                    Note: The following item(s) were out of stock and not included in your order:
+                    <strong><%= partialNotice %></strong>
+                </div>
+            <% } %>
+
+
             <div class="success-content">
                 <h2 class="success-title">Thank you for your order!</h2>
                 <p class="success-message">Your order has been placed successfully and is now being processed. You will receive a confirmation email shortly with your order details.</p>
