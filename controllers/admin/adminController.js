@@ -83,7 +83,7 @@ function generateDateLabels(rangeType, start, end) {
 const loadDashboard = async (req, res) => {
   if (req.session.admin) {
     try {
-      const { rangeType, startDate, endDate } = req.query;
+      let { rangeType, startDate, endDate } = req.query;
 
       const salesReportQuery = {
         $or: [
@@ -94,6 +94,10 @@ const loadDashboard = async (req, res) => {
 
       const now = new Date();
       let start, end;
+
+      if (!rangeType) {
+        rangeType = "daily"; 
+      }
 
       
       if (rangeType === "daily") {
@@ -212,10 +216,20 @@ const loadDashboard = async (req, res) => {
         totalCouponDiscount: 0
       };
 
+
+      const page = parseInt(req.query.page) || 1;
+      const limit = 10;
+      const skip = (page - 1) * limit;
+
+      const totalOrdersCount = await Order.countDocuments(salesReportQuery);
+      const totalPages = Math.ceil(totalOrdersCount / limit);
+
       
       const orders = await Order.find(salesReportQuery)
         .populate("user couponId")
-        .sort({ createdOn: -1 });
+        .sort({ createdOn: -1 })
+        .skip(skip)
+        .limit(limit);
 
       console.log("Orders found for report:", orders.length);
       orders.forEach(o => console.log(o.createdOn, o.status, o.finalAmount));
@@ -361,10 +375,15 @@ const loadDashboard = async (req, res) => {
               orders,
               report,
               chartData: filledChartData,
-              filters: req.query,
+              filters: {
+                ...req.query,
+                rangeType
+              },
               topProducts,
               topCategories,
-              topBrands
+              topBrands,
+              currentPage: page,
+              totalPages
             });
           } catch (error) {
             console.error("Dashboard load error:", error);
@@ -454,8 +473,8 @@ const downloadSalesReportPDF = async (req, res) => {
     doc.moveDown(2);
 
     // Table headers
-    const headers = ['Date', 'Order ID', 'User', 'Offer\nDiscount\n(INR)', 'Total\nSales Price\n(INR)', 'Coupon', 'Coupon\nDiscount\n(INR)', 'Shipping\n(INR)', 'Final\nAmount\n(INR)'];
-    const colWidths = [50, 70, 60, 55, 60, 55, 70, 50, 60];
+    const headers = ['Date', 'Order ID', 'User', 'Total\nSales Price\n(INR)', 'Coupon\nDiscount\n(INR)', 'Final\nAmount\n(INR)', 'Payment\nMethod', 'Status'];
+    const colWidths = [55, 75, 60, 75, 65, 75, 55, 55];
     const colX = [];
     let x = 40;
     colWidths.forEach(w => {
@@ -491,20 +510,20 @@ const downloadSalesReportPDF = async (req, res) => {
     for (const order of orders) {
       if (y > 700) {
         doc.addPage();
-        y = 50;
+        y = 70;
         addTableHeader();
+        y = doc.y + 10;
       }
 
       const row = [
         order.createdOn.toLocaleDateString('en-IN'),
         order.orderId.slice(-10),
         order.user?.name || 'Guest',
-        `${order.discount || 0}`,
         `${order.totalPrice || 0}`,
-        order.couponId?.name || 'None',
         `${order.couponDiscount || 0}`,
-        `40`,
         `${order.finalAmount || 0}`,
+        (order.paymentMethod || 'N/A').toUpperCase(),
+        order.status || 'N/A'
       ];
 
       row.forEach((text, i) => {
@@ -579,10 +598,10 @@ const downloadSalesReportExcel = async (req, res) => {
 
     
     worksheet.addRow([
-      'Date', 'Order ID', 'User', 'Offer Discount (INR)',
-      'Total Sales Price (INR)', 'Coupon', 'Coupon Discount (INR)',
-      'Shipping (INR)', 'Final Amount (INR)'
-    ]);
+      'Date', 'Order ID', 'User',
+      'Total Sales Price (INR)', 'Coupon Discount (INR)', 'Final Amount (INR)',
+      'Payment Method', 'Status'
+    ]).font = { bold: true };
 
     
     orders.forEach(order => {
@@ -590,12 +609,11 @@ const downloadSalesReportExcel = async (req, res) => {
         order.createdOn.toLocaleDateString('en-IN'),
         order.orderId.slice(-10),
         order.user?.name || 'Guest',
-        order.discount || 0,
         order.totalPrice || 0,
-        order.couponId?.name || 'None',
         order.couponDiscount || 0,
-        40,
-        order.finalAmount || 0
+        order.finalAmount || 0,
+        order.paymentMethod || 'N/A',
+        order.status || 'N/A'
       ]);
     });
 

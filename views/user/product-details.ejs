@@ -527,6 +527,12 @@
       max-width: 230px;         
       cursor: pointer;
     }
+    .product-brand {
+        font-size: 14px;
+        color: #6c757d;
+        margin-bottom: 12px;
+        font-weight: 500;
+    }
 
 
     /* Responsive Design */
@@ -676,7 +682,7 @@
                         <div class="action-section">
                             
 
-                            <form action="/addToCart" method="POST" class="d-flex flex-grow-1">
+                            <form id="add-to-cart-form" class="d-flex flex-grow-1">
                                 <input type="hidden" name="productId" value="<%= product._id %>">
                                 <input type="hidden" name="quantity" id="cartQty" value="1">
                                 <input type="hidden" name="selectedSize" id="selectedSize">
@@ -685,9 +691,10 @@
                                 </button>
                             </form>
 
-                            <a href="#" class="wishlist-btn" aria-label="Add to Wishlist">
-                                <i class="fas fa-heart"></i>
-                            </a>
+                          
+                            <button class="wishlist-btn" onclick="addToWishlist('<%= product._id %>',this)" aria-label="Toggle wishlist">
+                                     <i class="<%= user.wishlist.includes(product._id.toString()) ? 'fas text-danger' : 'far' %> fa-heart"></i>
+                            </button>
                         </div>
 
                         <div class="product-meta">
@@ -715,15 +722,19 @@
                                     <a href="/productdetails?id=<%= product._id %>">
                                         <img src="/uploads/re-image/<%= product.productImage[0] %>" alt="<%= product.productName %>">
                                     </a>
-                                    <button class="card-wishlist-btn" aria-label="Add to wishlist">
-                                        <i class="fas fa-heart"></i>
+                                    
+                                    <button class="card-wishlist-btn" onclick="addToWishlist('<%= product._id %>',this)" aria-label="Toggle wishlist">
+                                     <i class="<%= user.wishlist.includes(product._id.toString()) ? 'fas text-danger' : 'far' %> fa-heart"></i>
                                     </button>
                                 </div>
                                 <div class="product-card-content">
                                     <h6 class="product-card-title truncated-text" title="<%= product.productName %>"><%= product.productName %></h6>
+                                    <div class="product-brand">
+                                        <i class="fas fa-tag me-1"></i>Brand: <%= product.brand %>
+                                    </div>
                                     <div class="product-card-price">₹<%= product.salePrice %></div>
-                                    <a href="#" class="product-card-btn">
-                                        <i class="fas fa-shopping-cart me-1"></i>Add to cart
+                                    <a href="/productdetails?id=<%= product._id %>" class="product-card-btn">
+                                        <i class="fas fa-shopping-cart me-1"></i>View Details
                                     </a>
                                 </div>
                             </div>
@@ -739,38 +750,122 @@
     </section>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        
         const cartQty = document.getElementById("cartQty");
-        
         const sizeSelect = document.getElementById('sizeSelect');
         const hiddenSelectedSize = document.getElementById('selectedSize');
-        const form = document.querySelector("form");
+        const form = document.getElementById("add-to-cart-form");
+        const productId = document.querySelector("input[name='productId']").value;
 
-        let quantity = 1;
-
-        cartQty.value = quantity;
-
-       
+        cartQty.value = 1;
 
         sizeSelect.addEventListener('change', function () {
-            const selected = this.value;
-            hiddenSelectedSize.value = selected;
-           
+            hiddenSelectedSize.value = this.value;
         });
 
-        form.addEventListener("submit", function (e) {
-            hiddenSelectedSize.value = sizeSelect.value;
-            if (!hiddenSelectedSize.value) {
-                e.preventDefault();
-                alert("Please select a size before adding to cart.");
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const selectedSize = sizeSelect.value;
+            if (!selectedSize) {
+                return Swal.fire({
+                    icon: 'warning',
+                    title: 'Select Size',
+                    text: 'Please select a size before adding to cart.',
+                });
+            }
+
+            try {
+                const response = await fetch("/addToCart", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        productId: productId,
+                        selectedSize: selectedSize
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Added to Cart",
+                        text: data.message || "Product added successfully",
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = "/cart";
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Cannot Add to Cart",
+                        text: data.message || "Something went wrong"
+                    });
+                }
+            } catch (err) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Server Error",
+                    text: "Could not add item to cart. Please try again later."
+                });
             }
         });
     });
 
     function changeMainImage(imageSrc) {
         document.getElementById("main-image").src = "/uploads/re-image/" + imageSrc;
+    }
+</script>
+
+<script>
+    function addToWishlist(productId, button) {
+        $.ajax({
+            url: "/addToWishlist",
+            method: "POST",
+            data: { productId: productId },
+            success: (response) => {
+                const icon = button.querySelector('i');
+
+                if (response.status === 'added') {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas', 'text-danger');
+
+                    Swal.fire({
+                        title: 'Added to wishlist',
+                        text: response.message,
+                        icon: 'success',
+                        timer: 500,
+                        showConfirmButton: false
+                    });
+                } else if (response.status === 'removed') {
+                    icon.classList.remove('fas', 'text-danger');
+                    icon.classList.add('far');
+
+                    Swal.fire({
+                        title: 'Removed from wishlist',
+                        text: response.message,
+                        icon: 'info',
+                        timer: 500,
+                        showConfirmButton: false
+                    });
+                }
+            },
+            error: (error) => {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'There is an error adding the product to your wishlist',
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+        });
     }
 </script>
 

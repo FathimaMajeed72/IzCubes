@@ -29,23 +29,23 @@ const loadHomepage = async (req,res) => {
         let productData = await Product.find({
             isBlocked:false,
             category:{$in:categories.map(category=>category._id)},
-            //quantity:{$gt:0}
         }).sort({createdAt:-1}).limit(4)
 
-       // productData.sort((a,b)=>new Date(b.createdOn)-new Date(a.createdOn));
-       // productData=productData.slice(0,4);
+    
 
-        
-        if(user){
-            const userData = await User.findOne({_id:user._id});
-            console.log(userData)
-            res.render("home",{user:userData,products:productData});
-        }else{
-            return res.render("home",{products:productData});
+        let userData = null;
+
+        if (user) {
+            userData = await User.findById(user._id);
         }
 
+        res.render("home", {
+            user: userData, 
+            products: productData
+        });
+
     }catch(error){
-        console.log("Home Page not found");
+        console.log("Home Page not found",error);
         res.status(500).send("Server error");
     }
 }
@@ -65,26 +65,6 @@ const loadSignup = async (req,res) => {
 }
 
 
-// const signup = async (req,res) => {
-
-//     const {name,email,phone,password} = req.body;
-
-//     try {
-
-//         const newUser = new User({name,email,phone,password})
-
-//         await newUser.save();
-
-//         res.redirect("/signup")
-        
-//     } catch (error) {
-
-//         console.log("Error for save user",error);
-//         res.status(500).send("Internal Server Error");
-        
-//     }
-    
-// }
 
 function generateOtp(){
     return Math.floor(100000 + Math.random()*900000).toString();
@@ -186,7 +166,7 @@ const verifyOtp = async (req,res) => {
             const user = req.session.userData;
             const passwordHash = await securePassword(user.password);
 
-            //to avoid saving the same user after refreshing the otp page after already succesful registration
+ 
             const existingUser = await User.findOne({ email: user.email });
             if (existingUser) {
                 return res.status(400).json({ success: false, message: "User already exists" });

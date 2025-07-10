@@ -279,6 +279,162 @@
             font-size: 12px;
         }
     }
+
+       /* Backdrop (optional) */
+.modal-backdrop {
+  background-color: rgba(26, 29, 41, 0.75);
+  backdrop-filter: blur(6px);
+}
+
+/* Modal Dialog */
+#sizeModal .modal-dialog {
+  max-width: 480px;
+  margin: 3rem auto;
+}
+
+/* Modal Content */
+#sizeModal .modal-content {
+  border: none;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+/* Modal Header */
+#sizeModal .modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  padding: 20px 24px;
+  border-bottom: none;
+}
+
+#sizeModal .modal-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+#sizeModal .btn-close {
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+}
+
+#sizeModal .btn-close:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Modal Body */
+#sizeModal .modal-body {
+  padding: 24px;
+  background-color: #f9fafb;
+}
+
+/* Size Options */
+#sizeModal #sizeOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+#sizeModal #sizeOptions label {
+  position: relative;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a5568;
+  min-width: 100px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+#sizeModal #sizeOptions label:hover {
+  border-color: #667eea;
+  background-color: #eef2ff;
+  transform: translateY(-2px);
+}
+
+#sizeModal #sizeOptions input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* When a radio is checked (fallback for JS-controlled highlight) */
+#sizeModal #sizeOptions input[type="radio"]:checked + label,
+#sizeModal #sizeOptions label:has(input[type="radio"]:checked) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+/* Modal Footer */
+#sizeModal .modal-footer {
+  padding: 16px 24px;
+  background-color: #fff;
+  border-top: 1px solid #e2e8f0;
+}
+
+#sizeModal .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  padding: 10px 24px;
+  font-weight: 600;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+#sizeModal .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(102, 126, 234, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #sizeModal .modal-dialog {
+    margin: 1rem;
+    max-width: 100%;
+  }
+
+  #sizeModal #sizeOptions label {
+    min-width: 80px;
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+}
+ .add-to-cart-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 75%;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .add-to-cart-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    
+
 </style>
 
 <main class="main">
@@ -337,15 +493,23 @@
                                                     ₹<span><%= product.salePrice %></span>
                                                 </td>
                                                 <td class="text-center" data-title="Add to Cart">
-                                                    <a href="#" onclick="" class="btn btn-primary">
+                                                    <!-- <a href="/addToCart" onclick="" class="btn btn-primary">
                                                         <i class="fas fa-shopping-cart"></i>
                                                         Add to Cart
-                                                    </a>
+                                                    </a> -->
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        <button class="add-to-cart-btn" data-bs-toggle="modal" data-bs-target="#sizeModal" data-product-id="<%= product._id %>" data-sizes='<%- JSON.stringify(product.sizes) %>' onclick="openSizeModal(this)">
+                                                            <i class="fas fa-shopping-cart"></i>
+                                                            Add to Cart
+                                                        </button>
+                                                    </div>
                                                 </td>
                                                 <td class="action" data-title="Remove">
-                                                    <a class="btn" href="#" onclick="confirmRemove('<%= product._id %>')">
-                                                        <i class="fas fa-trash"></i>
-                                                    </a>
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        <a class="btn" href="#" onclick="confirmRemove('<%= product._id %>')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         <% } %>
@@ -368,6 +532,31 @@
                 </div>
             </div>
         </div>
+
+         <!-- Size Selection Modal -->
+        <div class="modal fade" id="sizeModal" tabindex="-1" aria-labelledby="sizeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="addToCartForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="sizeModalLabel">Select Size</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                <input type="hidden" name="productId" id="modalProductId">
+                <div id="sizeOptions" class="d-flex flex-wrap gap-2"></div>
+                </div>
+                
+                <div class="modal-footer justify-content-center">
+                <button type="submit" class="btn btn-primary">Add to Cart</button>
+                </div>
+            </div>
+            </form>
+        </div>
+        </div>
+
+
     </section>
 </main>
 
@@ -393,4 +582,106 @@
             }
         });
     }
+</script>
+<script>
+  function openSizeModal(button) {
+    const productId = button.dataset.productId;
+    const sizes = JSON.parse(button.dataset.sizes);
+    document.getElementById("modalProductId").value = productId;
+
+    const sizeOptions = document.getElementById("sizeOptions");
+    sizeOptions.innerHTML = "";
+
+    sizes.forEach(sizeObj => {
+      const label = document.createElement("label");
+      label.className = "btn btn-outline-secondary";
+      label.innerHTML = `
+        <input type="radio" name="selectedSize" value="${sizeObj.size}" required />
+        ${sizeObj.size} (${sizeObj.quantity} left)
+      `;
+      sizeOptions.appendChild(label);
+    });
+  }
+</script>
+<script>
+  document.getElementById("addToCartForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const productId = document.getElementById("modalProductId").value;
+    const selectedSize = document.querySelector('input[name="selectedSize"]:checked');
+
+    if (!selectedSize) {
+      Swal.fire({
+        icon: "warning",
+        title: "Please select a size",
+        timer: 1500,
+        showConfirmButton: false
+      });
+      return;
+    }
+
+    try {
+        console.log({ productId, selectedSize: selectedSize.value });
+
+      const response = await fetch("/addToCart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          productId,
+          selectedSize: selectedSize.value
+        })
+      });
+
+      const result = await response.json();
+      console.log(result);
+      console.log("Fetch status:", response.status);
+
+
+      if (response.ok) {
+
+        const modalEl = document.getElementById("sizeModal");
+        
+
+        if (modalEl && typeof bootstrap !== "undefined") {
+        let modalInstance;
+
+        if (bootstrap.Modal.getOrCreateInstance) {
+            modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+        } else {
+            modalInstance = new bootstrap.Modal(modalEl); 
+        }
+
+        modalInstance.hide();
+        }
+
+        Swal.fire({
+          icon: "success",
+          title: "Added to Cart",
+          text: result.message,
+          timer: 1500,
+          showConfirmButton: false
+        }).then(() => {
+            window.location.href = "/cart";
+        });
+
+
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: result.message || "Unable to add product to cart"
+        });
+      }
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      console.error("Fetch error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Something went wrong"
+      });
+    }
+  });
 </script>

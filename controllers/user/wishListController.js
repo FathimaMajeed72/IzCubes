@@ -32,18 +32,44 @@ const addToWishlist = async (req,res) => {
         const sessionUser = req.session.user;
         const user = await User.findById(sessionUser._id);
 
-        if(user.wishlist.includes(productId)){
-            return res.status(200).json({
-                status : false,
-                message : "Product already exist in wishlist"
-            })
+        if (!sessionUser) {
+            return res.status(401).json({ status: false, message: "Unauthorized" });
         }
-        user.wishlist.push(productId);
-        await user.save();
-        return res.status(200).json({
-            status : true,
-            message : "Product added to wishlist"
-        })
+
+
+        const index = user.wishlist.indexOf(productId);
+
+        if (index > -1) {
+
+            user.wishlist.splice(index, 1);
+            await user.save();
+            return res.status(200).json({
+                status: 'removed',
+                message: "Product removed from wishlist"
+            });
+        } else {
+           
+            user.wishlist.push(productId);
+            await user.save();
+            return res.status(200).json({
+                status: 'added',
+                message: "Product added to wishlist"
+            });
+        }
+
+
+        // if(user.wishlist.includes(productId)){
+        //     return res.status(200).json({
+        //         status : false,
+        //         message : "Product already exist in wishlist"
+        //     })
+        // }
+        // user.wishlist.push(productId);
+        // await user.save();
+        // return res.status(200).json({
+        //     status : true,
+        //     message : "Product added to wishlist"
+        // })
 
     } catch (error) {
         console.error(error);

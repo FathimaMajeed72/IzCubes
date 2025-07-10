@@ -334,7 +334,7 @@ const postNewPassword = async (req,res)=>{
 const changeEmail = async (req,res) => {
   try {
 
-    res.render("change-email")
+    res.render("change-email",{ message: null })
     
   } catch (error) {
     
@@ -366,7 +366,7 @@ const changeEmailValidation = async (req, res) => {
 
     const emailExists = await User.findOne({ email: newEmail });
     if (emailExists) {
-      return res.render("change-email", { message: "New email is already in use." });
+      return res.render("change-email", { message: "New email is already in use.", currentEmail, newEmail });
     }
 
     const otp = generateOtp();

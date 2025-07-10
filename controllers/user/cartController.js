@@ -76,6 +76,8 @@ const addToCart = async (req,res) => {
     try {
 
         const {productId,selectedSize} = req.body;
+        console.log("Received:", { productId, selectedSize });
+
         const sessionUser = req.session.user;
         const userId = sessionUser._id;
 
@@ -112,7 +114,7 @@ const addToCart = async (req,res) => {
                   return res.status(400).json({ message: `Max limit of ${MAX_QUANTITY_LIMIT} per item` });
                 }
                 if (item.quantity + 1 > sizeStock.quantity) {
-                  return res.status(400).json({ message: `Only ${sizeStock.quantity} items in stock` });
+                  return res.status(400).json({ message: `Only ${sizeStock.quantity} items in stock(already added to cart)` });
                 }
 
                 item.quantity += 1;
@@ -140,14 +142,17 @@ const addToCart = async (req,res) => {
       $pull: { wishlist: productId },
     });
    // res.status(200).json({ message: "Cart updated", cart });
-    res.redirect("/cart")
+   // res.redirect("/cart")
+    return res.status(200).json({ message: "Item added to cart" });
+
 
         
     } catch (error) {
 
        console.error("Add to Cart Error:", error);
-       res.redirect("/pageNotFound");
-        
+      //  res.redirect("/pageNotFound");
+      return res.status(500).json({ message: "Server Error. Could not add item to cart." });
+
     }
     
 }
