@@ -1,146 +1,353 @@
 <!DOCTYPE html>
-<html lang="zxx">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="description" content="Male_Fashion Template" />
-    <meta name="keywords" content="Male_Fashion, unica, creative, html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Male-Fashion</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css" />
-    <link rel="stylesheet" href="css/elegant-icons.css" type="text/css" />
-    <link rel="stylesheet" href="css/magnific-popup.css" type="text/css" />
-    <link rel="stylesheet" href="css/nice-select.css" type="text/css" />
-    <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css" />
-    <link rel="stylesheet" href="css/slicknav.min.css" type="text/css" />
-    <link rel="stylesheet" href="css/style.css" type="text/css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <style> 
-        body, html {
-            height: 100%;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification - IzCubes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* General styling matching signup page */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #fafbfc 0%, #f0f2f5 100%);
+            color: #1a1d29;
+            line-height: 1.6;
             margin: 0;
-            font-family: "Nunito Sans", sans-serif;
-            overflow: hidden;
-        }
-        .container {
+            padding: 0;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100%;
+            padding: 20px 0;
         }
-        .login_wrap {
+
+        .otp-container {
+            background: white;
+            padding: 3rem 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
             width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            border-radius: 5px;
-            background: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .heading_s1 h3 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 600;
-            color: #333;
+            max-width: 480px;
             text-align: center;
-            margin-bottom: 30px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .otp-timer {
-            display: inline-block;
-            margin-left: 10px;
-            font-size: 14px;
             position: relative;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            line-height: 60px;
-            text-align: center;
-            background: #f2f2f2;
-            border: 2px solid #ddd;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 20px;
         }
-        #timerValue {
+
+        /* Decorative gradient background */
+        .otp-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .otp-container img {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 1rem;
+            border-radius: 50%;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e3e7ff 100%);
+        }
+
+        .otp-container h1 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #6c757d;
+            font-size: 15px;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        /* Form styling */
+        .form-group {
+            text-align: left;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
             display: block;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 18px;
+            background: white;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 0.5rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: #f8f9ff;
+        }
+
+        .form-group input::placeholder {
+            color: #a0aec0;
+            letter-spacing: normal;
+        }
+
+        /* Timer styling */
+        .timer-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e3e7ff 100%);
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .otp-timer {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        #timerValue {
             font-size: 24px;
             font-weight: bold;
-            color: #333;
-            line-height: 60px;
+            color: #667eea;
         }
+
         #timerValue.expired {
+            color: #f56565;
             font-size: 14px;
-            color: red;
         }
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-            width: 100%;
-            margin-top: 10px;
-            display: block;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        .btn-secondary {
-            width: 100%;
-            background-color: #6c757d;
-            border: none;
-            margin-top: 10px;
-            display: block;
-        }
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-        .alert-danger {
-            margin-top: 15px;
-            text-align: center;
-        }
-        .text-center {
-            text-align: center;
-            margin-top: 15px;
-        }
-        .text-muted {
+
+        .timer-text {
             color: #6c757d;
-            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
         }
-        .pt-25 {
-            padding-top: 25px;
+
+        /* Verify button */
+        .verify-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            width: 100%;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .verify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .verify-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Resend button */
+        .resend-btn {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .resend-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .resend-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .resend-btn:disabled:hover {
+            background: white;
+            color: #667eea;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Alert styling */
+        .alert {
+            border: none;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            padding: 12px 16px;
+            font-size: 14px;
+            background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+            color: #742a2a;
+            border-left: 4px solid #f56565;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Login link */
+        .login-link {
+            font-size: 15px;
+            color: #6c757d;
+            margin-top: 1.5rem;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #4c63d2;
+            text-decoration: underline;
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .otp-container {
+                margin: 20px;
+                padding: 2rem 1.5rem;
+                max-width: none;
+            }
+
+            .otp-container h1 {
+                font-size: 22px;
+            }
+
+            .form-group input {
+                padding: 12px 14px;
+                font-size: 16px;
+            }
+
+            .timer-section {
+                padding: 1rem;
+            }
+
+            .otp-timer {
+                width: 70px;
+                height: 70px;
+            }
+
+            #timerValue {
+                font-size: 20px;
+            }
+        }
+
+        /* Success animation */
+        .success-icon {
+            color: #48bb78;
+            font-size: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .success-icon.show {
+            opacity: 1;
+        }
+
+        /* Input validation styling */
+        .form-group input.error {
+            border-color: #f56565;
+            background: #fef5f5;
+        }
+
+        .form-group input.success {
+            border-color: #48bb78;
+            background: #f0fff4;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="login_wrap">
-        <div class="padding_eight_all bg-white">
-            <div class="heading_s1">
-                <h3>Email Verification Page</h3>
+    <div class="otp-container">
+        <img src="img/LOGO_BRAND_NO_BACKGROUND.png" alt="IzCubes Logo">
+        <h1>Verify Your Email</h1>
+        <p class="subtitle">We've sent a 6-digit code to your email address</p>
+
+        <form id="otpForm" action="/verify-otp" method="post" onsubmit="return validateOTPForm()">
+            <div class="form-group">
+                <label for="otp">Enter Verification Code</label>
+                <input type="text" id="otp" name="otp" class="form-control" required maxlength="6" pattern="\d*" placeholder="000000" />
             </div>
-            <form id="otpForm" action="/verify-otp" method="post" onsubmit="return validateOTPForm()">
-                <div class="form-group">
-                    <label for="otp">Enter OTP:</label>
-                    <input type="text" id="otp" name="otp" class="form-control" required maxlength="6" pattern="\d*" />
+
+            <button type="submit" class="verify-btn">
+                <i class="fas fa-check-circle"></i>
+                <span>Verify Email</span>
+            </button>
+
+            <div class="timer-section">
+                <div class="otp-timer">
+                    <span id="timerValue">60</span>
                 </div>
-                <button type="submit" class="btn btn-primary">Verify Email</button>
-                <div class="form-group text-center">
-                    <div id="otpTimer" class="otp-timer">
-                        <span id="timerValue">60</span>
-                    </div>
-                    <button type="button" class="btn btn-secondary" onclick="resendOTP()">Resend OTP</button>
-                </div>
-               <% if (locals.message && message.length > 0) { %>
-                <div class="alert alert-danger"><%= message %></div>
-                <% } %>  
-            </form>
-            <div class="text-muted text-center pt-25">
-                Already verified? <a href="/login">Login now</a>
+                <p class="timer-text">Resend code in <span id="timerText">60</span> seconds</p>
+                <button type="button" class="resend-btn" id="resendBtn" onclick="resendOTP()" disabled>
+                    <i class="fas fa-redo"></i>
+                    <span>Resend Code</span>
+                </button>
             </div>
+
+            <% if (locals.message && message.length > 0) { %>
+                <div class="alert">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <%= message %>
+                </div>
+            <% } %>
+        </form>
+
+        <div class="login-link">
+            Already verified? <a href="/login">Sign in here</a>
         </div>
     </div>
-</div>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -153,11 +360,15 @@
         timerInterval = setInterval(() => {
             timer--;
             document.getElementById("timerValue").textContent = timer;
+            document.getElementById("timerText").textContent = timer;
             if (timer <= 0) {
                 clearInterval(timerInterval);
                 document.getElementById("timerValue").classList.add("expired");
                 document.getElementById("timerValue").textContent = "Expired";
+                document.getElementById("timerText").textContent = "0";
                 document.getElementById("otp").disabled = true;
+
+                document.getElementById("resendBtn").disabled = false;
             }
         }, 1000);
     }
@@ -229,6 +440,8 @@ function resendOTP(){
             }
         }
     })
+    
+    document.getElementById("resendBtn").disabled = true;
 
     return false;
 }

@@ -506,7 +506,7 @@
                     <strong>Return Reason:</strong> <%= order.returnReason %>
                 </div>
             <% } %>
-            <% if ((order.paymentMethod === 'Online') ||  (order.paymentMethod === 'COD' && (order.status === 'Delivered' || order.status === 'Returned')) ){ %>
+            <% if ((order.paymentMethod === 'Online' && order.paymentStatus !== 'Failed') ||  (order.paymentMethod === 'COD' && (order.status === 'Delivered' || order.status === 'Returned')) ){ %>
             <a href="/invoice/<%= order._id %>" class="invoice-btn" target="_blank">
                 <i class="bi bi-download"></i> Download Invoice
             </a>
@@ -579,17 +579,7 @@
                                         <button class="return-item-btn" disabled>Item Return Rejected</button>
                                         <% } %>
 
-                                        <!-- <% if (order.status === 'Delivered' && item.status !== 'Cancelled' && item.status !== 'Returned') { %>
-                                            <button type="button" class="return-item-btn" data-bs-toggle="modal" data-bs-target="#returnItemModal" data-order-id="<%= order.orderId %>" data-product-id="<%= item.product._id %>">
-                                                Return Item
-                                            </button>
-                                            <% } else if (item.status === 'Returned' && order.status === 'Return Request') { %>
-                                            <button class="return-item-btn" disabled>Item Return Requested</button>
-                                            <% } else if (item.status === 'Returned' && order.status === 'Returned') { %>
-                                            <button class="return-item-btn" disabled>Item Returned</button>
-                                            <% } else if (item.status === 'Returned' && order.status === 'Return Rejected') { %>
-                                            <button class="return-item-btn" disabled>Item Return Rejected</button>
-                                            <% } %> -->
+                                     
                                     <% } %>
                                 </div>
                             </div>
@@ -662,6 +652,8 @@
                     <% }else{ %>
                         <% if (order.paymentMethod === 'COD') { %>
                             <p class="mb-0 text-danger fw-semibold">₹<%= order.finalAmount %> due on delivery</p>
+                        <% } else if (order.paymentStatus === 'Failed') { %>   
+                            <p class="mb-0 text-danger fw-semibold">Payment Failed</p>
                         <% } else { %>
                             <p class="mb-0 text-success fw-semibold">₹<%= order.finalAmount %> Paid Online</p>
                         <% } %>
@@ -698,8 +690,17 @@
             <div class="modal-body">
                 <input type="hidden" name="orderId" id="cancelOrderIdInput">
                 <input type="hidden" name="productId" id="cancelProductIdInput">
+                <!-- <label for="itemCancelReason" class="form-label">Reason (optional)</label>
+                <textarea class="form-control" name="reason" id="itemCancelReason" rows="3" placeholder="Why cancel this item?"></textarea> -->
                 <label for="itemCancelReason" class="form-label">Reason (optional)</label>
-                <textarea class="form-control" name="reason" id="itemCancelReason" rows="3" placeholder="Why cancel this item?"></textarea>
+                <select class="form-select" name="reason" id="itemCancelReason">
+                    <option value="">-- Select Reason --</option>
+                    <option value="Ordered by mistake">Ordered by mistake</option>
+                    <option value="Found a better price elsewhere">Found a better price elsewhere</option>
+                    <option value="Delivery is too late">Delivery is too late</option>
+                    <option value="Need to change shipping address">Need to change shipping address</option>
+                    <option value="Other">Other</option>
+                </select>
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-outline-danger">Confirm Cancel</button>
@@ -718,8 +719,17 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" name="orderId" value="<%= order.orderId %>">
+                <!-- <label for="cancelReason" class="form-label">Reason (optional)</label>
+                <textarea class="form-control" name="reason" id="cancelReason" rows="3" placeholder="Why are you cancelling?"></textarea> -->
                 <label for="cancelReason" class="form-label">Reason (optional)</label>
-                <textarea class="form-control" name="reason" id="cancelReason" rows="3" placeholder="Why are you cancelling?"></textarea>
+                <select class="form-select" name="reason" id="cancelReason">
+                    <option value="">-- Select Reason --</option>
+                    <option value="Changed my mind">Changed my mind</option>
+                    <option value="Ordered wrong item(s)">Ordered wrong item(s)</option>
+                    <option value="Delay in delivery">Delay in delivery</option>
+                    <option value="Placing a new order">Placing a new order</option>
+                    <option value="Other">Other</option>
+                </select>
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-outline-danger">Confirm Cancel</button>
@@ -738,8 +748,17 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" name="orderId" value="<%= order.orderId %>">
+                <!-- <label for="returnReason" class="form-label">Reason for return <span class="text-danger">*</span></label>
+                <textarea class="form-control" name="reason" id="returnReason" rows="3" required placeholder="State reason for returning the order"></textarea> -->
                 <label for="returnReason" class="form-label">Reason for return <span class="text-danger">*</span></label>
-                <textarea class="form-control" name="reason" id="returnReason" rows="3" required placeholder="State reason for returning the order"></textarea>
+                <select class="form-select" name="reason" id="returnReason" required>
+                    <option value="">-- Select Reason --</option>
+                    <option value="Received damaged product">Received damaged product</option>
+                    <option value="Wrong item delivered">Wrong item delivered</option>
+                    <option value="Product no longer needed">Product no longer needed</option>
+                    <option value="Item not as described">Item not as described</option>
+                    <option value="Other">Other</option>
+                </select>
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-warning">Submit Return Request</button>
@@ -760,8 +779,17 @@
       <div class="modal-body">
         <input type="hidden" name="orderId" id="returnOrderIdInput">
         <input type="hidden" name="productId" id="returnProductIdInput">
+        <!-- <label for="returnItemReason" class="form-label">Reason for return <span class="text-danger">*</span></label>
+        <textarea class="form-control" name="reason" id="returnItemReason" rows="3" required placeholder="Why are you returning this item?"></textarea> -->
         <label for="returnItemReason" class="form-label">Reason for return <span class="text-danger">*</span></label>
-        <textarea class="form-control" name="reason" id="returnItemReason" rows="3" required placeholder="Why are you returning this item?"></textarea>
+        <select class="form-select" name="reason" id="returnItemReason" required>
+            <option value="">-- Select Reason --</option>
+            <option value="Received damaged product">Received damaged product</option>
+            <option value="Wrong item delivered">Wrong item delivered</option>
+            <option value="Size doesn’t fit">Size doesn’t fit</option>
+            <option value="Not satisfied with quality">Not satisfied with quality</option>
+            <option value="Other">Other</option>
+        </select>
       </div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-warning">Submit Return Request</button>

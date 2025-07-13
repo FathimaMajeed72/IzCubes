@@ -127,9 +127,8 @@
                     <button
                       class="btn btn-danger"
                       style="width: 90px"
-                      onclick="return confirmDelete()"
-                    >
-                      <a href="/admin/deleteBrand?id=<%=brand._id%>" class="text-white">Delete</a>
+                      onclick="return confirmDelete(event,'<%= brand._id %>')">
+                      <span class="text-white">Delete</a>
                     </button>
                   </td>
                 </tr>
@@ -172,10 +171,119 @@
   <% } %>
 
   <script>
-    function confirmDelete(){
-      return confirm("Are you sure you want to delete this brand?")
+  function confirmDelete(event, id) {
+    event.preventDefault();                      
+    Swal.fire({
+      icon: "warning",
+      title: "Delete this brand?",
+      text: "This action cannot be undone.",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel"
+    }).then(result => {
+      if (result.isConfirmed) {
+       
+        window.location.href = `/admin/deleteBrand?id=${id}`;
+      }
+    });
+  }
+</script>
+
+
+<script>
+  document.querySelector("form").addEventListener("submit", function (e) {
+    const fileInput = document.querySelector('input[type="file"][name="image"]');
+    const file = fileInput.files[0];
+
+ 
+    if (!file) {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'warning',
+        title: 'No Image Selected',
+        text: 'Please select a brand image before submitting.'
+      });
+      return;
     }
-  </script>
+
+ 
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid File Type',
+        text: 'Only JPG, PNG, or WEBP images are allowed.'
+      });
+      return;
+    }
+
+   
+    const maxSizeInMB = 2;
+    if (file.size > maxSizeInMB * 1024 * 1024) {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'error',
+        title: 'File Too Large',
+        text: `Image must be less than ${maxSizeInMB} MB.`
+      });
+      return;
+    }
+  });
+</script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get("success") === "1") {
+    Swal.fire({
+      icon: "success",
+      title: "Brand Added",
+      text: "Brand was added successfully!",
+      timer: 2000,
+      showConfirmButton: false
+    });
+
+
+    if (history.replaceState) {
+      params.delete("success");
+      const newUrl = `${location.pathname}?${params.toString()}`;
+      history.replaceState(null, '', newUrl.endsWith('?') ? location.pathname : newUrl);
+    }
+  }
+
+   if (params.get("deleted") === "1") {
+    Swal.fire({
+      icon: "success",
+      title: "Brand deleted",
+      text: "The brand was removed successfully.",
+      timer: 2000,
+      showConfirmButton: false
+    });
+
+   
+    if (history.replaceState) {
+      params.delete("deleted");
+      const newUrl = `${location.pathname}?${params.toString()}`;
+      history.replaceState(null, "", newUrl.endsWith("?") ? location.pathname : newUrl);
+    }
+  }
+
+  if (params.get("error")) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: params.get("error"),
+    });
+
+   
+    if (history.replaceState) {
+      params.delete("error");
+      const newUrl = `${location.pathname}?${params.toString()}`;
+      history.replaceState(null, '', newUrl.endsWith('?') ? location.pathname : newUrl);
+    }
+  }
+</script>
+
 
 
 <%- include("../../views/partials/admin/footer") %>

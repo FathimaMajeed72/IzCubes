@@ -1,6 +1,115 @@
 <%- include("../../views/partials/user/header") %>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: #fafbfc;
+        color: #1a1d29;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+    }
+
+    .main-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    /* Hero Section - Matching Shop Header Style */
+    .hero {
+        /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+        background: linear-gradient(135deg, #a9a9b4 0%, #8f8d92 100%);
+        padding: 60px 0;
+        margin-bottom: 40px;
+        
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero__items {
+        padding: 3rem 0;              
+        position: relative;
+        display: flex;
+        align-items: center;          
+        /* min-height: unset; */
+    }
+    
+
+       
+        
+        .hero__img img {
+        max-width: 100%;             
+        height: auto;
+        border-radius: 15px;
+        margin-left: auto;
+        margin-right: auto;
+        }
+
+        /* Slightly tighter copy width on xl screens so the text column
+        doesn’t sprawl too wide. */
+        @media (min-width: 1200px) {
+        .hero__text {
+            max-width: 32rem;
+        }
+        }
+
+    .hero__text {
+        color: white;
+        padding: 0 30px;
+    }
+
+    .hero__text h2 {
+        font-size: 36px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 20px;
+        line-height: 1.2;
+    }
+
+    .hero__text h6 {
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    .hero__text p {
+        font-size: 18px;
+        margin-bottom: 30px;
+        opacity: 0.9;
+        max-width: 600px;
+    }
+
+    .primary-btn {
+        background: rgba(14, 12, 12, 0.95);
+        color: #ffffff;
+        padding: 14px 28px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .primary-btn:hover {
+        background: white;
+        color: #764ba2;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        text-decoration: none;
+    }
+
+
        /* Product Section */
     .product {
         padding: 40px 0;
@@ -485,38 +594,37 @@
         }
     }
 </style>
-<section class="hero">
+    <section class="hero">
   <div class="hero__slider owl-carousel">
-      <div class="hero__items set-bg" data-setbg="img/Main_banner.jpg">
-          <div class="container">
-              <div class="row">
-                  <div class="col-xl-5 col-lg-7 col-md-8">
-                      <div class="hero__text">
-                          <!--<h6>Summer Collection</h6>  -->
-                          <h2>Where Little Styles Spark Big Smiles – Discover the Magic of IzCubes!!!</h2>
-                          <p>Stylish, comfy, and affordable outfits Shop for your little ones. Enjoy fast delivery & great prices.</p>
-                          <a href="#" class="primary-btn">Shop now <span class="arrow_right"></span></a>
-                      </div>
-                  </div>
-              </div>
+    <div class="hero__items">
+      <div class="container">
+        <div class="row align-items-center">        <!-- keeps text & pic vertically centred -->
+          
+          <!-- ▸ LEFT: headline, copy, CTA  -->
+          <div class="col-lg-6 col-md-7 order-2 order-lg-1">
+            <div class="hero__text">
+              <h2>Where Little Styles Spark Big Smiles – Discover the Magic of IzCubes!!!</h2>
+              <p>Stylish, comfy, and affordable outfits for your little ones. Enjoy fast delivery &amp; great prices on premium kids' fashion.</p>
+              <a href="/shop" class="primary-btn">
+                <i class="fas fa-shopping-bag"></i>
+                Shop now
+              </a>
+            </div>
           </div>
-      </div>
-      <div class="hero__items set-bg" data-setbg="img/hero/hero-2.jpg">
-          <div class="container">
-              <div class="row">
-                  <div class="col-xl-5 col-lg-7 col-md-8">
-                      <div class="hero__text">
-                          <h6>Summer Collection</h6>
-                          <h2>Fall - Winter Collections 2030</h2>
-                          <p>A specialist label creating luxury essentials.</p>
-                          <a href="/shop" class="primary-btn">Shop now <span class="arrow_right"></span></a>
-                      </div>
-                  </div>
-              </div>
+
+          <!-- ▸ RIGHT: the image  -->
+          <div class="col-lg-6 col-md-5 order-1 order-lg-2 text-center">
+            <div class="hero__img">
+              <img src="img/homebannerimage_new.jpg" alt="Two kids in IzCubes outfits" class="img-fluid">
+            </div>
           </div>
+
+        </div>
       </div>
+    </div>
   </div>
 </section>
+
 <section class="banner spad">
   <div class="container">
       <div class="row">

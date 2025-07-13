@@ -31,8 +31,11 @@ const getBrandPage = async (req,res) => {
 
 const addBrand = async (req,res) => {
     try {
-        const brand = req.body.name
-        const findBrand = await Brand.findOne({brandName : brand});
+        const brand = req.body.name?.trim();
+        if (!brand) {
+            return res.redirect("/admin/brands?error=Brand name required");
+        }
+        const findBrand = await Brand.findOne({brandName : { $regex: `^${brand}$`, $options: "i" }});
         if(!findBrand){
             const image = req.file.filename;
             const newBrand = new Brand({
@@ -40,7 +43,7 @@ const addBrand = async (req,res) => {
                 brandImage : image,
             })
             await newBrand.save();
-            res.redirect("/admin/brands")
+            res.redirect("/admin/brands?success=1")
         }else {
             
             res.redirect("/admin/brands?error=Brand already exists!");
@@ -86,7 +89,7 @@ const deleteBrand = async (req,res) => {
             return res.status(400).redirect("/admin/pageerror")
         }
         await Brand.deleteOne({_id:id})
-        res.redirect("/admin/brands")
+        res.redirect("/admin/brands?deleted=1")
     } catch (error) {
         console.error("Error deleting Brand: ",error);
         res.status(500).redirect("/admin/pageerror")
