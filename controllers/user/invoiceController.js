@@ -35,8 +35,9 @@ const generateInvoice = async (req, res) => {
       .text(`Customer: ${order.address.name}`,50,140)
       .text(`Phone: ${order.address.phone}`,50,160)
       .text(`Address: ${order.address.houseName}, ${order.address.streetName}, ${order.address.city} - ${order.address.pincode}`,50,180)
+      
+      .text(`Payment Method: ${order.paymentMethod}`, 50, 200)
       .moveDown();
-
     
     const tableTop = doc.y;
     doc

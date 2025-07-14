@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Male_Fashion Template">
-    <meta name="keywords" content="Male_Fashion, unica, creative, html">
+    <meta name="description" content="IzCubes">
+    <meta name="keywords" content="IzCubes, unica, creative, html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>IzCubes Kids</title>
@@ -15,7 +15,7 @@
 
     <!-- Css Styles -->
     <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="/css/elegant-icons.css" type="text/css">
     <link rel="stylesheet" href="/css/magnific-popup.css" type="text/css">
     <link rel="stylesheet" href="/css/nice-select.css" type="text/css">
@@ -34,108 +34,104 @@
         color: #ff7f50;
         }
 
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: white;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index:1000;
-            right:0;
-        }
-        .dropdown-content a {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            width: 100%;
-        }
-        .dropdown-content a:hover{
-            background-color: #f1f1f1;
-        }
-        .dropdown:hover .dropdown-content{
-            display: block;
-        }
+        
         .header {
             position: relative;
             z-index: 500;
         }
 
+                
+        .nav-link i {
+            color: #333;             
+            transition: color .2s;
+        }
+
+        .nav-link:hover i {
+            color: #667eea;          
+        }
+
+        .header__nav__option a.nav-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            white-space: nowrap;
+        }
 
 
     </style>
 </head>
 
 <body>
-  
-    <!-- Header Section Begin -->
-    <header class="header">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 col-md-3">
-                    <div class="header__logo">
-                        <a href="#"><img src="/img/logo_IzCubes.png" style="height: 23px;width: 196px;" alt=""></a>
-                    </div>
-                </div>
-                <div class="col-lg-6 col-md-6">
-                    <nav class="header__menu mobile-menu">
-                        <ul>
-                            <li class=""><a href="/">Home</a></li>
-                            <li><a href="/shop">Shop</a></li>
-                            <!-- <li><a href="#">Pages</a>
-                                <ul class="dropdown">
-                                    <li><a href="./">About Us</a></li>
-                                    <li><a href="./shop-details.html">Shop Details</a></li>
-                                    <li><a href="./shopping-cart.html">Shopping Cart</a></li>
-                                    <li><a href="./checkout.html">Check Out</a></li>
-                                    <li><a href="./blog-details.html">Blog Details</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="./blog.html">Blog</a></li>
-                            <li><a href="./contact.html">Contacts</a></li> -->
-                        </ul>
-                    </nav>
-                </div>
-                <div class="col-lg-3 col-md-3">
-                    <div class="header__nav__option">
-                        <% if(locals.user){ %>
-                            <div class="dropdown">
-                                <a href="#" class="sign-in-link"><%= locals.user.name %></a>
-                                <div class="dropdown-content">
-                                    <a href="/userProfile">Profile</a>
-                                    <a href="/logout">Logout</a>
-                                </div>
-                            </div>
-                        <% }else{ %>
 
-                        <a href="/signup" class="sign-in-link">Sign Up</a>
-                        <a href="/login" class="sign-in-link">Log In</a>
-                        <% } %>
-                        <a href="#" class="search-switch"><img src="/img/icon/search.png" alt=""></a>
-                        <a href="/wishlist"><img src="/img/icon/heart.png" alt=""></a>
-                        <a href="/cart"><img src="/img/icon/cart.png" alt=""> <span>0</span></a>
-                       <!-- <div class="price">$0.00</div>  -->
-                    </div>
-                </div>
-            </div>
-            <div class="canvas__open"><i class="fa fa-bars"></i></div>
-        </div>
-    </header>
+
+<!-- Header Section Begin -->
+
+
+
+<header class="sticky-top bg-white shadow-sm">
+  <nav class="navbar navbar-expand-lg navbar-light container">
+    <a class="navbar-brand fw-bold" href="/"><img src="/img/logo_IzCubes.png" style="height: 23px;width: 196px;" alt=""></a>
+
+    <!-- Hamburger -->
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+            aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="mainNavbar">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
+        <li class="nav-item"><a class="nav-link" href="/wishlist"><i class="fa-regular fa-heart"></i> Wishlist</a></li>
+        <li class="nav-item"><a class="nav-link" href="/cart"><i class="fa-solid fa-cart-shopping"></i> Cart</a></li>
+
+        <% if (locals.user) { %>
+          <!--  Logged‑in user dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center"
+               href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fa-regular fa-user"></i>
+              <span><%= locals.user.name %></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="/userProfile">Profile</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/logout">Logout</a></li>
+            </ul>
+          </li>
+        <% } else { %>
+          <!--  Not logged in -->
+          <li class="nav-item">
+            <a class="nav-link" href="/signup">Sign Up</a>
+          </li>
+          <li class="nav-item"> 
+            <a class="nav-link" href="/login">Login</a>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+
+   
     <!-- Header Section End -->
 
 
-        <script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+ <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const currentPath = window.location.pathname;
+    const currentPath = window.location.pathname.replace(/\/$/, "");
     const navLinks = document.querySelectorAll("nav li a");
 
     navLinks.forEach(link => {
-      if (link.getAttribute("href") === currentPath) {
-        link.parentElement.classList.add("active");
+      const linkPath = new URL(link.href).pathname.replace(/\/$/, "");
+      if (linkPath === currentPath) {
+        link.classList.add("active");
       }
     });
   });

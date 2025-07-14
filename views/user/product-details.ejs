@@ -75,6 +75,24 @@
         transition: transform 0.4s ease;
     }
 
+    /* ---------- Zoom‑on‑hover ---------- */
+.main-image-container {
+    overflow: hidden;          /* crop the enlarged image */
+    cursor: crosshair;         /* nice visual cue           */
+}
+
+.main-image {
+    transition:
+        transform 0.35s ease,
+        transform-origin 0.35s ease;
+    will-change: transform;    /* keeps it smooth */
+}
+
+.main-image-container:hover .main-image {
+    transform: scale(2);       /* 2× zoom – tweak as needed */
+}
+
+
     .main-image:hover {
         transform: scale(1.05);
     }
@@ -578,6 +596,10 @@
             gap: 12px;
         }
     }
+    @media (hover: hover) and (pointer: fine) { 
+        .main-image-container:hover .main-image { transform: scale(2); }
+    }
+
 </style>
 
 <main class="main">
@@ -868,6 +890,33 @@
         });
     }
 </script>
+
+<script>
+(function () {
+  const img        = document.getElementById('main-image');
+  const container  = img.parentElement;
+
+  /* --- Mouse‑follow zoom --- */
+  container.addEventListener('mousemove', (e) => {
+    const rect = container.getBoundingClientRect();
+    const xPct = ((e.clientX - rect.left) / rect.width)  * 100;
+    const yPct = ((e.clientY - rect.top)  / rect.height) * 100;
+    img.style.transformOrigin = `${xPct}% ${yPct}%`;
+  });
+
+  container.addEventListener('mouseleave', () => {
+    /* reset so the next hover starts centred */
+    img.style.transformOrigin = 'center center';
+  });
+
+  /* --- make sure new images reset properly --- */
+  window.changeMainImage = (src) => {
+    img.src = "/uploads/re-image/" + src;
+    img.style.transformOrigin = 'center center';
+  };
+})();
+</script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
