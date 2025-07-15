@@ -216,7 +216,7 @@ const getEditProduct =async (req,res) => {
     const id = req.query.id;
 
     const product = await Product.findById(id);
-    //console.log("Fetched product:", product);
+    
     const invertoryIndex = product.sizes.length;
     const category = await Category.find();
     const brand = await Brand.find();

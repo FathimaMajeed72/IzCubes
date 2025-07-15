@@ -70,7 +70,9 @@ function generateDateLabels(rangeType, start, end) {
       current.setDate(current.getDate() + 1);
     } else if (rangeType === "daily") {
       const istDate = new Date(current.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
-      label = `${istDate.getFullYear()}-${String(istDate.getMonth() + 1).padStart(2, '0')}-${String(istDate.getDate()).padStart(2, '0')} ${String(istDate.getHours()).padStart(2, '0')}:00`;
+      label = `${istDate.getFullYear()}-${String(istDate.getMonth() + 1).padStart(2,'0')}-` +
+              `${String(istDate.getDate()).padStart(2,'0')}T` +
+              `${String(istDate.getHours()).padStart(2,'0')}:00`;
       current.setHours(current.getHours() + 1);
     }
 
@@ -121,7 +123,6 @@ const loadDashboard = async (req, res) => {
         end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         end.setHours(23, 59, 59, 999);
         salesReportQuery.createdOn = { $gte: start, $lte: end };
-         console.log("Monthly range:", start.toISOString(), "to", end.toISOString());
       } else if (rangeType === "yearly") {
         start = new Date(now.getFullYear(), 0, 1);
         end = new Date(now.getFullYear(), 11, 31);
@@ -153,7 +154,7 @@ const loadDashboard = async (req, res) => {
         };
       } else if (rangeType === "daily") {
         groupFormat = {
-          $dateToString: { format: "%Y-%m-%dT%H", date: "$createdOn", timezone: "Asia/Kolkata" }
+          $dateToString: { format: "%Y-%m-%dT%H:00", date: "$createdOn", timezone: "Asia/Kolkata" }
         };
       }
 
@@ -179,13 +180,7 @@ const loadDashboard = async (req, res) => {
         if (rangeType === "yearly") {
           const monthIndex = parseInt(entry._id.split("-")[1], 10) - 1;
           label = monthNames[monthIndex];
-        } else if (rangeType === "daily") {
-          const [dateStr, hourStr] = entry._id.split("T");
-          const utcDate = new Date(`${dateStr}T${hourStr}:00:00Z`);
-          const istDate = new Date(utcDate.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
-
-          label = `${istDate.getFullYear()}-${String(istDate.getMonth() + 1).padStart(2, '0')}-${String(istDate.getDate()).padStart(2, '0')} ${String(istDate.getHours()).padStart(2, '0')}:00`;
-        }
+        } 
 
         chartMap[label] = entry.totalSales;
       });
@@ -231,8 +226,6 @@ const loadDashboard = async (req, res) => {
         .skip(skip)
         .limit(limit);
 
-      console.log("Orders found for report:", orders.length);
-      orders.forEach(o => console.log(o.createdOn, o.status, o.finalAmount));
 
 
       const topProducts = await Order.aggregate([

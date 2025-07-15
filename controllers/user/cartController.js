@@ -76,7 +76,7 @@ const addToCart = async (req,res) => {
     try {
 
         const {productId,selectedSize} = req.body;
-        console.log("Received:", { productId, selectedSize });
+       
 
         const sessionUser = req.session.user;
         const userId = sessionUser._id;

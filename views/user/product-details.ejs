@@ -896,7 +896,6 @@
   const img        = document.getElementById('main-image');
   const container  = img.parentElement;
 
-  /* --- Mouse‑follow zoom --- */
   container.addEventListener('mousemove', (e) => {
     const rect = container.getBoundingClientRect();
     const xPct = ((e.clientX - rect.left) / rect.width)  * 100;
@@ -905,11 +904,11 @@
   });
 
   container.addEventListener('mouseleave', () => {
-    /* reset so the next hover starts centred */
+   
     img.style.transformOrigin = 'center center';
   });
 
-  /* --- make sure new images reset properly --- */
+ 
   window.changeMainImage = (src) => {
     img.src = "/uploads/re-image/" + src;
     img.style.transformOrigin = 'center center';
@@ -918,6 +917,6 @@
 </script>
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
 
 <%- include("../../views/partials/user/footer") %>

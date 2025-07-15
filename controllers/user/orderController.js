@@ -22,9 +22,7 @@ const placeOrder = async (req, res) => {
 
     const {razorpay_order_id,razorpay_payment_id, razorpay_signature} = req.body;
 
-    console.log(userId);
-    
-    console.log(addressId);
+   
     
     if (!addressId) {
       return res.status(400).send("No address selected.");
@@ -398,8 +396,7 @@ const cancelOrderItem = async (req, res) => {
   try {
     const { orderId, productId, reason } = req.body;
 
-    console.log("productId from req.body:", productId);
-
+  
 
     const order = await Order.findOne({ orderId }).populate("orderedItems.product");
     if (!order) return res.status(404).send("Order not found");
@@ -407,8 +404,7 @@ const cancelOrderItem = async (req, res) => {
 
     const item = order.orderedItems.find(i => i.product._id.toString() === productId);
 
-    console.log("Matched item:", item);
-    console.log("Item status:", item?.status);
+
     if (!item || item.status !== 'Confirmed') {
       return res.status(400).send("Item cannot be cancelled");
     }

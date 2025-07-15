@@ -8,7 +8,7 @@ const Coupon = require('../../models/couponSchema');
 const applyCoupon = async (req, res) => {
   try {
     const { couponCode, subtotal } = req.body;
-    console.log("Coupon Request:", couponCode, subtotal);
+    
     const userId = req.session.user._id;
 
     const coupon = await Coupon.findOne({

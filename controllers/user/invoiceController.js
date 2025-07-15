@@ -19,7 +19,7 @@ const generateInvoice = async (req, res) => {
 
     
     const logoPath = path.join(__dirname, '..','..', 'public', 'img', 'logo_IzCubes.png');
-    console.log('Loading logo from:', logoPath);
+    
     if (fs.existsSync(logoPath)) {
       doc.image(logoPath, 50, 45, { width: 100 });
     }else {
