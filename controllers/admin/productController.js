@@ -62,7 +62,7 @@ const addProducts = async (req,res) => {
             let regularPrice = parseFloat(products.regularPrice);
             let salePrice = parseFloat(products.salePrice);
 
-            let productOffer = ((regularPrice - salePrice) / regularPrice) * 100;
+            let productOffer = Math.round(((regularPrice - salePrice) / regularPrice) * 100);
 
             const newProduct = new Product({
                 productName : products.productName,
