@@ -391,7 +391,7 @@ const cancelEntireOrder = async (req, res) => {
     }
 
 
-   if (order.paymentMethod === 'Online') {
+   if ((order.paymentMethod === 'Online'|| order.paymentMethod === 'Wallet') && order.finalAmount > 0) {
       const user = await User.findById(order.user);
       if (user && order.finalAmount > 0) {
         user.wallet.balance += order.finalAmount;
@@ -455,7 +455,7 @@ const cancelOrderItem = async (req, res) => {
 
 
     let refundAmount = 0;
-    if (order.paymentMethod === 'Online') {
+    if ((order.paymentMethod === 'Online' || order.paymentMethod === 'Wallet')) {
       const itemTotal = item.price * item.quantity;
       const orderPayableAmount = order.totalPrice - order.couponDiscount;
       refundAmount = Math.round((itemTotal / order.totalPrice) * orderPayableAmount);
