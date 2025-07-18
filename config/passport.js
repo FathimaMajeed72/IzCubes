@@ -15,22 +15,32 @@ passport.use(new GoogleStrategy({
 
 async (accessToken,refreshToken,profile,done)=>{
     try {
-        let user = await User.findOne({googleId:profile.id});
-        if(user){
-            if (user.isBlocked) {
+         const email = profile.emails[0].value;
+         const profileImage = profile.photos?.[0]?.value || "/img/defaultProfileImage.jpg";
+         console.log("Google Profile:", profileImage);
+
+   
+        let existingUser = await User.findOne({email});
+        if(existingUser){
+            if (existingUser.isBlocked) {
                 return done(null, false, { message: 'Your Account is blocked' });
             }
-            return done(null,user);
+
+            if (!existingUser.googleId) {
+                return done(null, false, { message: "An account with this email already exists. Please log in using your password." });
+            }
+
+            return done(null,existingUser);
         }else{
-            const profileImage = profile.photos && profile.photos.length > 0 ? profile.photos[0].value : "defaultProfileImage.jpg";
-            user = new User({
+
+            const newUser = new User({
                 name : profile.displayName,
                 email : profile.emails[0].value,
                 googleId : profile.id,
                 profileImage: profileImage
             })
-            await user.save();
-            return done(null,user);
+            await newUser.save();
+            return done(null,newUser);
         }
     } catch (error) {
         console.error("GoogleStrategy Error:", error);

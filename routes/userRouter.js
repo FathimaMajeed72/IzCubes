@@ -11,6 +11,8 @@ const checkoutController = require("../controllers/user/checkoutController")
 const invoiceController = require("../controllers/user/invoiceController")
 const paymentController = require("../controllers/user/paymentController")
 const couponController = require("../controllers/user/couponController")
+const oauthController = require("../controllers/user/oauthController");
+
 const {userAuth,adminAuth} = require("../middlewares/auth")
 const multer = require("multer")
 const storage = require("../helpers/multer")
@@ -26,10 +28,10 @@ router.get("/signup",userController.loadSignup);
 router.post("/signup",userController.signup)
 router.post("/verify-otp",userController.verifyOtp)
 router.post("/resend-otp", userController.resendOtp)
-router.get("/auth/google",passport.authenticate('google',{scope : ['profile','email']}))
-router.get("/auth/google/callback",passport.authenticate('google',{failureRedirect:'/login?message=User%20is%20blocked'}),(req,res)=>{
-    res.redirect("/")
-})
+router.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+router.get("/auth/google/callback", oauthController.googleCallback);
+
+
 
 router.get("/login",userController.loadLogin)
 router.post("/login",userController.login)

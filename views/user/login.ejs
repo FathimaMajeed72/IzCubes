@@ -24,7 +24,7 @@
 
     .login-container {
       background: white;
-      padding: 3rem 2.5rem;
+      padding: 2rem 2.5rem;
       border-radius: 20px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
       width: 100%;
@@ -32,6 +32,8 @@
       text-align: center;
       position: relative;
       overflow: hidden;
+      margin-top: 2rem;
+      margin-bottom: 2rem;
     }
 
     /* Decorative gradient background */
@@ -48,7 +50,7 @@
     .login-container img {
       width: 120px;
       height: 120px;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
       border-radius: 50%;
       padding: 20px;
       background: linear-gradient(135deg, #f8f9ff 0%, #e3e7ff 100%);
@@ -330,6 +332,8 @@
           <i class="fas fa-exclamation-triangle me-2"></i><%=message%>
         </div>
       <%}%>
+
+      <input type="hidden" name="redirect" value="<%= redirect %>" />
 
       <button type="submit" class="login-btn" id="loginButton">
         <i class="fas fa-sign-in-alt"></i>

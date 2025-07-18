@@ -506,7 +506,7 @@
                     <strong>Return Reason:</strong> <%= order.returnReason %>
                 </div>
             <% } %>
-            <% if ((order.paymentMethod === 'Online' && order.paymentStatus !== 'Failed') ||  (order.paymentMethod === 'COD' && (order.status === 'Delivered' || order.status === 'Returned')) ){ %>
+            <% if ((order.paymentMethod === 'Online' && order.paymentStatus !== 'Failed') ||  (order.paymentMethod === 'COD' && (order.status === 'Delivered' || order.status === 'Returned')) ||(order.paymentMethod === 'Wallet') ){ %>
             <a href="/invoice/<%= order._id %>" class="invoice-btn" target="_blank">
                 <i class="bi bi-download"></i> Download Invoice
             </a>
@@ -645,7 +645,7 @@
                         <i class="fas fa-credit-card"></i>
                         Payment Mode
                     </h6>
-                    <p class="mb-1"><%= order.paymentMethod === 'COD' ? 'Cash On Delivery' : 'Online Payment' %></p>
+                    <p class="mb-1"><%= order.paymentMethod === 'COD' ? 'Cash On Delivery' : order.paymentMethod === 'Online' ? 'Online Payment' : 'Wallet Payment' %></p>
 
                     <% if (order.status === 'Returned') { %>
                         <p class="text-danger">Refunded the amount to your Wallet</p>
@@ -653,7 +653,9 @@
                         <% if (order.paymentMethod === 'COD') { %>
                             <p class="mb-0 text-danger fw-semibold">₹<%= order.finalAmount %> due on delivery</p>
                         <% } else if (order.paymentStatus === 'Failed') { %>   
-                            <p class="mb-0 text-danger fw-semibold">Payment Failed</p>
+                            <p class="mb-0 text-danger fw-semibold">Payment Failed</p>
+                        <% } else if (order.paymentMethod==='Wallet'){ %>
+                            <p class="mb-0 text-success fw-semibold">₹<%= order.finalAmount %> Paid from Wallet</p>
                         <% } else { %>
                             <p class="mb-0 text-success fw-semibold">₹<%= order.finalAmount %> Paid Online</p>
                         <% } %>

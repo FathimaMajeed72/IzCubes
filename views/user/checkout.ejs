@@ -655,6 +655,8 @@
                     </div>
                     <div class="card-body">
                         <% const codAvailable = total <= 1000; %>
+                        <% const walletSufficient = user.wallet && user.wallet.balance >= total; %>
+
                         <form method="POST" action="/orders" id="checkoutForm">
                             <!-- COD option -->
                             <div
@@ -677,7 +679,7 @@
                                     class="fas fa-money-bill-wave <%= codAvailable ? 'text-success' : 'text-secondary' %> me-2"
                                 ></i>
                                 Cash on Delivery
-                                <% if (!codAvailable) { %>(Not Available for orders > ₹1000)<% } %>
+                                <% if (!codAvailable) { %>(Not Available for orders > ₹1000)<% } %>
                                 </label>
                             </div>
 
@@ -695,6 +697,21 @@
                                 <i class="fas fa-credit-card text-info me-2"></i>
                                 Online Payment
                                 </label>
+                            </div>
+
+                             <!-- Wallet Payment Option -->
+                            <div class="payment-option <%= walletSufficient ? '' : 'disabled' %>"
+                                title="<%= walletSufficient ? '' : 'Insufficient wallet balance' %>">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="wallet" value="Wallet"
+                                    <%= walletSufficient ? '' : 'disabled' %> />
+                                <label class="form-check-label <%= walletSufficient ? '' : 'text-muted' %>" for="wallet">
+                                    <i class="fas fa-wallet <%= walletSufficient ? 'text-warning' : 'text-secondary' %> me-2"></i>
+                                    Wallet
+                                    <% if (!walletSufficient) { %>(Insufficient Balance)<% } %>
+                                </label>
+                                <% if (walletSufficient) { %>
+                                    <div class="small text-muted ms-4">Available: ₹<%= user.wallet.balance.toFixed(2) %></div>
+                                <% } %>
                             </div>
 
                             <input type="hidden" name="addressId" id="formAddressId" value="">
@@ -750,6 +767,28 @@
                                 </div>
                             </div>
                         </form>
+                        <!-- Wallet Confirm Modal -->
+                            <div class="modal fade" id="walletConfirmModal" tabindex="-1" aria-labelledby="walletConfirmModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content rounded-3 shadow">
+                                <div class="modal-header bg-primary text-white">
+                                    <h5 class="modal-title" id="walletConfirmModalLabel">Confirm Wallet Payment</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Your order will be paid using your wallet balance.</p>
+                                    <p class="fw-semibold text-success">Available Wallet Balance: ₹<%= user.wallet.balance?.toFixed(2) || "0.00" %></p>
+                                    <p>Are you sure you want to proceed?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button id="confirmWalletBtn" type="button" class="btn btn-primary">Confirm & Place Order</button>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+
+
                     </div>
                 </div>
             </div>
@@ -851,7 +890,7 @@
                             </div>
 
 
-                                                        <!-- Toggle link -->
+                            <!-- Toggle link -->
                             <div class="mt-3">
                             <a href="#" id="toggleCoupons" class="text-primary text-decoration-underline">
                                 View Available Coupons
@@ -909,6 +948,12 @@
             document.getElementById("checkoutForm").submit();
         });
 
+        const walletModal = new bootstrap.Modal(document.getElementById('walletConfirmModal'));
+        const confirmWalletBtn = document.getElementById('confirmWalletBtn');
+        confirmWalletBtn.addEventListener("click", () => {
+            console.log("Wallet confirmation clicked");
+            document.getElementById("checkoutForm").submit();
+        });
 
 
         const couponCodeInput = document.getElementById("couponCode");
@@ -1209,7 +1254,11 @@
                     console.error(err);
                     Swal.fire("Error", "Payment initialization failed", "error");
                 }
-            } else {
+            }else if (selectedPayment === 'Wallet') {
+            
+                    walletModal.show();
+            
+            }else {
                 
                 document.getElementById("checkoutForm").submit();
             }

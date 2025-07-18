@@ -170,7 +170,28 @@ const placeOrder = async (req, res) => {
     } else if (paymentMethod === "COD") {
       paymentStatus = "Pending"; 
       
-    } else {
+    } else if (paymentMethod === "Wallet") {
+      const user = await User.findById(userId);
+
+      if (!user.wallet || user.wallet.balance < finalAmount) {
+        return res.status(400).send("Insufficient wallet balance");
+      }
+
+     
+      user.wallet.balance -= finalAmount;
+
+      
+      user.wallet.transactions.push({
+        type: "debit",
+        amount: finalAmount,
+        reason: "Order Payment",
+        date: new Date(),
+        orderId: retryOrderId || undefined 
+      });
+
+      await user.save();
+      paymentStatus = "Success";
+    }else {
       return res.status(400).send("Unsupported payment method");
     }
 
@@ -229,6 +250,18 @@ const placeOrder = async (req, res) => {
     });
 
     await newOrder.save();
+    if (paymentMethod === "Wallet") {
+      await User.updateOne(
+        { _id: userId, "wallet.transactions.orderId": null },
+        { $set: { "wallet.transactions.$[elem].orderId": newOrder._id } },
+        {
+          arrayFilters: [
+            { "elem.reason": "Order Payment", "elem.orderId": { $exists: false } }
+          ]
+        }
+      );
+    }
+
   }
 
     for (const item of orderedItems) {

@@ -255,10 +255,11 @@ const loadLogin = async (req,res) => {
     try {
 
         const message = req.query.message || "";
+        const redirect = req.query.redirect || "/";
 
         if(!req.session.user&&!req.user){
             
-            return res.render("login",{message})
+            return res.render("login",{message,redirect})
         }else{
             res.redirect("/")
         }
@@ -270,11 +271,12 @@ const loadLogin = async (req,res) => {
 
 const login = async (req,res) => {
     try {
-        const {email,password} = req.body;
+        const {email,password,redirect} = req.body;
 
         if (!email || !password) {
             return res.render("login", {
                 message: "Email and password are required",
+                redirect
             });
         }
 
@@ -282,6 +284,7 @@ const login = async (req,res) => {
         if (!emailPattern.test(email)) {
             return res.render("login", {
                 message: "Invalid email format",
+                redirect
             });
         }
         
@@ -291,12 +294,12 @@ const login = async (req,res) => {
         if(!findUser){
             
           
-           return res.render("login",{message:"User not found"})
+           return res.render("login",{message:"User not found", redirect})
         }
         if(findUser.isBlocked){
             
            
-            return res.render("login",{message:"User is blocked by admin"})
+            return res.render("login",{message:"User is blocked by admin", redirect})
         }
         
         const passwordMatch = await bcrypt.compare(password,findUser.password);
@@ -304,7 +307,7 @@ const login = async (req,res) => {
         if(!passwordMatch){
             
             
-            return res.render("login",{message:"Incorrect password"})
+            return res.render("login",{message:"Incorrect password", redirect})
         }
 
         req.login(findUser, (err) => {
@@ -315,7 +318,7 @@ const login = async (req,res) => {
 
             //console.log(findUser)
             req.session.user = findUser;
-            res.redirect("/")
+            res.redirect(redirect || "/")
         });
 
 
@@ -323,7 +326,10 @@ const login = async (req,res) => {
         console.error("login error ",error); 
         
         
-        return res.render("login",{message:"Login failed. Please try again later"})
+        return res.render("login",{
+            message:"Login failed. Please try again later",
+            redirect: req.body.redirect || "/"
+        })
     }
 }
 

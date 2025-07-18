@@ -7,21 +7,22 @@ const userAuth = async (req, res, next) => {
         const user = req.session.user || req.user;
 
         if (!user || !user._id) {
-            
-            return res.render("login",{message:"Please login to continue"})
+            const redirectUrl = encodeURIComponent(req.originalUrl);
+            return res.redirect(`/login?redirect=${redirectUrl}&&message=Please login to continue`);
+            //return res.render("login",{message:"Please login to continue"})
         }
 
         const foundUser = await User.findById(user._id);
 
         if (!foundUser) {
-
-            return res.render("login",{message:"User not found"})
+              return res.redirect(`/login?message=User not found`);
+           // return res.render("login",{message:"User not found"})
         }
 
         if (foundUser.isBlocked) {
             req.session.destroy(() => {
-                
-                return res.render("login",{message:"User is blocked by admin"})
+                return res.redirect(`/login?message=User is blocked by admin`);
+                //return res.render("login",{message:"User is blocked by admin"})
             });
         } else {
             req.user = foundUser;
